@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Send Anonymous Message</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'Cabinet Grotesk',sans-serif;
+      background: linear-gradient(135deg,#0a0014,#2a005a,#000);
+      color:#fff;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      overflow:hidden;
+      position:relative;
+    }
+    body::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(circle at center, rgba(168,85,255,.15), transparent 70%);
+      pointer-events:none;
+    }
+
+    .anon-card {
+      background: rgba(30,30,50,.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(168,85,255,.3);
+      border-radius: 28px;
+      padding: 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0,0,0,.7);
+      animation: popIn .5s cubic-bezier(.2,.8,.4,1);
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes popIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+
+    .profile-pic {
+      width:90px; height:90px;
+      border-radius:50%;
+      border:4px solid #a855ff;
+      object-fit:cover;
+      margin:0 auto 16px;
+      box-shadow:0 0 25px rgba(168,85,255,.5);
+    }
+
+    .username {
+      font-size:24px; font-weight:800;
+      background: linear-gradient(90deg,#a855ff,#00d9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom:8px;
+    }
+
+    .subtitle { color:#94a3b8; font-size:15px; margin-bottom:24px; }
+
+    input, textarea {
+      width:100%; padding:12px 16px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:12px;
+      color:#fff; font-size:15px;
+      outline:none;
+      margin-bottom:16px;
+    }
+    textarea { min-height:120px; resize:none; }
+    input:focus, textarea:focus {
+      border-color:#a855ff;
+      box-shadow:0 0 0 3px rgba(168,85,255,.2);
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg,#a855ff,#ff66cc);
+      color:white;
+      border:none;
+      padding:14px 32px;
+      border-radius:50px;
+      font-size:17px;
+      font-weight:700;
+      cursor:pointer;
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      transition:all .3s;
+      text-transform:uppercase;
+      letter-spacing:1px;
+    }
+    .send-btn:hover {
+      transform:translateY(-3px);
+      box-shadow:0 15px 30px rgba(168,85,255,.4);
+    }
+    .send-btn:disabled {
+      opacity:.6; cursor:not-allowed; transform:none;
+    }
+
+    .feedback {
+      display:none; margin-top:12px; font-size:14px;
+      align-items:center; justify-content:center; gap:6px;
+    }
+    .loading { color:#a855ff; }
+    .success { color:#28a745; }
+    .error   { color:#ef4444; }
+
+    #success {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #0d021c;
+      padding: 14px 18px;
+      border-left: 4px solid #a855ff;
+      border-radius: 10px;
+      color: #eae1ff;
+      animation: slideDown 0.35s ease;
+      text-align: left;
+    }
+
+    .success-icon { color: #a855ff; font-size: 20px; }
+    .signup-strong { display: block; margin-top: 10px; font-size: 15px; color: #d9c3ff; }
+    .signup-link { color: #a855ff; font-weight: 600; text-decoration: underline; }
+    .signup-link:hover { color: #c77dff; text-shadow: 0 0 8px #b06bff; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .fa-spinner { animation: spin 1s linear infinite; }
+
+    /* Username suggestions */
+    .username-suggest {
+      position: absolute;
+      background: #120024;
+      width: calc(100% - 32px);
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #6b39ff;
+      border-radius: 8px;
+      display: none;
+      z-index: 999;
+      left: 16px;
+      margin-top: 4px;
+    }
+    .username-suggest div {
+      padding: 10px;
+      cursor: pointer;
+      color: #ddd;
+      transition: 0.2s;
+    }
+    .username-suggest div:hover {
+      background: #6b39ff;
+      color: white;
+    }
+
+    /* Dice button & hint box */
+    .textarea-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .dice-btn {
+      position: absolute;
+      bottom: 30px;
+      right: 12px;
+      font-size: 28px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 12px;
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: #a855ff;
+      transition: all 0.25s;
+      z-index: 10;
+    }
+    .dice-btn:hover {
+      animation: rollDice 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: scale(1.15);
+      background: rgba(168,85,255,.2);
+    }
+
+    /* HINT BOX — THIS IS THE FIX THAT MAKES IT VISIBLE */
+    .hint-box {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      width: calc(100% - 20px);
+      max-height: 240px;
+      background: #1f1f2e;
+      border: 1px solid #6b39ff;
+      border-radius: 12px;
+      padding: 10px 0;
+      overflow-y: auto;
+      z-index: 9999;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: none !important;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .hint-box.show {
+      display: block !important;
+      opacity: 1 !important;
+    }
+
+    .hint-row {
+      padding: 12px 16px;
+      font-size: 15px;
+      color: #ddd;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .hint-row:hover {
+      background: rgba(168, 85, 247, 0.25);
+      color: #fff;
+    }
+
+    @keyframes rollDice {
+      0%   { transform: rotate(0deg) scale(1); }
+      20%  { transform: rotate(180deg) scale(1.4); }
+      40%  { transform: rotate(360deg) scale(1.1); }
+      60%  { transform: rotate(540deg) scale(1.3); }
+      80%  { transform: rotate(700deg) scale(1.2); }
+      100% { transform: rotate(720deg) scale(1); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .anon-card { padding: 24px; }
+      .profile-pic { width: 75px; height: 75px; }
+      .username { font-size: 22px; }
+    }
+    @media (max-width: 360px) {
+      .anon-card { padding: 20px; border-radius: 20px; }
+      .username { font-size: 20px; }
+      .subtitle { font-size: 14px; }
+      .send-btn { padding: 13px 24px; font-size: 16px; }
+      input, textarea { font-size: 16px; padding: 12px 14px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="anon-card">
+  <img id="profilePic" class="profile-pic" src="" alt="Profile">
+  <div class="username">@<span id="username">loading...</span></div>
+  <p class="subtitle">Send an anonymous message — they won't know it's you!</p>
+
+  <input id="replyUsername" type="text" placeholder="Your username (optional – for replies)">
+  <div id="usernameSuggest" class="username-suggest"></div>
+
+  <div class="textarea-wrapper">
+    <textarea id="messageInput" placeholder="Type your message here..." aria-label="Message"></textarea>
+    <button class="dice-btn" id="diceBtn" title="Get a random question">🎲</button>
+    <div id="hintBox" class="hint-box"></div>
+  </div>
+
+<!-- 1. Fix button onclick -->
+<button id="sendBtn" class="send-btn">
+  <i class="fas fa-paper-plane"></i>
+  <span id="sendText">Send Anonymously</span>
+</button>
+
+  <div id="loading" class="feedback loading"><i class="fas fa-spinner"></i> Sending...</div>
+  <div id="success" class="feedback success">
+    <i class="fas fa-check success-icon"></i>
+    <span>Message sent anonymously!</span>
+  </div>
+  <div id="error" class="feedback error"><i class="fas fa-exclamation-triangle"></i> Failed. Try again.</div>
+</div>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+/* ====================== SUPABASE ====================== */
+const SUPABASE_URL = 'https://ssyaklpnjhoxukfanyxb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzeWFrbHBuamhveHVrZmFueXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjA2NzUsImV4cCI6MjA5NjczNjY3NX0.H95B092ZXEAQz3l6-QefzWt44RZLpp5PdiEbLktstGE';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabase = supabase;
+
+  const $ = id => document.getElementById(id);
+
+  const profilePic    = $('profilePic');
+  const usernameEl    = $('username');
+  const messageInput  = $('messageInput');
+  const replyInput    = $('replyUsername');
+  const sendBtn       = $('sendBtn');
+  const loading       = $('loading');
+  const success       = $('success');
+  const errorDiv      = $('error');
+  const suggestionBox = $('usernameSuggest');
+  const diceBtn       = $('diceBtn');
+  const hintBox       = $('hintBox');
+
+  // ──────────────────────────────────────────────────────────────
+  // FORCE CSS TO MAKE HINT BOX VISIBLE WHEN .show IS ADDED
+  // ──────────────────────────────────────────────────────────────
+  const forceCSS = document.createElement('style');
+  forceCSS.textContent = `
+    .hint-box { 
+      display: none !important; 
+      opacity: 0; 
+      visibility: hidden; 
+      transition: opacity 0.3s ease;
+    }
+    .hint-box.show { 
+      display: block !important; 
+      opacity: 1 !important; 
+      visibility: visible !important; 
+    }
+  `;
+  document.head.appendChild(forceCSS);
+
+  // ──────────────────────────────────────────────────────────────
+  // BULLETPROOF DICE BUTTON (clones to remove any broken listeners)
+  // ──────────────────────────────────────────────────────────────
+  const newDiceBtn = diceBtn.cloneNode(true);
+  diceBtn.parentNode.replaceChild(newDiceBtn, diceBtn);
+
+  newDiceBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    console.log("Dice clicked – opening/closing hint box");
+
+    if (!hintBox.classList.contains('show')) {
+      populateQuestions();
+    }
+    hintBox.classList.toggle('show');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!newDiceBtn.contains(e.target) && !hintBox.contains(e.target)) {
+      hintBox.classList.remove('show');
+    }
+  });
+
+  // ──────────────────────────────────────────────────────────────
+  // QUESTIONS + POPULATE FUNCTION
+  // ──────────────────────────────────────────────────────────────
+  const questions = [
+    "What's your favorite hobby?",
+    "What's the most adventurous thing you've done in bed?",
+    "What's a secret talent you have?",
+    "Do you like kissing or cuddling more?",
+    "If you could travel anywhere, where would you go?",
+    "What's your biggest turn-on?",
+    "What's your favorite childhood memory?",
+    "Have you ever had a secret crush on someone here?",
+    "What's one thing you've always wanted to try?",
+    "What's the naughtiest thing you've ever done?",
+    "What's your favorite book or movie?",
+    "Do you prefer giving or receiving compliments?",
+    "What's your dream job?",
+    "What's a fantasy you've never told anyone?",
+    "What's a skill you wish you had?",
+    "Have you ever flirted just for fun?",
+    "If you could meet any famous person, who would it be?",
+    "Do you like to be in control or let someone else lead?",
+    "What's your favorite food?",
+    "What's a secret you’re too embarrassed to tell?",
+    "What's a memorable vacation you've had?",
+    "What's your favorite part of your body?",
+    "Do you prefer mornings or nights?",
+    "Have you ever sent a risque text to someone?",
+    "What's a fear you’ve overcome?",
+    "Do you like playful teasing or serious romance?",
+    "What's your favorite music genre?",
+    "What's your idea of a perfect date night?",
+    "What's one habit you want to start?",
+    "Have you ever had a crush on a friend?",
+    "Do you believe in luck?",
+    "Do you like surprise kisses or planned ones?",
+    "What's your favorite season and why?",
+    "What's a naughty habit you have?",
+    "What's the best advice you’ve ever received?",
+    "Do you enjoy flirting with strangers?",
+    "What's your favorite way to relax?",
+    "What's the most romantic thing you've ever done?",
+    "What's AngelesWhat’s a small thing that makes you happy?",
+    "Have you ever broken a rule just for fun?",
+    "What's a favorite quote or saying?",
+    "What's the last thing that made you laugh?",
+    "If you won the lottery, what's the first thing you'd do?",
+    "What's a goal you're currently working on?",
+    "What's a hobby you’ve never tried but want to?",
+    "Do you prefer cats or dogs?",
+    "What's your favorite holiday?",
+    "What's the most unusual food you've tried?",
+    "What's a place that makes you feel peaceful?",
+    "What's your favorite childhood game?",
+    "What's the last movie or show you watched?",
+    "Do you believe in fate?",
+    "What's the best gift you've ever received?",
+    "What's your favorite color and why?",
+    "What's a skill you’re proud of?",
+    "What's your favorite type of weather?",
+    "What's your favorite dessert?",
+    "If you could change one thing about the world, what would it be?",
+    "Do you prefer the mountains or the beach?",
+    "What's your favorite sport or activity?",
+    "What's a hobby that relaxes you the most?",
+    "Do you enjoy surprises?",
+    "What's your favorite type of music or artist?",
+    "What's one thing that always motivates you?",
+    "If you could live anywhere, where would it be?"
+  ];
+
+  function populateQuestions() {
+    console.log("Populating questions...");
+    hintBox.innerHTML = "";
+    questions.forEach(q => {
+      const row = document.createElement("div");
+      row.className = "hint-row";
+      row.textContent = q;
+      row.onclick = () => {
+        messageInput.value = q;
+        hintBox.classList.remove("show");
+        messageInput.focus();
+      };
+      hintBox.appendChild(row);
+    });
+    console.log(`Added ${questions.length} questions`);
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // GET USERNAME FROM URL
+  // ──────────────────────────────────────────────────────────────
+  const params = new URLSearchParams(location.search);
+  let username = params.get('to');
+  if (!username) {
+    const path = location.pathname.replace(/^\/+|\/+$/g, '').trim();
+    const known = ['', 'index.html', 'dashboard.html','live-chat.html','anon.html','group.html','tools.html','admin2.html','admin.html','upgrade.html','buy.html','documentation.html', 'rule.html', 'upgrade.html'];
+    if (path && !known.includes(path)) {
+      username = decodeURIComponent(path);
+      history.replaceState({}, '', `?to=${encodeURIComponent(username)}`);
+    }
+  }
+  if (!username) {
+    document.body.innerHTML = `<div style="text-align:center;padding:40px;color:#ef4444;font-size:18px;">Invalid link.</div>`;
+    throw new Error('No username');
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // TRACKING + PROFILE + SEND MESSAGE (all your original code)
+  // ──────────────────────────────────────────────────────────────
+  let alreadyTracked = false;
+
+  async function trackVisitor() {
+    if (alreadyTracked || !username) return;
+    alreadyTracked = true;
+
+    let geo = { ip: 'hidden', city: 'Hidden', region: 'Hidden', country_name: 'Unknown' };
+    try {
+      const r = await fetch('https://ip-api.com/json/');
+      if (r.ok) {
+        const data = await r.json();
+        if (data.status === 'success') {
+          geo.city = data.city || 'Hidden';
+          geo.region = data.regionName || 'Hidden';
+          geo.country_name = data.country || 'Nigeria';
+          geo.ip = data.query || 'hidden';
+        }
+      }
+    } catch (e) {}
+
+    if (geo.country_name === 'Unknown' || !geo.country_name) {
+      geo.country_name = 'Nigeria';
+      if (geo.city === 'Hidden') geo.city = 'Lagos';
+    }
+
+    const ua = navigator.userAgent;
+    let brand = "Unknown Device", os = "Unknown";
+    if (/iPhone|iPad|iPod/.test(ua)) {
+      brand = /iPad/.test(ua) ? "iPad" : "iPhone";
+      os = ua.match(/OS (\d+)[._](\d+)/) ? `iOS ${RegExp.$1}.${RegExp.$2}` : "iOS";
+    } else if (/Android/.test(ua)) {
+      os = ua.match(/Android (\d+\.?\d*)/) ? `Android ${RegExp.$1}` : "Android";
+      if (/Samsung|SM-/.test(ua)) brand = "Samsung";
+      else if (/Pixel/.test(ua)) brand = "Google Pixel";
+      else if (/Xiaomi|Redmi|POCO/.test(ua)) brand = "Xiaomi";
+      else if (/OnePlus/.test(ua)) brand = "OnePlus";
+      else if (/OPPO|Realme/.test(ua)) brand = "OPPO/Realme";
+      else if (/vivo/.test(ua)) brand = "vivo";
+      else if (/HUAWEI|HONOR/.test(ua)) brand = "Huawei";
+    }
+
+    let ownerUserId = null;
+    try {
+      const { data: profile } = await supabase.from('profiles').select('id').eq('username', username).single();
+      if (profile) ownerUserId = profile.id;
+    } catch (err) {}
+
+    try {
+      await supabase.from('link_clicks').insert({
+        user_id: ownerUserId,
+        username: username,
+        ip_address: geo.ip || 'hidden',
+        country: geo.country_name || 'Unknown',
+        region: geo.region || 'Unknown',
+        city: geo.city || 'Unknown',
+        phone_brand: brand,
+        phone_model: brand,
+        os: os,
+        user_agent: ua.substring(0, 300),
+        clicked_at: new Date().toISOString(),
+        sent_message: false
+      });
+    } catch (err) {
+      console.warn('Failed to track click:', err);
+    }
+  }
+
+  const loadProfile = async () => {
+    try {
+      const { data } = await supabase.from('profiles').select('username, image').eq('username', username).maybeSingle();
+      const name = data?.username ?? username;
+      usernameEl.textContent = name;
+      profilePic.src = data?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6b4eff&color=fff&size=256&bold=true`;
+    } catch (err) {
+      usernameEl.textContent = username;
+      profilePic.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=6b4eff&color=fff&size=256&bold=true`;
+    }
+  };
+
+  const sendMessage = async () => {
+    const msg = messageInput.value.trim();
+    const replyUser = replyInput.value.trim() || null;
+    if (!msg) return;
+
+    sendBtn.disabled = true;
+    loading.style.display = 'flex';
+    success.style.display = 'none';
+    errorDiv.style.display = 'none';
+    suggestionBox.style.display = "none";
+    hintBox.classList.remove("show");
+
+    try {
+      if (replyUser) {
+        const { data } = await supabase.from("profiles").select("username").ilike("username", replyUser).maybeSingle();
+        if (!data) {
+          errorDiv.innerHTML = `This username does not exist.<br><a href="index.html" style="color:#a855ff;font-weight:600;">Sign up to receive replies</a>`;
+          errorDiv.style.display = "block";
+          sendBtn.disabled = false;
+          loading.style.display = 'none';
+          return;
+        }
+      }
+
+      const payload = {
+        to_username: username,
+        message: msg,
+        is_anonymous: true,
+        sent_at: new Date().toISOString()
+      };
+      if (replyUser) payload.reply_username = replyUser;
+
+      const { error } = await supabase.from("messages").insert(payload);
+      if (error) throw error;
+
+      messageInput.value = "";
+      replyInput.value = "";
+
+      const link = `<a href="index.html" class="signup-link">Sign up</a>`;
+      const extra = replyUser ? "" : `<br><strong class="signup-strong">Want replies? ${link} to view your inbox.</strong>`;
+
+      success.innerHTML = `<i class="fas fa-check success-icon"></i><span>Message sent anonymously!</span>${extra}`;
+      success.style.display = "flex";
+      setTimeout(() => success.style.display = "none", 19000);
+
+    } catch (err) {
+      errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${err.message || "Failed to send"}`;
+      errorDiv.style.display = "flex";
+    } finally {
+      loading.style.display = "none";
+      sendBtn.disabled = false;
+    }
+  };
+
+  // Username autocomplete
+  replyInput.addEventListener("input", async () => {
+    const value = replyInput.value.trim();
+    if (!value) {
+      suggestionBox.style.display = "none";
+      return;
+    }
+
+    const { data } = await supabase.from("profiles").select("username").ilike("username", `${value}%`).limit(6);
+
+    if (!data || data.length === 0) {
+      suggestionBox.innerHTML = `<div style="padding:10px;color:#999">No users found</div>`;
+      suggestionBox.style.display = "block";
+      return;
+    }
+
+    suggestionBox.innerHTML = data.map(u => `<div data-name="${u.username}">${u.username}</div>`).join("");
+    suggestionBox.style.display = "block";
+  });
+
+  suggestionBox.addEventListener("click", e => {
+    if (e.target.dataset.name) {
+      replyInput.value = e.target.dataset.name;
+      suggestionBox.style.display = "none";
+    }
+  });
+
+  // Init
+  loadProfile().then(() => trackVisitor());
+  sendBtn.addEventListener('click', sendMessage);
+  messageInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  messageInput.focus();
+</script>
+
+</body>
+</html>

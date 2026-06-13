@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>anonConnect Documentation</title>
+
+  <!-- Fonts & icons -->
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,700,800,900,1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+    /* ================ ALL YOUR ORIGINAL STYLE – 100% UNTOUCHED ================ */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      background: linear-gradient(135deg, #3A0471, #1a0030, #757575);
+      background-size: 400% 400%;
+      animation: bgAnimation 15s ease infinite;
+      color: #eee;
+      padding: 20px;
+      line-height: 1.7;
+    }
+
+    @keyframes bgAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1, h2, h3, h4 {
+      color: #fff;
+    }
+
+    h1 { font-size: 2.5em; margin-bottom: 0.5em; }
+    h2 { font-size: 2em; margin-top: 1.5em; margin-bottom: 0.5em; }
+    h3 { font-size: 1.5em; margin-top: 1em; }
+
+    p, li { font-size: 1em; color: #ddd; }
+
+    ul, ol { margin-left: 20px; }
+
+    table {
+      width: 100%; border-collapse: collapse; margin: 15px 0;
+    }
+    table, th, td { border: 1px solid #555; }
+    th, td { padding: 10px; text-align: left; }
+    th { background: #222; }
+    td { background: #111; }
+
+    .diagram {
+      display: block; margin: 20px auto; max-width: 100%;
+      border: 2px solid #444; border-radius: 5px;
+    }
+
+    a { color: #1e90ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    code {
+      background: #222; padding: 2px 5px; border-radius: 3px;
+      font-family: monospace; color: #0f0;
+    }
+
+    /* Collapsible */
+    .collapsible {
+      background-color: #111; color: #fff; cursor: pointer;
+      padding: 12px 18px; width: 100%; border: none; text-align: left;
+      outline: none; font-size: 1.1em; border-radius: 5px; margin-top: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .collapsible:hover { background-color: #222; }
+    .collapsible:after {
+      content: '\f078';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+    }
+    .collapsible.active:after { content: '\f077'; }
+
+    .content {
+      padding: 0 18px; max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease-out; background-color: #111;
+      margin-bottom: 5px; border-radius: 5px;
+    }
+
+    /* TOC */
+    .toc {
+      background-color: #111; padding: 15px 20px; border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .toc h2 { margin-top: 0; border-bottom: none; }
+    .toc ul { list-style: none; padding-left: 0; }
+    .toc ul li { margin-bottom: 8px; }
+    .toc a { color: #1e90ff; }
+
+    /* ================= RESPONSIVE ENHANCEMENTS ONLY (ADDED BELOW) ================= */
+    /* These do NOT alter your design — only make it perfect on small screens */
+
+    @media (max-width: 480px) {
+      body { padding: 15px; }
+      h1 { font-size: 2.2em; }
+      h2 { font-size: 1.8em; }
+      h3 { font-size: 1.4em; }
+      p, li, .collapsible, code { font-size: 1em; }
+      
+      .collapsible { 
+        padding: 14px 16px; 
+        font-size: 1.05em; 
+      }
+      
+      table, th, td { 
+        font-size: 0.9em; 
+        padding: 8px; 
+      }
+      
+      .toc {
+        padding: 14px 16px;
+      }
+    }
+
+    /* Extra small phones */
+    @media (max-width: 360px) {
+      h1 { font-size: 2em; }
+      h2 { font-size: 1.6em; }
+      .collapsible { padding: 12px 14px; }
+    }
+
+    /* Tablets & up – slightly larger text for comfort */
+    @media (min-width: 768px) {
+      body { padding: 40px; }
+      h1 { font-size: 3em; }
+      h2 { font-size: 2.3em; }
+      p, li { font-size: 1.1em; }
+    }
+
+    /* Large desktop – even more breathing room */
+    @media (min-width: 1200px) {
+      body { 
+        padding: 60px 80px; 
+        max-width: 1100px; 
+        margin: 0 auto; 
+      }
+      h1 { font-size: 3.5em; }
+    }
+
+    /* Prevent iOS zoom on inputs if you ever add forms */
+    input, textarea, select {
+      font-size: max(16px, 1em);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>AnonConnect Documentation</h1>
+
+  <!-- ================= TABLE OF CONTENTS ================= -->
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#overview">1. Overview</a></li>
+      <li><a href="#user-roles">2. User Roles</a></li>
+      <li><a href="#auth">3. User Authentication and Access</a></li>
+      <li><a href="#core-features">4. Core Features</a></li>
+      <li><a href="#premium">5. Premium Features</a></li>
+      <li><a href="#privacy">6. Privacy & Security</a></li>
+      <li><a href="#payment">7. Payment & Subscriptions</a></li>
+      <li><a href="#tech">8. Technical Overview</a></li>
+      <li><a href="#future">9. Future Enhancements</a></li>
+      <li><a href="#user-guide">10. User Guide</a></li>
+      <li><a href="#diagram">Diagram</a></li>
+    </ul>
+  </div>
+
+  <!-- ================= COLLAPSIBLE SECTIONS ================= -->
+  <button id="overview" class="collapsible">1. Overview</button>
+  <div class="content">
+    <p>
+      anonConnect is a secure, anonymous social and messaging platform where users can interact, share multimedia content, participate in group chats, and play games, all while controlling their privacy. The platform supports both free and premium tiers, giving premium users additional privacy and engagement features.
+    </p>
+    <h3>Key Features:</h3>
+    <ul>
+      <li>Share and receive anonymous messages with images, text, audio, and video.</li>
+      <li>Premium features include identifying message senders and controlling who can view your details.</li>
+      <li>Group chat functionality for collaborative conversations.</li>
+      <li>Gaming section for interactive, anonymous play.</li>
+      <li>Complete anonymity for free users while offering advanced privacy controls for premium users.</li>
+    </ul>
+  </div>
+
+  <button id="user-roles" class="collapsible">2. User Roles</button>
+  <div class="content">
+    <h3>Free Users</h3>
+    <ul>
+      <li>Send and receive messages anonymously.</li>
+      <li>Upload images, text, audio, and video.</li>
+      <li>Access group chats and play games anonymously.</li>
+      <li>Cannot see who sent messages.</li>
+    </ul>
+    <h3>Premium Users</h3>
+    <ul>
+      <li>See who sent messages.</li>
+      <li>Configure privacy settings to block certain users.</li>
+      <li>Full access to multimedia features and group chat settings.</li>
+      <li>Access additional gaming features and leaderboards.</li>
+    </ul>
+  </div>
+
+  <button id="auth" class="collapsible">3. User Authentication and Access</button>
+  <div class="content">
+    <ul>
+      <li>Authentication required for personalized features.</li>
+      <li>Free users: minimal verification.</li>
+      <li>Premium users: account verification + payment.</li>
+    </ul>
+    <h3>Session Management:</h3>
+    <ul>
+      <li>Users remain logged in until manual logout or session expiry.</li>
+      <li>Unauthenticated users: limited content or restricted anonymous links.</li>
+    </ul>
+  </div>
+
+  <button id="core-features" class="collapsible">4. Core Features</button>
+  <div class="content">
+    <h3>Link Creation</h3>
+    <ul>
+      <li>Create unique links to share messages, images, audio, and video.</li>
+      <li>External sharing without revealing sender identity.</li>
+      <li>Premium: track clicks optionally.</li>
+    </ul>
+    <h3>Messaging</h3>
+    <ul>
+      <li>Free: fully anonymous.</li>
+      <li>Premium: see sender identity.</li>
+      <li>Supports text, images, audio, video.</li>
+      <li>Premium: delete or hide messages.</li>
+    </ul>
+    <h3>Privacy Controls</h3>
+    <ul>
+      <li>Premium: hide details from specific users.</li>
+      <li>Block users from messaging or viewing content.</li>
+      <li>All multimedia encrypted and stored securely.</li>
+    </ul>
+    <h3>Group Chat</h3>
+    <ul>
+      <li>Join/create groups.</li>
+      <li>Anonymous or attributed messages.</li>
+      <li>Admin moderation: add/remove users, restrict message types, manage visibility.</li>
+    </ul>
+    <h3>Gaming Section</h3>
+    <ul>
+      <li>Play interactive games anonymously or with friends.</li>
+      <li>Premium: track scores, see participants, access premium modes.</li>
+      <li>Game types: text-based, image-based, multiplayer.</li>
+    </ul>
+    <h3>Multimedia Support</h3>
+    <ul>
+      <li>Images: JPEG, PNG, GIF</li>
+      <li>Audio: MP3, WAV</li>
+      <li>Video: MP4, MOV</li>
+      <li>Files uploaded securely and linked via URLs.</li>
+    </ul>
+  </div>
+
+  <button id="premium" class="collapsible">5. Premium Features</button>
+  <div class="content">
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Free</th>
+          <th>Premium</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>See who sent messages</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Hide profile from specific users</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Access advanced games</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Track link clicks</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Customizable group chat permissions</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Multimedia message priority</td><td>❌</td><td>✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button id="privacy" class="collapsible">6. Privacy & Security</button>
+  <div class="content">
+    <ul>
+      <li>User anonymity is core.</li>
+      <li>All communications encrypted.</li>
+      <li>No info shared without consent.</li>
+      <li>Premium controls for visibility.</li>
+      <li>Uploaded content securely stored.</li>
+    </ul>
+  </div>
+
+  <button id="payment" class="collapsible">7. Payment & Subscriptions</button>
+  <div class="content">
+    <ul>
+      <li>Premium access is subscription-based.</li>
+      <li>Payment: Stripe, PayPal, or local gateways.</li>
+      <li>Upgrade/downgrade anytime.</li>
+      <li>Billing history accessible in dashboard.</li>
+    </ul>
+  </div>
+
+  <button id="tech" class="collapsible">8. Technical Overview</button>
+  <div class="content">
+    <ul>
+      <li>Frontend: Responsive web app (HTML, CSS, JS).</li>
+      <li>Backend:Supabase / Firebase.</li>
+      <li>Database: Relational or NoSQL for users, messages, multimedia, games.</li>
+      <li>File Storage: Secure cloud storage.</li>
+      <li>Security: SSL/TLS, token authentication, role-based access.</li>
+    </ul>
+  </div>
+
+  <button id="future" class="collapsible">9. Future Enhancements</button>
+  <div class="content">
+    <ul>
+      <li>Mobile app (iOS & Android).</li>
+      <li>AI moderation.</li>
+      <li>Custom avatars.</li>
+      <li>Expanded game library + leaderboard.</li>
+      <li>Push notifications for messages & game invites.</li>
+    </ul>
+  </div>
+
+  <button id="user-guide" class="collapsible">10. User Guide</button>
+  <div class="content">
+    <h3>Sign Up / Login</h3>
+    <ul>
+      <li>Create account with email/social login.</li>
+      <li>Verify account for premium.</li>
+    </ul>
+    <h3>Create a Link</h3>
+    <ul>
+      <li>Go to “Create Link” section.</li>
+      <li>Upload multimedia and generate link.</li>
+    </ul>
+    <h3>Send & Receive Messages</h3>
+    <ul>
+      <li>Open a link or group chat.</li>
+      <li>Send messages via text, audio, video, or images.</li>
+    </ul>
+    <h3>Group Chats</h3>
+    <ul>
+      <li>Join or create a group.</li>
+      <li>Chat anonymously or with username.</li>
+    </ul>
+    <h3>Play Games</h3>
+    <ul>
+      <li>Access “Games” section.</li>
+      <li>Play anonymously or with friends.</li>
+      <li>Premium: unlock special modes.</li>
+    </ul>
+    <h3>Manage Privacy</h3>
+    <ul>
+      <li>Adjust dashboard privacy settings.</li>
+      <li>Premium: block users or hide details.</li>
+    </ul>
+    <h3>Upgrade to Premium</h3>
+    <ul>
+      <li>Navigate to subscription section, choose plan, pay, and access premium features.</li>
+    </ul>
+  </div>
+
+
+    <img src="./diagram.png" id="diagram" alt="anonConnect System Diagram" class="diagram">
+    <script>
+    const collapsibles = document.querySelectorAll(".collapsible");
+    collapsibles.forEach(button => {
+      button.addEventListener("click", () => {
+        button.classList.toggle("active");
+        const content = button.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

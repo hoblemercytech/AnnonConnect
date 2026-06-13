@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buy Coins – Add More Coins Anytime</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<style>
+    :root { --gold: #fbbf24; --purple: #8b5cf6; --pink: #ec4899; --green: #10b981; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0f23, #1e1b4b, #2d1b69);
+      color: #fff; min-height: 100vh; padding: 20px 0; text-align: center;
+    }
+    .container {
+      max-width: 440px; margin: 0 auto;
+      background: linear-gradient(135deg, rgba(30,27,75,0.92), rgba(76,29,149,0.75));
+      backdrop-filter: blur(20px); border-radius: 32px; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6); border: 1px solid rgba(251,191,36,0.3);
+      position: relative; padding-bottom: 40px;
+    }
+    .container::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, var(--gold), var(--pink));
+    }
+    header { padding: 50px 20px 30px; }
+    .crown { font-size: 80px; color: var(--gold); }
+    h1 { font-size: 34px; margin: 15px 0; background: linear-gradient(90deg, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .badge { background: var(--green); color: white; padding: 10px 25px; border-radius: 50px; font-weight: bold; display: inline-block; margin: 15px 0; }
+
+    .price-input {
+      width: 100%; padding: 20px; border-radius: 20px; border: none; font-size: 28px; text-align: center;
+      background: rgba(255,255,255,0.1); color: white; margin: 20px 0;
+    }
+    .price-input::placeholder { color: rgba(255,255,255,0.6); }
+
+    .btn-pay {
+      background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; border: none;
+      width: 100%; padding: 22px; font-size: 22px; font-weight: bold; border-radius: 50px; cursor: pointer;
+      margin: 20px 0; box-shadow: 0 15px 40px rgba(139,92,246,0.6);
+    }
+
+    .info { margin: 30px 30px; padding: 20px; background: rgba(16,185,129,0.15); border-radius: 20px; border: 1px solid rgba(16,185,129,0.3); font-size: 16px; }
+
+    #modalContainer {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+      display: none; flex-direction: column; gap: 20px; padding: 20px; overflow-y: auto;
+      align-items: center; justify-content: flex-start; z-index: 9999;
+    }
+    #modalContainer.active { display: flex; }
+
+    .payment-modal {
+      background: linear-gradient(135deg, #1e1b4b, #4c1d95); border: 2px solid var(--gold);
+      border-radius: 32px; padding: 40px; width: 90%; max-width: 420px; text-align: center;
+      box-shadow: 0 40px 100px rgba(251,191,36,0.5); animation: pop 0.7s ease-out;
+    }
+    @keyframes pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .bank-details {
+      background: rgba(255,255,255,0.1); padding: 28px; border-radius: 24px;
+      margin: 30px 0; line-height: 2.4; font-size: 20px;
+      border: 1px dashed rgba(251,191,36,0.4);
+    }
+    .paid-btn {
+      background: linear-gradient(135deg, #10b981, #34d399);
+      color: white; border: none; padding: 20px; width: 100%;
+      border-radius: 50px; font-size: 20px; font-weight: bold; cursor: pointer;
+      margin-top: 20px;
+    }
+    .spinner {
+      width: 90px; height: 90px; border: 10px solid rgba(255,255,255,0.2);
+      border-top: 10px solid var(--gold); border-radius: 50%;
+      animation: spin 1s linear infinite; margin: 40px auto;
+    }
+    .countdown { font-size: 56px; font-weight: 900; color: var(--gold); }
+    .success-screen h2 { font-size: 32px; margin: 20px 0; color: #10b981; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* =================================================================== */
+    /* RESPONSIVE FIXES ONLY – YOUR ORIGINAL STYLE IS 100% UNTOUCHED ABOVE */
+    /* =================================================================== */
+
+    /* Tiny phones (iPhone SE, etc.) */
+    @media (max-width: 380px) {
+      body { padding: 15px 0; }
+      header { padding: 40px 15px 25px; }
+      .crown { font-size: 65px; }
+      h1 { font-size: 28px; }
+      .price-input { font-size: 24px; padding: 18px; }
+      .btn-pay, .paid-btn { font-size: 19px; padding: 18px; }
+      .container { border-radius: 24px; }
+      .payment-modal { padding: 30px; border-radius: 26px; }
+      .bank-details { padding: 20px; font-size: 18px; line-height: 2.2; }
+      .countdown { font-size: 46px; }
+    }
+
+    /* Small phones */
+    @media (max-width: 480px) {
+      .container { margin: 0 10px; }
+      .info { margin: 20px 20px; font-size: 15px; }
+    }
+
+    /* Tablets – a bit more breathing room */
+    @media (min-width: 481px) and (max-width: 768px) {
+      .container { max-width: 480px; }
+      header { padding: 60px 30px 35px; }
+      .crown { font-size: 90px; }
+      h1 { font-size: 38px; }
+    }
+
+    /* Large tablets & small desktops */
+    @media (min-width: 769px) {
+      .container { max-width: 460px; }
+    }
+
+    /* Very short screens (landscape mobile) – prevent cutoff */
+    @media (max-height: 580px) {
+      body { padding-top: 10px; }
+      header { padding-top: 30px; }
+      #modalContainer { padding: 10px; justify-content: center; }
+    }
+
+    /* Prevent zoom on iOS when focusing input */
+    @media (max-width: 768px) {
+      input[type="number"], .price-input {
+        font-size: 16px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <i class="fas fa-coins crown"></i>
+    <h1>Buy More Coins</h1>
+    <div class="badge">Anytime • Unlimited</div>
+  </header>
+
+  <div style="padding: 0 30px;">
+    <p style="font-size:18px;opacity:0.9;margin-bottom:20px;">₦1 = 1 Coin • Minimum ₦500</p>
+    
+    <input type="number" id="coinAmt" class="price-input" placeholder="Enter amount (e.g. 2000)" min="500" value="1000">
+
+    <button class="btn-pay" id="buyCoins">
+      Pay ₦<span id="displayAmt">1,000</span> & Get <span id="displayCoins">1,000</span> Coins
+    </button>
+  </div>
+
+  <div class="info">
+    <i class="fas fa-shield-check" style="font-size:40px;color:var(--green);"></i><br><br>
+    Manual Transfer • Instant Activation After Verification • 100% Safe<br>
+    You can buy coins as many times as you want!
+  </div>
+</div>
+
+<div id="modalContainer"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+/* ====================== SUPABASE ====================== */
+const SUPABASE_URL = 'https://ssyaklpnjhoxukfanyxb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzeWFrbHBuamhveHVrZmFueXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjA2NzUsImV4cCI6MjA5NjczNjY3NX0.H95B092ZXEAQz3l6-QefzWt44RZLpp5PdiEbLktstGE';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabase = supabase;
+
+
+  const params = new URLSearchParams(location.search);
+  const username = params.get('user');
+  
+  if (!username) {
+    alert("Invalid access");
+    window.location.href = "dashboard.html";
+  }
+
+  const modalContainer = document.getElementById('modalContainer');
+  const amtInput = document.getElementById('coinAmt');
+  const displayAmt = document.getElementById('displayAmt');
+  const displayCoins = document.getElementById('displayCoins');
+
+  amtInput.addEventListener('input', () => {
+    const val = amtInput.value || 0;
+    if (val >= 500) {
+      displayAmt.textContent = Number(val).toLocaleString();
+      displayCoins.textContent = Number(val).toLocaleString();
+    }
+  });
+document.getElementById('buyCoins').onclick = async () => {
+  const amount = parseInt(amtInput.value) || 0;
+  if (amount < 500) return alert("Minimum ₦500");
+
+  // Insert payment record (status: pending)
+  const { error } = await supabase.from('manual_payments').insert({
+    username,
+    payment_type: 'buy_coins',
+    amount: amount,
+    coin_amount: amount,
+    status: 'pending'
+  });
+
+  if (error) {
+    alert("Error creating payment");
+    console.error(error);
+    return;
+  }
+
+  showPaymentModal(amount);
+
+  // After payment is confirmed (trigger in DB adds coins):
+  // Refresh coins from DB
+  await loadCoins();
+};
+
+  function showPaymentModal(amount) {
+    modalContainer.innerHTML = `
+      <div class="payment-modal">
+        <h2>Buy Coins</h2>
+        
+        <div class="bank-details">
+          <p><strong>Bank:</strong> Opay</p>
+          <p><strong>Account Name:</strong>Blessing Joshua Ogundele</p>
+          <p><strong>Account Number:</strong> 651 854 6439</p>
+          <p><strong>Amount:</strong> <span style="color:var(--gold);font-size:32px;font-weight:bold;">₦${amount.toLocaleString()}</span></p>
+        </div>
+
+        <button class="paid-btn" id="paidBtn">I’ve Made Payment</button>
+
+        <div style="display:none;margin-top:30px;">
+          <p style="font-size:19px;">Verifying your payment...</p>
+          <div class="spinner"></div>
+          <p class="countdown">30:00</p>
+          <p style="margin-top:30px;opacity:0.9;">Do not close this page or reload till your payment is confirmed</p>
+        </div>
+      </div>
+    `;
+    modalContainer.classList.add('active');
+
+    document.getElementById('paidBtn').onclick = () => {
+      document.querySelector('.bank-details').style.display = 'none';
+      document.querySelector('div[style*="display:none"]').style.display = 'block';
+      startCountdown(amount);
+    };
+  }
+
+  function startCountdown(amount) {
+    let seconds = 1800;
+    const timerEl = document.querySelector('.countdown');
+    const interval = setInterval(() => {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      timerEl.textContent = `${mins}:${secs}`;
+      if (--seconds < 0) clearInterval(interval);
+    }, 1000);
+
+    const poll = setInterval(async () => {
+      const { data } = await supabase
+        .from('manual_payments')
+        .select('status')
+        .eq('username', username)
+        .eq('coin_amount', amount)
+        .eq('status', 'confirmed')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (data && data.length > 0) {
+        clearInterval(interval);
+        clearInterval(poll);
+        modalContainer.innerHTML = `
+          <div class="payment-modal success-screen">
+            <div style="font-size:80px;">🎉</div>
+            <h2>Coins Added Successfully!</h2>
+            <p style="font-size:20px;">+${amount.toLocaleString()} Coins 🪙</p>
+            <p style="color:var(--green);margin-top:30px;">Redirecting to dashboard...</p>
+          </div>
+        `;
+        setTimeout(() => location.href = `dashboard.html?user=${username}`, 4000);
+      }
+    }, 8000);
+  }
+</script>
+</body>
+</html>

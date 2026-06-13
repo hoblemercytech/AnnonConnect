@@ -1,0 +1,5301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | AnonConnect</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ================= GLOBAL RESET & TYPOGRAPHY ================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    body {
+  font-family: 'Cabinet Grotesk', sans-serif;
+  background: linear-gradient(135deg, #0a0014 0%, #2a005a 50%, #000 100%);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px 0;
+}
+
+    h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+    button, input, textarea { font-family: inherit; }
+
+    /* ================= LIGHT MODE ROOT COLORS ================= */
+    :root {
+      --bg-gradient-start: #f8f9ff;
+      --bg-gradient-mid:   #e0e7ff;
+      --bg-gradient-end:   #c7d2fe;
+      --text-primary:      #1a1a2e;
+      --text-secondary:    #4a4a68;
+      --card-bg:           rgba(255, 255, 255, 0.85);
+      --card-border:       rgba(99, 102, 241, 0.25);
+      --accent-primary:    #6366f1;
+      --accent-secondary:  #a78bfa;
+      --accent-danger:     #ef4444;
+      --shadow-soft:       rgba(0, 0, 0, 0.08);
+      --shadow-glow:       rgba(99, 102, 241, 0.2);
+      --blur-bg:           rgba(255, 255, 255, 0.7);
+    }
+
+    /* ================= LIGHT MODE OVERRIDES ================= */
+    body.light-mode {
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+      color: var(--text-primary);
+    }
+
+    body.light-mode .nav {
+      background: linear-gradient(to bottom, #eef2ff, #e0e7ff);
+      border-right: 3px solid var(--accent-primary);
+      border-bottom: 3px solid var(--accent-primary);
+    }
+
+    body.light-mode .dash-card,
+    body.light-mode .panel,
+    body.light-mode #panelDisplay,
+    body.light-mode #groupChat,
+    body.light-mode .group-section,
+    body.light-mode .anon-inbox,
+    body.light-mode .group-container,
+    body.light-mode .instructions {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      box-shadow: 
+        0 8px 25px var(--shadow-soft),
+        0 0 20px var(--shadow-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      color: var(--text-primary);
+    }
+
+    body.light-mode .dash-card i,
+    body.light-mode .group-container h1,
+    body.light-mode .welcome-modal h1,
+    body.light-mode .tour-step h3,
+    body.light-mode .card-modal-header i,
+    body.light-mode .insight-box i {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 8px var(--shadow-glow));
+    }
+
+    body.light-mode .welcome-modal p { color: black; }
+    body.light-mode nav button, body.light-mode nav a {
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--text-primary);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    body.light-mode nav button:hover,
+    body.light-mode nav a:hover {
+      background: var(--accent-primary);
+      color: #fff;
+      transform: translateX(5px);
+    }
+
+    body.light-mode .welcome-modal,
+    body.light-mode .tour-step,
+    body.light-mode .modalContent,
+    body.light-mode .card-modal-content {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--text-primary);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      font-family: 'cabinet grostek';
+    }
+
+    body.light-mode .welcome-modal ul { color: black; }
+    body.light-mode .welcome-modal p strong { color: black; }
+    body.light-mode .welcome-agree,
+    body.light-mode .tour-btn.primary,
+    body.light-mode .card-modal-action,
+    body.light-mode .create-link-btn,
+    body.light-mode .joinChatBtn {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+    }
+
+    body.light-mode .dont-show { color: black; }
+    body.light-mode .welcome-agree:hover,
+    body.light-mode .tour-btn.primary:hover,
+    body.light-mode .card-modal-action:hover,
+    body.light-mode .create-link-btn:hover,
+    body.light-mode .joinChatBtn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.3);
+    }
+
+    body.light-mode .profile-input,
+    body.light-mode .profile-file,
+    body.light-mode .settings-form input {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--text-primary);
+    }
+
+    body.light-mode .toast {
+      background: rgba(30, 30, 50, 0.95);
+      color: #fff;
+      border-left-color: var(--accent-primary);
+    }
+
+    body.light-mode .theme-toggle i { color: #6366f1; }
+    body.light-mode .theme-toggle:hover { background: var(--accent-primary); }
+
+    body.light-mode .dash-card::before,
+    body.light-mode .dash-card:hover::before {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), #ec4899);
+    }
+
+    body.light-mode .dash-card p,
+    body.light-mode .muted,
+    body.light-mode .inbox-item small { color: var(--text-secondary); }
+
+    body.light-mode .save-btn {
+      background: transparent;
+      border: 2px solid var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    body.light-mode .save-btn:hover {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+
+    /* ================= ORIGINAL DARK MODE ================= */
+    .app {
+      display: flex;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+.nav {
+  width: 88%;
+  max-width: 420px;
+  background: linear-gradient(135deg, #1a0033, #0f001a, #1e0033);
+  padding: 28px 20px;
+  border-right: 4px solid #a855ff;
+  border-bottom: 4px solid #a855ff;
+  border-radius: 32px;
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  box-shadow: 
+    0 20px 60px rgba(168, 85, 255, 0.35),
+    0 0 40px rgba(168, 85, 255, 0.25),
+    inset 0 0 20px rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow-y: auto;
+  max-height: 95vh;
+}
+
+.user-info { 
+  text-align: center; 
+  padding-bottom: 10px;
+}
+
+.avatar-container { 
+  position: relative; 
+  display: inline-block; 
+  margin-bottom: 15px;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 5px solid #a855ff;
+  object-fit: cover;
+  box-shadow: 
+    0 0 25px rgba(168, 85, 255, 0.8),
+    0 0 50px rgba(251, 191, 36, 0.5);
+  transition: all 0.4s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 35px rgba(168, 85, 255, 1);
+}
+
+/* Floating Crown for VIP */
+.crown {
+  position: absolute;
+  top: -28px;
+  right: -18px;
+  font-size: 58px;
+  filter: drop-shadow(0 8px 20px rgba(251,191,36,0.9));
+  animation: float 4.5s infinite ease-in-out;
+  z-index: 10;
+  pointer-events: none;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-10deg); }
+  50% { transform: translateY(-16px) rotate(10deg); }
+}
+
+.welcome-title {
+  color: transparent;
+  font-size: 32px;
+  margin: 20px 0;
+  font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+  background: linear-gradient(90deg, #a855ff, #ec4899, #fbbf24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255,255,255,0.1);
+  font-weight: 400;
+}
+
+.username {
+  font-weight: 800;
+  font-size: 26px;
+  color: #fff;
+  text-shadow: 0 0 15px #a855ff;
+  margin: 10px 0;
+}
+
+/* Coins Balance */
+.coins-balance {
+  font-size: 18px;
+  color: #fbbf24;
+  background: rgba(251,191,36,0.2);
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 2px solid rgba(251,191,36,0.5);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(251,191,36,0.3);
+}
+
+/* Premium Badge */
+.premium-badge {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+  color: #000;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 900;
+  font-size: 16px;
+  margin: 18px 0;
+  box-shadow: 0 10px 30px rgba(251,191,36,0.7);
+  animation: vipPulse 3s infinite;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+@keyframes vipPulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* Upgrade Button */
+.upgrade-btn {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef, #ec4899);
+  color: white;
+  border: none;
+  width: 92%;
+  padding: 18px;
+  font-size: 19px;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  margin: 20px auto;
+  display: block;
+  box-shadow: 0 12px 35px rgba(139,92,246,0.6);
+  transition: all 0.4s ease;
+}
+.upgrade-btn:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 25px 50px rgba(139,92,246,0.8);
+}
+
+/* PREMIUM LOCK SECTION – LOOKS INSANE NOW */
+#premiumLockSection {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 22px;
+  border-radius: 20px;
+  margin: 25px 0;
+  text-align: center;
+  box-shadow: 
+    0 15px 40px rgba(102, 126, 234, 0.4),
+    inset 0 0 20px rgba(255,255,255,0.1);
+  border: 1px solid rgba(168, 85, 255, 0.5);
+}
+
+#nonPremiumLockMessage {
+  background: rgba(255,255,255,0.08);
+  padding: 22px;
+  border-radius: 20px;
+  margin: 25px 0;
+  text-align: center;
+  border: 2px dashed rgba(255,255,255,0.2);
+  color: #ccc;
+}
+
+/* Lock Switch – Even More Premium */
+.lock-switch {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 52px;
+}
+.lock-switch input { display: none; }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.2);
+  transition: .4s;
+  border-radius: 52px;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 44px;
+  width: 44px;
+  left: 4px;
+  bottom: 4px;
+  background: linear-gradient(135deg, #fff, #f0f0f0);
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+}
+input:checked + .slider {
+  background: linear-gradient(135deg, #e91e63, #ff3366);
+  box-shadow: 0 0 20px rgba(233, 30, 99, 0.6);
+}
+input:checked + .slider:before {
+  transform: translateX(48px);
+}
+
+/* Navigation Buttons */
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 18px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+.nav-btn:hover {
+  background: #a855ff;
+  transform: translateX(10px);
+  box-shadow: 0 12px 30px rgba(168,85,255,0.6);
+}
+
+.nav-flex {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 30px;
+}
+.nav-flex > div { flex: 1; }
+    .main-area {
+      margin-left: 280px;
+      padding: 30px;
+      width: calc(100% - 280px);
+      min-height: 100vh;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+      padding: 0 10px;
+    }
+
+    .dash-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(168, 85, 255, 0.2);
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        0 0 20px rgba(168, 85, 255, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(168, 85, 255, 0.4),
+        0 0 60px rgba(255, 102, 204, 0.3);
+      border-color: #ff66cc;
+      z-index: 10;
+    }
+
+    .dash-card i {
+      font-size: 42px;
+      background: linear-gradient(135deg, #a855ff, #ff66cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 15px rgba(168, 85, 255, 0.6));
+      margin-bottom: 14px;
+      animation: iconPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% { filter: drop-shadow(0 0 15px rgba(168, 85, 255, 0.6)); }
+      50% { filter: drop-shadow(0 0 25px rgba(255, 102, 204, 0.8)); }
+    }
+
+    .dash-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin: 8px 0;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .dash-card p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .dash-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 2px;
+      background: linear-gradient(135deg, #a855ff, #ff66cc, #ff4d4f);
+      mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      -webkit-mask-composite: destination-out;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .dash-card:hover::before { opacity: 0.7; }
+
+    /* ================= GROUP SECTION STYLES ================= */
+    #group {
+      margin: 60px 0;
+      padding: 0 20px;
+    }
+
+    .group-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 50px 30px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(168, 85, 255, 0.2);
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(168, 85, 255, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: floatIn 0.8s ease-out;
+    }
+
+    @keyframes floatIn {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .group-header {
+      margin-bottom: 40px;
+    }
+
+    .group-title {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 0 0 16px;
+      background: linear-gradient(135deg, #a855ff, #ff66cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 12px rgba(168, 85, 255, 0.5));
+    }
+
+    .highlight {
+      color: #ff66cc;
+      font-style: italic;
+      font-weight: 900;
+    }
+
+    .group-subtitle {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin: 50px 0;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 24px 16px;
+      border: 1px solid rgba(168, 85, 255, 0.2);
+      backdrop-filter: blur(10px);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(168, 85, 255, 0.1), rgba(255, 102, 204, 0.05));
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(168, 85, 255, 0.25);
+      border-color: #ff66cc;
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, #a855ff, #ff66cc);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      box-shadow: 0 0 20px rgba(168, 85, 255, 0.4);
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      margin: 12px 0 8px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.5;
+    }
+
+    .instructions-box {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 28px;
+      margin: 50px auto;
+      max-width: 700px;
+      border: 1px dashed rgba(168, 85, 255, 0.3);
+      position: relative;
+    }
+
+    .instructions-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #a855ff;
+    }
+
+    .instructions-header i {
+      font-size: 28px;
+      background: linear-gradient(135deg, #a855ff, #ff66cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .instructions-box p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .joinChatBtn {
+      background: linear-gradient(135deg, #a855ff, #ff66cc);
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+      padding: 16px 40px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      box-shadow: 0 10px 25px rgba(168, 85, 255, 0.4);
+      transition: all 0.4s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .joinChatBtn:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 35px rgba(168, 85, 255, 0.6);
+      background: linear-gradient(135deg, #ff66cc, #a855ff);
+    }
+
+    .joinChatBtn i {
+      font-size: 18px;
+      transition: transform 0.3s ease;
+    }
+
+    .joinChatBtn:hover i {
+      transform: translateX(5px);
+    }
+    /* ================= ANONYMOUS LINK OVERLAY ================= */
+.anon-overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.9);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  display:none;               /* hidden by default */
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.anon-overlay.show{ display:flex; opacity:1; }
+
+.anon-panel{
+  background:rgba(30,30,50,.95);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(168,85,255,.3);
+  border-radius:24px;
+  padding:32px;
+  max-width:420px;
+  width:90%;
+  position:relative;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  animation:popIn .4s cubic-bezier(.2,.8,.4,1);
+}
+@keyframes popIn{
+  from{transform:scale(.85);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+/* Close X */
+.close-x{
+  position:absolute; top:12px; right:16px;
+  background:none; border:none;
+  color:#ccc; font-size:22px; font-weight:bold;
+  cursor:pointer; width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  transition:all .2s;
+}
+.close-x:hover{ background:#a855ff; color:#fff; }
+
+/* keep the rest of your old #anonLinkPanel styles – they still apply */
+        /* ================= ANONYMOUS LINK PANEL (glass-morphic) ================= */
+  /* Make sure the panel is always visible when overlay is open */
+.anon-overlay.show .anon-panel {
+display: block !important;
+}
+    .anon-header{text-align:center;margin-bottom:24px;}
+    .anon-header h2{font-size:24px;font-weight:800;background:linear-gradient(90deg,#00d9ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+    .anon-header p{color:#94a3b8;font-size:15px;}
+    .anon-link-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:20px;backdrop-filter:blur(8px);}
+    .anon-link-box input{background:transparent;border:none;color:#e2e8f0;font-family:'Courier New',monospace;font-size:15px;flex:1;outline:none;}
+    .copy-btn{background:rgba(0,217,255,.2);border:1px solid rgba(0,217,255,.4);color:#fff;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;font-size:18px;}
+    .copy-btn:hover{background:rgba(0,217,255,.35);box-shadow:0 0 20px rgba(0,217,255,.4);transform:translateY(-2px);}
+    .anon-actions{display:flex;gap:12px;margin-bottom:24px;}
+    .anon-btn{flex:1;padding:14px;border-radius:14px;font-weight:600;font-size:15px;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px;border:none;}
+    .qr-btn{background:rgba(255,255,255,.12);color:#e2e8f0;border:1px solid rgba(255,255,255,.12);}
+    .qr-btn:hover{background:rgba(255,255,255,.2);transform:translateY(-2px);}
+    #qrSection{display:none;margin:20px 0;text-align:center;animation:fadeIn .4s;}
+    #qrContainer{width:140px;height:140px;background:#fff;padding:10px;border-radius:16px;margin:0 auto 12px;box-shadow:0 8px 25px rgba(0,0,0,.3);}
+    .download-btn{background:rgba(0,217,255,.2);color:#fff;border:1px solid rgba(0,217,255,.4);padding:10px 16px;border-radius:12px;font-size:14px;display:inline-flex;align-items:center;gap:6px;margin-top:8px;}
+    .download-btn:hover{background:rgba(0,217,255,.35);}
+    .share-title{font-size:15px;color:#94a3b8;margin:24px 0 12px;text-align:center;}
+    .share-row{display:flex;justify-content:center;gap:16px;}
+    .share-btn{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.3);transition:all .3s;}
+    .share-btn:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 12px 30px rgba(0,0,0,.4);}
+    .whatsapp{background:#25D366;}.telegram{background:#0088cc;}.snapchat{background:#FFFC00;color:#000;}
+/* ================= PREMIUM INSIGHTS OVERLAY 2025 ================= */
+.insights-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  display:none; align-items:center; justify-content:center;
+  z-index:9999; opacity:0; transition:all .4s cubic-bezier(.2,.8,.4,1);
+  padding:16px; box-sizing:border-box;
+}
+.insights-overlay.show{ display:flex; opacity:1; }
+
+.insights-panel{
+  background:linear-gradient(135deg, rgba(20,15,50,0.98), rgba(10,5,35,0.98));
+  border:1px solid rgba(168,85,255,0.4);
+  border-radius:28px;
+  padding:28px 24px;
+  width:100%; max-width:460px;
+  max-height:90vh; overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(168,85,255,0.2);
+  position:relative; overflow:hidden;
+}
+.insights-panel::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at top right, rgba(168,85,255,0.15), transparent 70%);
+  pointer-events:none;
+}
+
+.close-x{
+  position:absolute; top:16px; right:20px;
+  background:none; border:none; font-size:28px; color:#94a3b8;
+  cursor:pointer; width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .3s;
+}
+.close-x:hover{ background:rgba(168,85,255,0.2); color:#fff; }
+
+.insights-header{text-align:center;margin-bottom:32px;}
+.insights-header h2{
+  font-size:28px; font-weight:900; margin:0;
+  background:linear-gradient(120deg, #a855ff, #00d9ff, #a855ff);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-size:200%; animation:gradient 6s ease infinite;
+}
+.insights-header p{color:#94a3b8; font-size:15px; margin-top:8px;}
+
+.insights-summary{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;
+  background:rgba(168,85,255,0.1); border-radius:20px;
+  padding:20px 16px; margin-bottom:28px;
+  border:1px solid rgba(168,85,255,0.25);
+  text-align:center;
+}
+.stat-value{
+  font-size:26px; font-weight:900; color:#a855ff;
+  text-shadow:0 0 20px rgba(168,85,255,0.6);
+}
+.stat-label{font-size:12px; color:#94a3b8; margin-top:6px; text-transform:uppercase; letter-spacing:0.5px;}
+
+.insights-list-header{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:14px;
+}
+.insights-list-header h3{
+  font-size:19px; color:#e2e8f0; margin:0; font-weight:700;
+  display:flex; align-items:center; gap:10px;
+}
+.pulse-dot{
+  width:10px; height:10px; background:#a855ff; border-radius:50%;
+  box-shadow:0 0 20px #a855ff; animation:pulse 2s infinite;
+}
+
+.clicks-list{
+  max-height:380px; overflow-y:auto; padding:8px; gap:10px; display:flex; flex-direction:column;
+}
+.click-item{
+  background:rgba(168,85,255,0.12); border-left:4px solid #a855ff;
+  border-radius:0 14px 14px 0; padding:14px 16px;
+  animation:slideIn 0.5s ease forwards; opacity:0; transform:translateX(-30px);
+  backdrop-filter:blur(10px); position:relative;
+  border:1px solid rgba(168,85,255,0.2);
+}
+.click-item.ghost{ border-left-color:#ff6b6b; }
+.click-item.sent{ border-left-color:#51cf66; }
+
+.click-item .top{
+  display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;
+}
+.click-item .device-model{
+  font-weight:700; color:#fff; font-size:15px;
+}
+.click-item .location{
+  color:#a855ff; font-size:14px; font-weight:600;
+}
+.click-item .location .flag{
+  font-size:18px; margin-right:6px;
+}
+.click-item .meta{
+  font-size:12px; color:#94a3b8; display:flex; gap:12px; margin-top:8px;
+  flex-wrap:wrap;
+}
+.click-item .status{
+  padding:2px 8px; border-radius:8px; font-size:11px; font-weight:700;
+}
+.click-item.ghost .status{ background:#ff6b6b33; color:#ff6b6b; }
+.click-item.sent .status{ background:#51cf6633; color:#51cf66; }
+
+.no-data{
+  text-align:center; color:#64748b; padding:40px 20px; font-size:15px;
+}
+
+/* Animations */
+@keyframes popIn{ from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+@keyframes slideIn{ to{opacity:1;transform:translateX(0)} }
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes gradient{ 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+/* Custom scrollbar */
+.clicks-list::-webkit-scrollbar{width:6px;}
+.clicks-list::-webkit-scrollbar-track{background:transparent;}
+.clicks-list::-webkit-scrollbar-thumb{
+  background:rgba(168,85,255,0.5); border-radius:3px;
+}
+    /* Light Mode Group Section */
+    body.light-mode .group-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 15px 40px var(--shadow-soft), 0 0 30px var(--shadow-glow);
+    }
+
+    body.light-mode .feature-card {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    body.light-mode .feature-card:hover {
+      box-shadow: 0 15px 30px rgba(99, 102, 241, 0.2);
+    }
+
+    body.light-mode .instructions-box {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    body.light-mode .group-subtitle,
+    body.light-mode .feature-card p,
+    body.light-mode .instructions-box p {
+      color: var(--text-secondary);
+    }
+
+    body.light-mode .group-title,
+    body.light-mode .feature-card h3,
+    body.light-mode .instructions-header h2 {
+      color: var(--text-primary);
+    }
+
+    /* ================= PROFILE EDITOR ================= */
+    .profile-editor-title { font-size: 25px; text-align: center; margin-bottom: 20px; color: #ff66cc; }
+    .profile-label { display: block; font-weight: 700; margin: 15px 0 8px; color: #a855ff; }
+    .profile-input, .profile-file {
+      width: 100%; padding: 12px 16px; background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #fff;
+      font-size: 16px; margin-bottom: 15px;
+    }
+
+    .save-btn {
+      display: block; margin: 25px auto 0; padding: 12px 60px; background: transparent;
+      border: 2px solid #a855ff; color: #a577ff; border-radius: 25px; font-size: 20px;
+      font-weight: 700; cursor: pointer;
+    }
+
+    .save-btn:hover { background: #a855ff; color: #fff; box-shadow: 0 0 20px rgba(168, 85, 255, 0.6); }
+
+    #profileEditor { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, padding 0.5s ease; }
+    #profileEditor.show { max-height: 500px; padding: 20px; }
+    #profileEditor .profile-editor-title,
+    #profileEditor .profile-label,
+    #profileEditor .profile-input,
+    #profileEditor .profile-file,
+    #profileEditor .save-btn { opacity: 0; transition: opacity 0.5s ease; }
+    #profileEditor.show * { opacity: 1; }
+
+    /* ================= LOADING OVERLAY ================= */
+    #loadingOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(10, 0, 20, 0.95); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; flex-direction: column;
+      z-index: 9999; color: white; text-align: center;
+    }
+
+    #loadingOverlay.active { display: flex; }
+
+    .logo-loader {
+      width: 90px; height: 90px; margin-bottom: 1.5rem;
+      animation: pulse 1.5s ease-in-out infinite, blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .loading-text { font-size: 1.2rem; font-weight: 600; letter-spacing: 1px; }
+    .loading-dots::after { content: ''; animation: dots 1.5s steps(4, end) infinite; }
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+    
+    /* Modal Container */
+.welcome-modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 480px;
+  width: 90%;
+  padding: 50px 35px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #0f0033 0%, #3a00aa 60%, #000 100%);
+  border: 2px solid #7f6cff;
+  box-shadow: 0 15px 50px rgba(0,0,50,0.4);
+  text-align: center;
+  font-family: 'Cabinet Grotesk', sans-serif;
+  color: #fff;
+  z-index: 9999;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 60px;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+/* Headings */
+.welcome-modal h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.welcome-modal h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-align: left;
+  color: #9a84ff;
+}
+
+/* Paragraph */
+.welcome-modal p {
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 30px;
+  color: #e0e0e0;
+}
+
+/* List */
+.welcome-modal ul {
+  text-align: left;
+  font-size: 16px;
+  color: #dcd6ff;
+  margin-bottom: 30px;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+/* Agree Button */
+.agree-btn {
+  padding: 14px 28px;
+  background: #7f6cff;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.agree-btn:hover {
+  background: #957fff;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+      /* OVERLAY STYLES */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 9999;
+  }
+  .overlay-content {
+    background: rgba(30,30,50,.95);
+    border-radius: 20px; padding: 30px 20px;
+    max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto;
+    position: relative; box-shadow: 0 15px 40px rgba(0,0,0,.7);
+  }
+  .overlay-content h2 { text-align:center; font-size:22px; margin-bottom:20px; }
+  .overlay-content ul { list-style:none; padding:0; }
+  .overlay-content ul{
+    color: white;
+  }
+  .overlay-content li {
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 10px; padding: 12px 16px;
+    border-radius: 12px;
+    display:flex; justify-content: space-between; align-items:center;
+    font-size:15px;
+  }
+  .close-btn {
+    position:absolute; top:12px; right:12px; background:transparent; border:none; color:#fff; font-size:18px; cursor:pointer;
+  }
+  .no-notifications { text-align:center; color:#94a3b8; font-size:14px; display:none; }
+  .delete-btn { background:transparent; border:none; color:#ef4444; cursor:pointer; font-size:14px; margin-left:10px; }
+  .unread-badge {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: #ff0066;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  box-shadow: 0 2px 8px rgba(255, 0, 102, 0.4);
+  animation: pulse 2s infinite;
+  z-index: 5;
+}
+
+
+    /* ================= TOAST SYSTEM ================= */
+    #toastContainer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+    }
+
+    .toast {
+      background: #6b4eff;
+      color: white;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.4s ease;
+      min-width: 280px;
+      backdrop-filter: blur(10px);
+      border-left: 5px solid #a855ff;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(0); }
+    .toast.success { border-left-color: #28a745; }
+    .toast.error { border-left-color: #dc3545; }
+    .toast.info { border-left-color: #007bff; }
+
+    .toast i { font-size: 20px; }
+    .toast .toast-close { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; margin-left: auto; opacity: 0.7; }
+    .toast .toast-close:hover { opacity: 1; }
+
+    /* ================= SIGN OUT WAVE ================= */
+    #logoutWave {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 99998;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    #logoutWave.active {
+      opacity: 1;
+      animation: wave 1s ease forwards;
+    }
+
+    @keyframes wave {
+      0% { opacity: 0; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 0; transform: scale(1); }
+    }
+
+    .logout-wave-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168,85,255,0.6), rgba(0,0,0,0));
+      animation: wavePulse 1s ease-out forwards;
+    }
+
+    @keyframes wavePulse {
+      0% { transform: scale(0.1); opacity: 1; }
+      100% { transform: scale(6); opacity: 0; }
+    }
+
+    /* ================= MODAL ================= */
+    .modal {
+      display: none; 
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+      justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.show { display: flex; }
+
+    .modal-content {
+      background: #1f1f1f; color: #fff;
+      padding: 2rem; border-radius: 12px;
+      text-align: center; width: 90%; max-width: 400px;
+      transform: scale(0.8); animation: popIn 0.3s ease forwards;
+    }
+
+    .modal-buttons { display: flex; justify-content: space-around; margin-top: 1.5rem; }
+    .btn { padding: 0.5rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s ease; }
+    .btn-cancel { background: #555; color: #fff; }
+    .btn-cancel:hover { background: #777; }
+    .btn-confirm { background: #a855ff; color: #fff; }
+    .btn-confirm:hover { background: #ff66cc; }
+
+    @keyframes popIn { from { transform: scale(0.8); } to { transform: scale(1); } }
+
+    /* ================= THEME TOGGLE ================= */
+    .theme-toggle {
+      position: fixed;
+      top: 18px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: #a855ff;
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(168, 85, 255, 0.6);
+    }
+
+    .theme-toggle i {
+      font-size: 20px;
+      color: #ffb400;
+      transition: transform 0.4s ease;
+    }
+
+    .theme-toggle.active i {
+      transform: rotate(360deg);
+    }
+
+    body.light-mode .theme-toggle {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    body.light-mode .theme-toggle i {
+      color: #6366f1;
+    }
+    .feature-card h3, .feature-card p {
+      color:black;
+    }
+/* ================= INBOX MODAL - FULLY MATCHES YOUR DASHBOARD (Dark + Light Mode) ================= */
+
+.inbox-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.inbox-modal.active { display: flex; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.inbox-content {
+  width: 92%;
+  max-width: 520px;
+  height: 92vh;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* --- CSS Styling --- */
+        .slideshow-container {
+            max-width: 900px;
+            position: relative;
+            margin: auto;
+            border: 5px solid #333; /* Premium look border */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            overflow: hidden; /* Important for clean look */
+        }
+
+        /* Hide the slides by default */
+        .mySlides {
+            display: none;
+            width: 100%;
+        }
+
+        /* Images */
+        .mySlides img {
+            width: 100%;
+            vertical-align: middle;
+            filter: brightness(95%); /* Subtle "premium" filter */
+        }
+
+        /* Fade Animation */
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+
+        @keyframes fade {
+            from {opacity: .4}
+            to {opacity: 1}
+        }
+
+        /* Next & previous buttons (Arrows) */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        /* Position the "next button" to the right */
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        /* On hover, add a darker background */
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* The dots/bullets/indicators */
+        .dot-container {
+            text-align: center;
+            padding: 10px;
+            background-color: #eee;
+        }
+        
+        .dot {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 0 4px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+        }
+
+        .active, .dot:hover {
+            background-color: #717171;
+        }
+
+/* ================= HEADER - Matches Your Dashboard Accent ================= */
+.modal-header,
+.chat-header {
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.modal-header h1,
+.chat-header .chat-name {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.modal-header p {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  opacity: 0.92;
+}
+
+.close-btn,
+#closeBtn2 {
+  position: absolute;
+  top: 30px;
+  right: 16px;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.2);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+}
+
+.close-btn:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* ================= CONVERSATIONS LIST ================= */
+.conversations-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.conversations-container {
+  flex: 1;
+  overflow-y: auto;
+  background: transparent;
+}
+
+
+.convo-item {
+  position: relative; /* Important! */
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.convo-item:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.convo-item.unread {
+  background: rgba(139, 92, 246, 0.15);
+  font-weight: 600;
+}
+
+.convo-item .avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  margin-right: 16px;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.convo-info {
+  flex: 1;
+}
+
+.convo-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+}
+
+.last-msg {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.convo-time {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ================= CHAT VIEW ================= */
+.chat-view {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  background: url('https://images.unsplash.com/photo-1605720750750-2e3d943a3e7e?w=400') center/cover;
+}
+
+.chat-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 0, 20, 0.30);
+  pointer-events: none;
+}
+
+.chat-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.chat-header-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.chat-header-info .avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a78bfa, #6366f1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 12px;
+  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.4);
+}
+
+/* ================= MESSAGES CONTAINER ================= */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.message-bubble {
+  max-width: 78%;
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-radius: 20px;
+  position: relative;
+  word-wrap: break-word;
+  animation: bubbleIn 0.3s ease-out;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.message-bubble.sent {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 6px;
+}
+
+.message-bubble.received {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  margin-right: auto;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-bottom-left-radius: 6px;
+}
+
+.bubble-text {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.bubble-time {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 6px;
+  text-align: right;
+}
+
+.reply-preview {
+  font-size: 15px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  border-left: 3px solid rgba(255,255,255,0.4);
+}
+
+/* ================= INPUT AREA ================= */
+.message-input-area {
+  font-size: 15px;
+  padding: 12px;
+  background: rgba(20, 0, 40, 0.8);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+#messageInput {
+  flex: 1;
+  width:90%;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  font-size: 16px;
+  resize: none;
+  max-height: 120px;
+  backdrop-filter: blur(10px);
+}
+
+#messageInput::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+#messageInput:focus {
+  outline: none;
+  background: rgba(255,255,255,0.22);
+}
+
+.send-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  transition: all 0.2s;
+}
+
+.send-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.6);
+}
+
+.send-button:active {
+  transform: scale(0.95);
+}
+
+/* ================= EMPTY STATE ================= */
+.inbox-empty {
+  text-align: center;
+  padding: 100px 40px;
+  color: rgba(255,255,255,0.7);
+}
+
+.inbox-empty i {
+  font-size: 80px;
+  color: #8b5cf6;
+  margin-bottom: 24px;
+  opacity: 0.8;
+}
+
+/* ================= LIGHT MODE OVERRIDES ================= */
+body.light-mode .inbox-content {
+  background: white;
+  border: 1px solid #e0e7ff;
+}
+
+body.light-mode .convo-item {
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+body.light-mode .convo-item:hover {
+  background: #f8f9ff;
+}
+
+body.light-mode .convo-name { color: #1a1a2e; }
+body.light-mode .last-msg { color: #666; }
+body.light-mode .convo-time { color: #999; }
+
+body.light-mode .message-bubble.received {
+  background: #f1f3f9;
+  color: #333;
+}
+
+body.light-mode .message-input-area {
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+body.light-mode #messageInput {
+  background: #f8f9ff;
+  color: #333;
+}
+
+body.light-mode #messageInput::placeholder {
+  color: #999;
+}
+
+.messages-container { padding-bottom: 90px !important; }
+
+.chat-media {
+  max-width: 240px;
+  max-height: 300px;
+  border-radius: 12px;
+  margin: 8px 0;
+}
+
+.icon-btn {
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,0.1);
+  border: none; border-radius: 50%;
+  color: blueviolet; font-size: 20px;
+  cursor: pointer;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+.convo-item.unread .convo-name {
+  font-weight: 700 !important;
+}
+
+.convo-item.unread .last-msg {
+  font-weight: 600;
+  color: #000;
+}
+
+.unread-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #8b5cf6;
+  border-radius: 50%;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.sender-reveal-overlay {
+  margin: 8px 0;
+  text-align: center;
+}
+
+.reveal-btn {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 50px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.premium-lock-new {
+  background: #f1f3f4;
+  color: #555;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px dashed #ccc;
+}
+
+.upgrade-btn-small {
+  margin-top: 8px;
+  background: #8b5cf6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+}
+
+/* Profile Overlay */
+.profile-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.profile-card {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  padding: 30px 20px;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.close-overlay {
+  position: absolute;
+  top: 15px; right: 20px;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+}
+
+.profile-avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #eee center/cover no-repeat;
+  margin: 0 auto 16px;
+  border: 4px solid #8b5cf6;
+}
+
+.overlay-username { color: #888; margin: 8px 0; }
+.overlay-bio { color: #555; font-size: 15px; margin: 16px 0; }
+.overlay-stats { margin: 20px 0; display: flex; justify-content: center; gap: 30px; color: #666; }
+.visit-profile-btn {
+  background: #8b5cf6;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 10px;
+}
+.message-preview-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.4s ease;
+}
+
+.preview-controls {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 10000;
+}
+
+.preview-nav-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+}
+
+.preview-nav-btn:hover {
+  background: rgba(255,255,255,0.4);
+  transform: scale(1.1);
+}
+
+.preview-close-btn {
+  background: rgba(255, 0, 102, 0.8);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.preview-message-container {
+  max-width: 90%;
+  max-height: 90%;
+  text-align: center;
+  color: white;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.preview-message-container img,
+.preview-message-container video {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+
+.preview-message-container .bubble-text {
+  font-size: 28px;
+  line-height: 1.5;
+  background: rgba(255,255,255,0.1);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  max-width: 800px;
+  margin: 0 auto;
+  font-weight: 500;
+}
+
+.preview-counter {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.preview-share-bar {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 16px;
+  border-radius: 50px;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.share-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.share-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.share-btn.whatsapp {
+  background: #25D366;
+}
+.share-btn.snapchat{
+  background: #EEEB00;
+}
+.share-btn.snapchat:hover {
+  background: #D5D206;
+}
+
+.share-btn.telegram {
+  background: #06C6FF;
+}
+
+.share-btn.telegram:hover {
+  background: #EEEB00;
+}
+.share-btn.whatsapp:hover {
+  background: #1da851;
+}
+
+.share-btn.native {
+  background: #8b5cf6;
+}
+
+.share-btn.native:hover {
+  background: #7c4dff;
+}
+
+.share-btn i {
+  font-size: 18px;
+}
+.share-btn.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.share-btn.instagram:hover { opacity: 0.9; }
+
+.share-btn.tiktok { background: #000; color: white; border: 2px solid #ff0050; }
+.share-btn.tiktok:hover { background: #ff0050; }
+.share-btn.status {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.share-btn.status:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+}
+
+#statusCanvas { display: none; }
+
+.preview-message-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.premium-message-box {
+  width: 100%;
+  height: 30%;
+  max-width: 350px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 32px;
+  backdrop-filter: blur(20px);
+  border-right: 4px solid rgba(139, 92, 246, 0.4);
+  border-bottom: 5px solid rgba(139, 92, 246, 0.4);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.97),
+    0 0 60px rgba(139, 92, 246, 0.2),
+    inset 0 0 40px rgba(139, 92, 246, 0.37);
+  position: relative;
+  overflow: hidden;
+}
+
+#previewMessageContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#previewMessageContent img,
+#previewMessageContent video {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+#previewMessageContent div {
+  font-size: 23px;
+  line-height: 1.5;
+  color: white;
+  font-weight: 600;
+}
+
+/* BRANDING AT BOTTOM (VISIBLE IN PREVIEW) */
+.preview-branding {
+  margin-top: 40px;
+  animation: fadeIn 1s ease;
+}
+
+.branding-pill {
+  padding-top: 60px;
+  text-align: center;
+  font-family: cursive;
+
+}
+.brand-text {
+  font-family: 'cursive';
+  font-weight: bold;
+  font-size: 52px;
+  color: #8b5cf6;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+}
+
+.brand-link {
+  font-size: 16px;
+  color: #e0d4ff;
+  padding-top: 10px;
+  font-weight: 500;
+}
+
+/* Buttons & Counter (unchanged but beautiful) */
+.preview-share-bar { top: 90px; gap: 16px; padding: 14px 24px; }
+.share-btn { padding: 16px 24px; border-radius: 50px; font-size: 16px; }
+.preview-counter { bottom: 40px; font-size: 18px; background: rgba(0,0,0,0.6); padding: 12px 30px; border-radius: 50px; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+/* CONTAINER */
+.leaderboard-container {
+  width: 100%;
+  max-width: 580px;
+  margin: 30px auto;
+  padding: 22px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+}
+
+/* HEADER */
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.leaderboard-header h2 {
+  font-size: 28px;
+  color: #a855ff;
+  margin-bottom: 6px;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ITEM */
+.lb-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+  transform: translateY(10px);
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RANK NUMBER */
+.lb-rank {
+  width: 42px;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* FLAG & AVATAR */
+.lb-photo {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+.lb-flag {
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-right: 6px;
+}
+
+/* USERNAME + bar */
+.lb-info {
+  flex: 1;
+}
+
+.lb-username {
+  font-size: 17px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+/* PROGRESS BAR */
+.lb-bar {
+  margin-top: 6px;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lb-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #a855ff, #c084fc);
+  border-radius: 6px;
+  transition: width 0.7s ease;
+}
+
+/* SCORE */
+.lb-score {
+  min-width: 60px;
+  text-align: right;
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+/* TOP 3 COLORS */
+.lb-1 { color: gold; }
+.lb-2 { color: silver; }
+.lb-3 { color: #cd7f32; }
+
+/* HIGHLIGHT CURRENT USER */
+.lb-highlight {
+  border: 2px solid #a855ff !important;
+  background: rgba(168,85,255,0.15) !important;
+}
+
+  .lux-slider {
+    position: relative;
+    width: 100%;
+    max-width: 2500px;
+    margin: 10px auto;
+    overflow: hidden;
+    border-radius: 10px;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+
+  /* Ambient glow behind slides */
+  .lux-slider::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 200, 220, 0.15), transparent 70%);
+    filter: blur(120px);
+    z-index: 0;
+  }
+
+  /* Aspect ratio 2500x600 */
+  .lux-slider::after {
+    content: '';
+    display: block;
+    padding-top: 38%;
+  }
+
+  /* Track container */
+  .lux-track {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: 0;       /* Remove any space between slides */
+    position: absolute;
+    inset: 0;
+    transition: transform 1.4s ease-in-out;
+    will-change: transform;
+    z-index: 1;
+  }
+
+  /* Slide styling */
+  .lux-slide {
+    flex: 0 0 100%; /* exactly full width */
+    margin: 0;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lux-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.05);
+    transition: transform 1.4s ease-in-out;
+  }
+
+  .lux-slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0));
+    z-index: 2;
+  }
+
+  /* Captions */
+  .lux-caption {
+    position: absolute;
+    bottom: 36px;
+    left: 40px;
+    color: #fff;
+    font-size: 30px;
+    font-weight: 600;
+    text-shadow: 0 6px 22px rgba(0,0,0,0.55);
+    max-width: 55%;
+    line-height: 1.2;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 1s ease, transform 1s ease;
+    z-index: 3;
+  }
+  .lux-caption.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Dots */
+  .lux-dots {
+    position: absolute;
+    bottom: 18px;
+    right: 24px;
+    display: flex;
+    gap: 10px;
+    z-index: 3;
+  }
+  .lux-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .lux-dot.active {
+    background: rgba(255,255,255,0.95);
+    transform: scale(1.2);
+  }
+
+  /* Particle overlay */
+  .lux-particles {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    will-change: transform, opacity;
+    animation: floatParticle linear infinite;
+  }
+  @keyframes floatParticle {
+    0% { transform: translateY(0) translateX(0); opacity: 0.2; }
+    50% { opacity: 0.6; }
+    100% { transform: translateY(-120%) translateX(10px); opacity: 0; }
+  }
+
+  
+
+/* ================= RESPONSIVE ENHANCEMENTS ONLY (ADDED BELOW) ================= */
+/* These do NOT override or alter your design — they only improve layout on small screens */
+
+/* Tiny phones – iPhone SE, Galaxy Fold, etc. */
+@media (max-width: 380px) {
+body { padding: 10px 0; }
+.nav {
+padding: 20px 12px;
+top: 8px;
+border-radius: 20px;
+}
+.avatar { width: 80px; height: 80px; }
+.welcome-title { font-size: 26px; }
+.username { font-size: 22px; }
+.premium-badge, .upgrade-btn { padding: 10px 20px; font-size: 15px; }
+.coins-balance { padding: 8px 14px; font-size: 16px; }
+.nav-btn { padding: 12px 14px; font-size: 15px; gap: 10px; }
+.dash-card { padding: 18px 14px; min-height: 120px; }
+.dash-card i { font-size: 36px; }
+.group-title { font-size: 30px; }
+.group-subtitle { font-size: 16px; }
+.joinChatBtn { font-size: 17px; padding: 14px 28px; }
+.insights-panel, .anon-panel { padding: 24px 18px; }
+.insights-header h2 { font-size: 24px; }
+.click-item { padding: 12px 14px; }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+.nav {
+width: 94%;
+max-width: 380px;
+padding: 24px 16px;
+}
+.dashboard-grid {
+grid-template-columns: 1fr;
+gap: 16px;
+}
+.features-grid {
+grid-template-columns: 1fr;
+}
+.group-container { padding: 40px 20px; }
+.leaderboard-container { padding: 18px; }
+.lb-item { padding: 12px; gap: 10px; }
+.lb-photo { width: 38px; height: 38px; }
+.lb-rank { font-size: 20px; width: 36px; }
+}
+
+/* Tablet portrait */
+@media (min-width: 481px) and (max-width: 768px) {
+.nav { max-width: 400px; }
+.dashboard-grid {
+grid-template-columns: repeat(2, 1fr);
+}
+.features-grid {
+grid-template-columns: repeat(2, 1fr);
+}
+}
+
+/* Tablet landscape & small laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+.app { max-width: 100%; padding: 0 20px; }
+.nav { max-width: 380px; }
+.main-area { margin-left: 0; width: 100%; padding-top: 120px; }
+.dashboard-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Full desktop – your original fixed nav + side layout */
+@media (min-width: 1025px) {
+.app { flex-direction: row; }
+.nav {
+position: fixed;
+left: 20px;
+top: 50%;
+transform: translateY(-50%);
+width: 380px;
+max-width: none;
+height: auto;
+max-height: 92vh;
+border-radius: 32px;
+border-right: 4px solid #a855ff;
+border-bottom: none;
+}
+.main-area {
+margin-left: 420px;
+width: calc(100% - 420px);
+padding: 40px;
+}
+}
+
+/* Mobile-first nav fix – stacked layout */
+@media (max-width: 1024px) {
+.app { flex-direction: column; }
+.nav {
+position: relative;
+width: 96%;
+max-width: 420px;
+margin: 0 auto 30px;
+top: auto;
+left: auto;
+transform: none;
+border-radius: 28px;
+border-right: none;
+border-bottom: 4px solid #a855ff;
+}
+.main-area {
+margin-left: 0;
+width: 100%;
+padding: 20px;
+padding-top: 10px;
+}
+}
+
+/* Prevent zoom on inputs (iOS) */
+@media (max-width: 768px) {
+input, textarea, select {
+font-size: 16px !important;
+}
+}
+
+/* Short screens (landscape mobile) */
+@media (max-height: 600px) {
+.nav { max-height: 80vh; }
+.group-container { padding: 30px 20px; }
+}
+
+/* Fix modals/overlays on very small screens */
+@media (max-width: 400px) {
+.anon-panel,
+.insights-panel,
+.welcome-modal,
+.inbox-content {
+width: 96%;
+padding: 24px 16px;
+}
+.modal-header h1,
+.chat-header .chat-name { font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+ 
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer"></div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay">
+    <div class="logo-loader">
+      <img src="./badge-72.png" alt="AnonConnect" style="width: 90px; height:90px; border-radius: 18px;">
+    </div>
+    <div class="loading-text">Loading<span class="loading-dots"></span></div>
+  </div>
+
+  <!-- THEME TOGGLE -->
+  <button id="themeToggle" class="theme-toggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <!-- APP -->
+  <div class="app">
+    <!-- SIDEBAR -->
+  <aside class="nav">
+  <div class="nav-top-header">
+    <!-- USER INFO SECTION -->
+    <div class="user-info">
+      <div class="avatar-container">
+        <img id="userAvatar" class="avatar" src="https://via.placeholder.com/120" alt="Profile" />
+        <!-- Golden Crown for Lifetime VIP -->
+        <div id="crownOverlay" class="crown" style="display:none;">👑</div>
+      </div>
+
+      <div class="username" id="usernameDisplay" style="font-weight: 600; padding-top: 20px; font-size:25px;">Loading...</div>
+      
+      <h1 class="welcome-title">Welcome to AnonConnect</h1>
+      
+      <!-- Coins Balance -->
+      <div class="coins-balance">
+        <i class="fas fa-coins" style="color:#fbbf24;"></i>
+        <span id="coinsDisplay">0</span> Coins
+        <button id="buyBtn" style="background:none;border:none;color:#fbbf24;font-size:16px;cursor:pointer;padding:0;margin-left:10px;">
+  Buy More Coins 🪙
+</button>
+      </div>
+      
+      <!-- Premium Badge (only for VIPs) -->
+      <div id="premiumBadge" class="premium-badge" style="display:none; margin:15px 0;">
+        👑 LIFETIME VIP
+      </div>
+      
+      <!-- Upgrade Button (hidden if already premium) -->
+      <button id="upgradeBtn" class="upgrade-btn" style="margin:15px 0;">
+        👑 Upgrade to Lifetime VIP – ₦2,000
+      </button>
+
+
+      <nav>
+        <div class="nav-flex" style="display:flex; justify-content: space-between; margin-top: 30px;">
+          <div>
+            <button class="nav-btn" id="profileBtn">
+              <i class="fas fa-user"></i> <span>Profile</span>
+            </button>
+            <a class="nav-btn" href="tools.html" style="text-decoration: none; list-style: none;" >
+              <i class="fas fa-heart"></i> <span>Tools</span>
+            </a>
+          </div>
+          <div>
+            <button class="nav-btn" id="anonLinkBtn">
+              <i class="fas fa-link"></i> <span>Anonymous Link</span>
+            </button>
+            <button class="nav-btn" id="signOutBtn">
+              <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</aside>
+
+
+    <!-- PROFILE EDITOR -->
+    <section id="profileEditor">
+      <h3 class="profile-editor-title">Edit Profile</h3>
+      <label for="editDisplay" class="profile-label">Display Name:</label>
+      <input id="editDisplay" type="text" class="profile-input" />
+      <label for="editPic" class="profile-label">Profile Picture:</label>
+      <input type="file" id="editPic" accept="image/*" class="profile-file" />
+      <img id="previewAvatar" style="width:80px; height:80px; border-radius:12px; margin:10px 0;">
+      <button id="saveProfile" class="save-btn">Save</button>
+    </section>
+   
+
+    <!-- MAIN AREA -->
+    <main class="main-area">
+      <div class="dashboard-grid" id="dashboard">
+        <div class="dashboard-flex">
+          <div>
+            <div class="dash-card" data-panel="inbox">
+              <i class="fas fa-envelope"></i>
+              <h3>Inbox</h3>
+              <p>Check your latest anonymous or game messages.</p>
+            </div>
+           <div class="dash-card" data-panel="notifications" style="position:relative; cursor:pointer;">
+  <i class="fas fa-bell"></i>
+  <h3>Notifications</h3>
+  <p>Stay updated with public announcements.</p>
+<span id="unreadBadge" class="unread-badge"></span>
+</div>
+            <div class="dash-card" data-panel="insights">
+              <i class="fas fa-chart-line"></i>
+              <h3>Insights</h3>
+              <p>Track your link.</p>
+            </div>
+            <div class="dash-card" data-panel="tools" ><a href="tools.html" style="text-decoration: none;">
+  <i class="fas fa-users"></i>
+  <h3>Tools</h3>
+  <p>Copy pickup lines,Birthdays and all wishes also read some lovely articles.</p>
+  </a>
+</div>
+          </div>
+        </div>
+      </div>
+      
+<div class="lux-slider" id="luxSlider">
+  <div class="lux-track" id="luxTrack">
+    <figure class="lux-slide"><img src="./IMG_1755.jpeg" alt="Upgrade"></figure><figure class="lux-slide"><img src="./IMG_1756.jpeg" alt="Game"></figure><figure class="lux-slide"><img src="./IMG_1757.jpeg" alt="Anonymous"></figure>
+    <figure class="lux-slide"><img src="./IMG_1758.jpeg" alt="Refer"></figure>
+    <figure class="lux-slide"><img src="./IMG_1759.jpeg" alt="Track"></figure>
+    <figure class="lux-slide"><img src="./IMG_1760.jpeg" alt="Coin"></figure>
+  </div>
+
+  <div class="lux-dots" id="luxDots"></div>
+
+  <!-- Particle overlay -->
+  <div class="lux-particles" id="luxParticles"></div>
+</div>
+      <!-- GROUP SECTION -->
+      <section id="group">
+        <div class="group-container">
+          <div class="group-header">
+            <h1 class="group-title">
+              <span class="gradient-text">Welcome to the Ultimate</span>
+              <br>
+              <span class="highlight">Anonconnect!</span>
+            </h1>
+            <p class="group-subtitle">
+              Ready to dive into the most exciting and dynamic experience?
+            </p>
+          </div>
+
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="fas fa-user-secret"></i></div>
+              <h3>Chat Anonymously</h3>
+              <p>Your privacy matters — stay hidden, speak freely!</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon"><i class="fas fa-lock"></i></div>
+              <h3>Private Chats</h3>
+              <p>Secure one-on-one conversations with end-to-end privacy.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon"><i class="fas fa-image"></i></div>
+              <h3>Send Media</h3>
+              <p>Share photos, videos, audio, and more — instantly!</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon"><i class="fas fa-dice"></i></div>
+              <h3>Truth or Dare</h3>
+              <p>Play fun games with friends — dare to be bold and win a prize!</p>
+            </div>
+          </div>
+
+          <div class="instructions-box">
+            <div class="instructions-header">
+              <i class="fas fa-rocket"></i>
+              <h2>Ready to Join the Fun?</h2>
+            </div>
+          </div>
+
+          <button class="joinChatBtn" onclick="window.location.href='game.html'">
+            <span>Play game</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </section>
+    </main>
+    <!-- =========================
+ INLINE REFERRAL SECTION (ALWAYS OPEN)
+ ========================= -->
+<div id="referralSection" class="insights-panel" style="margin-top:20px;">
+
+    <div class="insights-header">
+      <h2><i class="fas fa-gift"></i> Referral Program</h2>
+      <p>Share your code & earn rewards automatically.</p>
+    </div>
+
+    <div class="insights-summary" style="gap:18px;">
+      <div class="stat">
+        <div class="stat-value" id="referralCode">loading...</div>
+        <div class="stat-label">Your Code</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-value" id="referralCount">0</div>
+        <div class="stat-label">Total Referrals</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-value" id="coinEarned">0</div>
+        <div class="stat-label">Coins</div>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="margin:18px 0;">
+      <label style="font-weight:600;color: red;">Referral Progress</label>
+      <div style="position:relative; margin-top:8px;">
+        <div style="width:100%; height:14px; background:#111; border-radius:10px; overflow:hidden;">
+          <div id="referralProgress" style="
+            height:100%; width:0%; background:linear-gradient(90deg,#9b5cff,#c084fc); transition:0.6s;"></div>
+        </div>
+
+        <!-- markers -->
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; opacity:0.8; color: red;">
+          <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+        </div>
+      </div>
+      <small id="progressText" style="opacity:0.7; display:block; margin-top:8px; color: red;">0 / 100 referrals</small>
+    </div>
+
+    <!-- Share buttons -->
+    <div style="margin:14px 0; text-align:center;">
+      <button onclick="copyReferralLink()" style="
+          padding:10px 18px; background:#a855ff; border:none; border-radius:8px; color:white; font-weight:600; cursor:pointer;">
+        <i class="fas fa-copy"></i> Copy Referral Link
+      </button>
+
+      <div style="margin-top:14px; display:flex; justify-content:center; gap:12px;">
+        <button onclick="shareWhatsApp()" class="share-btn"><i class="fab fa-whatsapp"></i></button>
+        <button onclick="shareInstagram()" class="share-btn"><i class="fab fa-instagram"></i></button>
+        <button onclick="shareSnap()" class="share-btn"><i class="fab fa-snapchat"></i></button>
+      </div>
+    </div>
+
+    <div class="insights-list-header">
+      <h3><span class="pulse-dot"></span> Referred Users</h3>
+    </div>
+
+    <div id="referralList" class="clicks-list" style="color: white;">
+      <p class="no-data">
+        <i class="fas fa-user-plus" style="font-size:32px;opacity:0.3;margin-bottom:12px;display:block; color: white;"></i>
+        No referrals yet. Share your code to get started!
+      </p>
+    </div>
+
+</div>
+
+    
+    <section class="leaderboard-container">
+  
+  <div class="leaderboard-header">
+    <h2><i class="fas fa-crown"></i> Top Referrers</h2>
+    <p>The most active inviters on the platform</p>
+  </div>
+
+  <div id="leaderboardList" class="leaderboard-list">
+    <p class="no-data">
+      <i class="fas fa-spinner fa-spin" style="font-size:32px;opacity:0.3;margin-bottom:12px;display:block;"></i>
+      Loading leaderboard…
+    </p>
+  </div>
+
+</section>
+
+   
+      <div id="premiumLockSection" style="display:none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:18px; border-radius:15px; margin:20px 0; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.2);">
+        <h3 style="margin:0 0 10px 0;">🔒 PREMIUM PROFILE LOCK</h3>
+        <p style="font-size:14px; margin:8px 0 15px;">Nobody can reveal your name, photo or bio<br>— even if they pay 1000 coins!</p>
+
+        <label class="lock-switch">
+          <input type="checkbox" id="lockMyProfile">
+          <span class="slider"></span>
+        </label>
+        <p id="lockStatus" style="margin-top:12px; font-weight:bold; font-size:15px;">Loading...</p>
+      </div>
+
+      <!-- For non-premium users -->
+      <div id="nonPremiumLockMessage" style="background:#f8f9fa; padding:20px; border-radius:15px; margin:20px 0; text-align:center; border:2px dashed #ddd;">
+        <h3 style="color:#999;">🔒 Profile Lock</h3>
+        <p style="color:#777; font-size:14px;">
+          Want to be 100% invisible?<br>
+          <strong>Upgrade to Lifetime VIP</strong> to unlock full privacy
+        </p>
+      </div>
+      </div>
+
+
+ 
+<!-- ==== ANONYMOUS LINK OVERLAY ==== -->
+<div id="anonLinkOverlay" class="anon-overlay">
+  <div id="anonLinkPanel" class="anon-panel">
+    <!-- ==== CLOSE BUTTON ==== -->
+    <button id="closeAnonOverlay" class="close-x">X</button>
+    
+    <div class="anon-header">
+      <h2>Your Anonymous Link</h2>
+      <p>Share privately — anyone can send you a message</p>
+    </div>
+    
+    <div class="anon-link-box">
+      <input type="text" id="anonLinkInput" readonly placeholder="Loading…" />
+      <button class="copy-btn" id="copyLinkBtn"><i class="fas fa-copy"></i></button>
+    </div>
+    
+    <div class="anon-actions">
+      <button class="anon-btn qr-btn" id="toggleQrBtn"><i class="fas fa-qrcode"></i> Show QR</button>
+    </div>
+    
+    <div id="qrSection">
+      <div id="qrContainer"></div>
+      <button id="downloadQrBtn" class="download-btn"><i class="fas fa-download"></i> Download QR</button>
+    </div>
+    
+    <div class="share-title">Share Instantly</div>
+    <div class="share-row">
+      <button class="share-btn whatsapp" id="shareWhatsapp"><i class="fab fa-whatsapp"></i></button>
+      <button class="share-btn telegram" id="shareTelegram"><i class="fab fa-telegram"></i></button>
+      <button class="share-btn snapchat" id="shareSnapchat"><i class="fab fa-snapchat"></i></button>
+    </div>
+  </div>
+</div>
+<!-- ==== PREMIUM INSIGHTS OVERLAY (2025 Edition) ==== -->
+<div id="insightsOverlay" class="insights-overlay">
+  <div class="insights-panel">
+    <button id="closeInsights" class="close-x">✕</button>
+    
+    <div class="insights-header">
+      <h2><i class="fas fa-satellite-dish"></i> Link Insights</h2>
+      <p>Real-time stalk— I mean, analytics 😉</p>
+    </div>
+    
+    <div class="insights-summary">
+      <div class="stat">
+        <div class="stat-value" id="totalClicks">0</div>
+        <div class="stat-label">Total Clicks</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="uniqueVisitors">0</div>
+        <div class="stat-label">Unique Devices</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="ghostRate">—</div>
+        <div class="stat-label">Ghost Rate</div>
+      </div>
+    </div>
+    
+    <div class="insights-list-header">
+      <h3><span class="pulse-dot"></span> Recent Visitors</h3>
+      <small id="liveIndicator" style="color:#a855ff;font-weight:600;">● LIVE</small>
+    </div>
+    
+    <div id="clicksList" class="clicks-list">
+      <p class="no-data">
+        <i class="fas fa-ghost" style="font-size:32px;opacity:0.3;margin-bottom:12px;display:block;"></i>
+        No visitors yet. Share your link and watch the magic!
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- NOTIFICATION OVERLAY -->
+<div id="notificationsOverlay" class="overlay">
+  <div class="overlay-content">
+    <button id="closeNotifications" style="position: absolute;
+top: 15%;
+right: 16px;
+transform: translateY(-50%);
+background: rgba(255,255,255,0.2);
+border: none;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+color: white;
+font-size: 28px;
+cursor: pointer;
+transition: all 0.2s;
+backdrop-filter: blur(10px);" aria-label="Close notifications">
+      <i class="fas fa-times"></i>
+    </button>
+    <h2>Notifications</h2>
+    <ul id="notificationsList"></ul>
+    <div id="noNotifications" class="no-notifications">No notifications yet.</div>
+    <div style="margin-top:16px; display:flex; justify-content:space-between;">
+      <button id="deleteAllBtn" style="background:#ef4444;color:#fff;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;">Delete All</button>
+    </div>
+  </div>
+</div>
+
+<!-- WELCOME MODAL -->
+<div id="welcomeModal" class="welcome-modal">
+  <button id="welcomeClose" style="position: absolute;
+top: 30px;
+right: 10px;
+transform: translateY(-50%);
+background: rgba(255,255,255,0.2);
+border: none;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+color: white;
+font-size: 28px;
+cursor: pointer;
+transition: all 0.2s;
+backdrop-filter: blur(10px);">×</button>
+
+  <h1>Welcome to Anon Group Chat</h1>
+
+  <p>
+    Create your unique link to share with others and receive anonymous messages.  
+    Unlike other platforms, you can start conversations first, reply anonymously, and even create topics or games with anonymous participants.  
+    A safe, fun space to connect without revealing your identity.
+  </p>
+
+  <h2>Terms and Conditions</h2>
+  <ul>
+    <li>By accessing or using Anon Group Chat, you agree to these Terms and Conditions.</li>
+    <li>Anon Group Chat may update these Terms at any time without notice.</li>
+    <li>You must be at least 18 years old to use this platform.</li>
+  </ul>
+
+  <button id="agreeBtn" class="agree-btn">I Agree</button>
+</div>
+
+<!-- FULL PROFESSIONAL INBOX MODAL - WhatsApp Style -->
+<div id="inboxModal" class="inbox-modal">
+  <div class="inbox-content">
+    
+    <!-- CONVERSATIONS LIST (Main Screen) -->
+    <div id="conversationsList" class="conversations-view">
+      <div class="modal-header">
+        <h1>Your Anonymous Inbox</h1>
+        <p>Tap a conversation to open • All replies are anonymous</p>
+        <button id="closeBtn" class="close-btn">&times;</button>
+      </div>
+      
+      <div class="conversations-container">
+        
+        <!-- Conversations will be injected here by JS -->
+        <div class="inbox-empty" style="display:none;">
+          <i class="fas fa-comments" style="font-size:60px; color:#ff66cc; margin-bottom:20px;"></i>
+          <div style="text-align:center; margin-top: 15px;">
+ 
+</div>
+          <p>No conversations yet.<br>Share your link and start receiving anonymous messages!</p>
+          <small style="color:#aaa;">Your link: <strong id="shareLink">loading...</strong></small>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CHAT VIEW (Individual Conversation) -->
+    <div id="chatView" class="chat-view" style="display:none;">
+      <div class="chat-header">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div id="chatHeader" class="chat-header-info">
+          <div class="avatar">A</div>
+          <div class="chat-name">Anonymous</div>
+        </div>
+        <button id="closeBtn2" class="close-btn">&times;</button>
+      </div>
+      
+      <div id="messagesContainer" class="messages-container">
+        <!-- Messages will appear here -->
+      </div>
+       <button id="previewAllMessagesBtn" style="background: white; color: red; border: none; padding: 12px 24px; border-radius: 12px; font-size: 14px; cursor: pointer;">
+   <i class="fas fa-expand-arrows-alt"></i> View All Messages Fullscreen
+ </button>
+      
+  <div class="message-input-area">
+  <button id="attachBtn" class="icon-btn"><i class="fas fa-paperclip"></i></button>
+  <textarea id="messageInput" placeholder="Type a message..."></textarea>
+  <button id="micBtn" class="icon-btn"><i class="fas fa-microphone"></i></button>
+  <button id="sendBtn" class="send-button"><i class="fas fa-paper-plane"></i></button>
+</div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- Reveal Sender Overlay -->
+<div id="senderProfileOverlay" class="profile-overlay" style="display:none;">
+  <div class="overlay-bg" onclick="closeSenderProfile()"></div>
+  <div class="profile-card">
+
+    <!-- CLOSE BUTTON -->
+    <button class="close-overlay" onclick="closeSenderProfile()">×</button>
+
+    <!-- BEFORE REVEAL -->
+    <div id="revealPrompt">
+      <div class="profile-avatar-large" style="opacity:0.4; filter:blur(4px);">
+        <i class="fas fa-user-secret" style="font-size:60px; color:#888;"></i>
+      </div>
+
+      <h3 style="margin-top:20px;">This sender is hidden</h3>
+
+      <p style="text-align:center; font-size:15px; color:#777;">
+        Revealing this sender will cost  
+        <strong style="color:gold;">1000 coins</strong>.
+      </p>
+
+      <button class="reveal-btn-pay" onclick="payAndRevealSender()">
+        Reveal Sender (1000 coins)
+      </button>
+    </div>
+
+    <!-- AFTER PAYMENT / REVEAL -->
+    <div id="revealedProfile" style="display:none;">
+      <div class="profile-avatar-large" id="overlayAvatar"></div>
+      <h3 id="overlayName">Anonymous</h3>
+      <p class="overlay-username">@<span id="overlayUsername"></span></p>
+      <p class="overlay-bio" id="overlayBio">No bio yet.</p>
+
+      <div class="overlay-stats">
+        <span><i class="fas fa-heart"></i> <strong id="overlayLikes">0</strong> Likes</span>
+        <span><i class="fas fa-comment"></i> <strong id="overlayMessages">0</strong> Messages</span>
+      </div>
+
+      <a id="overlayProfileLink" href="#" class="visit-profile-btn">View Full Profile</a>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- FULL SCREEN MESSAGE PREVIEW OVERLAY - PREMIUM NIGERIA 2025 EDITION -->
+<div id="messagePreviewOverlay" class="message-preview-overlay">
+  
+  <!-- Top Navigation -->
+  <div class="preview-controls">
+    <button id="prevMsgBtn" class="preview-nav-btn"><i class="fas fa-chevron-left"></i></button>
+    <button id="closePreviewBtn" class="preview-close-btn">×</button>
+    <button id="nextMsgBtn" class="preview-nav-btn"><i class="fas fa-chevron-right"></i></button>
+  </div>
+  
+  <!-- Action Buttons (Camera + Share) -->
+  <div class="preview-share-bar">
+    <button id="saveAsStatusBtn" class="share-btn status" title="Save as Status">
+      <i class="fas fa-camera"></i>
+    </button>
+    <button id="shareWhatsappBtn" class="share-btn whatsapp" title="Share on WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+    </button>
+    <button id="shareInstagramBtn" class="share-btn instagram" title="Share to Story">
+      <i class="fab fa-instagram"></i>
+    </button>
+    <button id="shareTiktokBtn" class="share-btn tiktok" title="Share to TikTok">
+      <i class="fab fa-tiktok"></i>
+    </button>
+  </div>
+  
+  <!-- PREMIUM MESSAGE CONTAINER + BRANDING -->
+  <div class="preview-message-container">
+    
+    <!-- BIG GLASS MESSAGE BOX (Looks exactly like final status) -->
+    <div class="premium-message-box">
+      <div id="previewMessageContent">
+        <!-- Text / Image / Video injected here by JS -->
+      </div>
+    </div>
+    
+    <!-- ANONCONNECT BRANDING (Shows in preview AND in saved image) -->
+    <div class="preview-branding">
+      <div class="branding-pill">
+        <div class="brand-text">Anonconnect</div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Message Counter -->
+  <div class="preview-counter">
+    <span id="previewCounter">1</span> / <span id="previewTotal">1</span>
+  </div>
+  
+</div>
+
+
+  <!-- SIGN OUT MODAL -->
+  <div id="signOutModal" class="modal">
+    <div class="modal-content">
+      <h2>Confirm Sign Out</h2>
+      <p>Are you sure you want to sign out?</p>
+      <div class="modal-buttons">
+        <button id="cancelSignOut" class="btn btn-cancel">Cancel</button>
+        <button id="confirmSignOut" class="btn btn-confirm">Sign Out</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="logoutWave"></div>
+
+  <!-- AUDIO -->
+  <audio id="toastSound" src="toast-sound.mp3" preload="auto"></audio>
+<!-- Hidden Canvas for Status Generation -->
+<canvas id="statusCanvas" width="720" height="1280" style="display:none;"></canvas>
+
+<script type="module">
+  // ==== SUPABASE ====
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+/* ====================== SUPABASE ====================== */
+const SUPABASE_URL = 'https://ssyaklpnjhoxukfanyxb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzeWFrbHBuamhveHVrZmFueXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjA2NzUsImV4cCI6MjA5NjczNjY3NX0.H95B092ZXEAQz3l6-QefzWt44RZLpp5PdiEbLktstGE';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabase = supabase;
+  
+  
+  
+  // ==== DOM ELEMENTS ====
+  const $ = id => document.getElementById(id);
+  const profileBtn = $('profileBtn');
+  const profileEditor = $('profileEditor');
+  const saveBtn = $('saveProfile');
+  const loadingOverlay = $('loadingOverlay');
+  const previewAvatar = $('previewAvatar');
+  const editPicInput = $('editPic');
+  const editDisplay = $('editDisplay');
+  const usernameDisplay = $('usernameDisplay');
+  const userAvatar = $('userAvatar');
+  const toastContainer = $('toastContainer');
+  const signOutBtn = $('signOutBtn');
+  const signOutModal = $('signOutModal');
+  const cancelSignOut = $('cancelSignOut');
+  const confirmSignOut = $('confirmSignOut');
+  const logoutWave = $('logoutWave');
+  const toastSound = $('toastSound');
+  const themeToggle = $('themeToggle');
+  const themeIcon = themeToggle.querySelector('i');
+  
+  
+  
+  
+  // ==== ANONYMOUS LINK ELEMENTS ====
+  const anonLinkBtn = $('anonLinkBtn');
+  const anonLinkPanel = $('anonLinkPanel');
+  const anonLinkInput = $('anonLinkInput');
+  const copyLinkBtn = $('copyLinkBtn');
+  const toggleQrBtn = $('toggleQrBtn');
+  const qrSection = $('qrSection');
+  const qrContainer = $('qrContainer');
+  const downloadQrBtn = $('downloadQrBtn');
+  const shareWhatsapp = $('shareWhatsapp');
+  const shareTelegram = $('shareTelegram');
+  const shareSnapchat = $('shareSnapchat');
+  
+  // ==== UTILITIES ====
+  const showLoading = () => loadingOverlay?.classList.add('active');
+  const hideLoading = () => loadingOverlay?.classList.remove('active');
+  const defaultAvatar = name => `https://ui-avatars.com/api/?name=${encodeURIComponent(name||'User')}&background=6b4eff&color=fff&size=256&bold=true`;
+  
+  // ==== TOAST SYSTEM ====
+  const showToast = (message, type = 'info', duration = 3000) => {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+      <span>${message}</span>
+      <button class="toast-close">×</button>
+    `;
+    toastContainer.appendChild(toast);
+    toastSound.currentTime = 0;
+    toastSound.play().catch(() => {});
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    const timeout = setTimeout(() => toast.remove(), duration + 400);
+    
+    toast.querySelector('.toast-close').onclick = () => {
+      clearTimeout(timeout);
+      toast.remove();
+    };
+  };
+  
+  
+  
+  // ==== THEME TOGGLE ====
+  const applyTheme = (theme) => {
+    if (theme === 'light') {
+      document.body.classList.add('light-mode');
+      themeIcon.classList.replace('fa-moon', 'fa-sun');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.body.classList.remove('light-mode');
+      themeIcon.classList.replace('fa-sun', 'fa-moon');
+      localStorage.setItem('theme', 'dark');
+    }
+    themeToggle.classList.add('active');
+    setTimeout(() => themeToggle.classList.remove('active'), 400);
+  };
+  
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  applyTheme(savedTheme);
+  
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-mode');
+    applyTheme(isLight ? 'dark' : 'light');
+  });
+  
+  // ==== PROFILE FUNCTIONS ====
+  const loadProfile = async (userId) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username, image')
+      .eq('id', userId)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      showToast('Failed to load profile', 'error');
+      return { username: 'User', image: null };
+    }
+    
+    const username = data?.username || 'User';
+    const image = data?.image;
+    
+    usernameDisplay.textContent = username;
+    userAvatar.src = image || defaultAvatar(username);
+    
+    return { username, image };
+  };
+  
+  const saveProfile = async () => {
+    const newName = editDisplay.value.trim();
+    if (!newName) return showToast('Username is required', 'error');
+    
+    showLoading();
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+    let imageUrl = null;
+    
+    if (editPicInput.files[0]) {
+      const file = editPicInput.files[0];
+      const ext = file.name.split('.').pop().toLowerCase();
+      const path = `${userId}/avatar.${ext}`;
+      
+      const { error: upErr } = await supabase.storage
+        .from('profile_images')
+        .upload(path, file, { upsert: true, contentType: file.type });
+      
+      if (upErr && upErr.statusCode !== 409) {
+        hideLoading();
+        return showToast('Image upload failed', 'error');
+      }
+      
+      const { data: urlData } = supabase.storage.from('profile_images').getPublicUrl(path);
+      imageUrl = urlData.publicUrl;
+    }
+    
+    const { error: dbErr } = await supabase
+      .from('profiles')
+      .upsert({ id: userId, username: newName, image: imageUrl });
+    
+    hideLoading();
+    
+    if (dbErr) return showToast('Failed to save profile', 'error');
+    
+    showToast('Profile updated!', 'success');
+    profileEditor.classList.remove('show');
+    usernameDisplay.textContent = newName;
+    userAvatar.src = imageUrl || defaultAvatar(newName);
+    previewAvatar.src = imageUrl || defaultAvatar(newName);
+  };
+  
+  // ==== SIGN OUT WITH WAVE ====
+  const triggerLogoutWave = () => {
+    const wave = document.createElement('div');
+    wave.className = 'logout-wave-circle';
+    wave.style.left = '50%';
+    wave.style.top = '50%';
+    logoutWave.appendChild(wave);
+    logoutWave.classList.add('active');
+    setTimeout(() => {
+      logoutWave.classList.remove('active');
+      logoutWave.innerHTML = '';
+    }, 1000);
+  };
+  
+  // ==== ANONYMOUS LINK LOGIC ====
+  let currentUsername = '';
+  let finalLink = '';
+  let qrDataUrl = '';
+  
+  const buildAnonLink = username => `${window.location.origin}/${encodeURIComponent(username)}`;
+  
+  // Wait for QRCode to load
+  const waitForQRCode = () => new Promise(resolve => {
+    if (typeof QRCode !== 'undefined') return resolve();
+    const check = setInterval(() => {
+      if (typeof QRCode !== 'undefined') {
+        clearInterval(check);
+        resolve();
+      }
+    }, 50);
+  });
+  
+  const generateQR = async text => {
+    await waitForQRCode();
+    qrContainer.innerHTML = '';
+    qrDataUrl = await QRCode.toDataURL(text, { width: 140, margin: 2, color: { dark: '#000', light: '#fff' } });
+    const img = new Image();
+    img.src = qrDataUrl;
+    img.style.borderRadius = '8px';
+    qrContainer.appendChild(img);
+  };
+  
+  const initAnonLink = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return location.href = 'index.html';
+    
+    const userId = session.user.id;
+    const { username } = await loadProfile(userId);
+    currentUsername = username;
+    finalLink = buildAnonLink(username);
+    anonLinkInput.value = finalLink;
+    
+    await generateQR(finalLink);
+    qrSection.style.display = 'block';
+  };
+  
+  // ==== EVENT LISTENERS ====
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return location.href = 'index.html';
+    
+    const userId = session.user.id;
+    await loadProfile(userId);
+    
+    
+    // Profile Editor
+    profileBtn?.addEventListener('click', async () => {
+      profileEditor.classList.toggle('show');
+      if (profileEditor.classList.contains('show')) {
+        const p = await loadProfile(userId);
+        editDisplay.value = p.username || '';
+        previewAvatar.src = p.image || defaultAvatar(p.username);
+        editPicInput.value = '';
+      }
+    });
+    
+    editPicInput?.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) previewAvatar.src = URL.createObjectURL(file);
+    });
+    
+    saveBtn?.addEventListener('click', saveProfile);
+    
+    // Sign Out
+    signOutBtn?.addEventListener('click', () => signOutModal.classList.add('show'));
+    cancelSignOut?.addEventListener('click', () => signOutModal.classList.remove('show'));
+    confirmSignOut?.addEventListener('click', async () => {
+      signOutModal.classList.remove('show');
+      showToast('Signing out...', 'info');
+      triggerLogoutWave();
+      const { error } = await supabase.auth.signOut();
+      if (error) showToast('Sign out failed', 'error');
+      else setTimeout(() => location.href = 'index.html', 800);
+    });
+    signOutModal?.addEventListener('click', e => { if (e.target === signOutModal) signOutModal.classList.remove('show'); });
+    
+    // Anonymous Link Panel
+    // 3. REPLACE the old anonLinkBtn click handler
+const anonOverlay = $('anonLinkOverlay');
+const closeOverlay = $('closeAnonOverlay');
+
+anonLinkBtn.addEventListener('click', () => {
+  anonOverlay.classList.add('show');
+  if (!finalLink) initAnonLink();
+});
+
+closeOverlay.addEventListener('click', () => {
+  anonOverlay.classList.remove('show');
+});
+
+anonOverlay.addEventListener('click', e => {
+  if (e.target === anonOverlay) anonOverlay.classList.remove('show');
+});
+    copyLinkBtn.addEventListener('click', async () => {
+      if (!finalLink) return showToast('Link not ready', 'error');
+      await navigator.clipboard.writeText(finalLink);
+      showToast('Copied!', 'success');
+    });
+    
+    toggleQrBtn.addEventListener('click', () => {
+      qrSection.style.display = qrSection.style.display === 'block' ? 'none' : 'block';
+      if (!qrDataUrl) generateQR(finalLink);
+    });
+    
+    downloadQrBtn.addEventListener('click', () => {
+      if (!qrDataUrl) return;
+      const a = document.createElement('a');
+      a.href = qrDataUrl;
+      a.download = 'anon-link-qr.png';
+      a.click();
+    });
+    
+    shareWhatsapp.addEventListener('click', () => {
+      if (!finalLink) return showToast('Link not ready', 'error');
+      window.open(`https://wa.me/?text=${encodeURIComponent(finalLink)}`, '_blank');
+    });
+    
+    shareTelegram.addEventListener('click', () => {
+      if (!finalLink) return showToast('Link not ready', 'error');
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(finalLink)}`, '_blank');
+    });
+    
+    shareSnapchat.addEventListener('click', async () => {
+      if (!finalLink) return showToast('Link not ready', 'error');
+      await navigator.clipboard.writeText(finalLink);
+      showToast('Copied – paste in Snapchat', 'info');
+    });
+    
+    anonLinkInput.addEventListener('click', () => {
+      window.location.href = `anon.html?to=${encodeURIComponent(currentUsername)}`;
+      
+    });
+    refreshUserStatus();
+setupRealtimeStatus();
+  });
+  
+// ==== PREMIUM-ONLY INSIGHTS – ZERO ERRORS FINAL VERSION (2025) ====
+// Works even if $ or currentUsername are already defined elsewhere
+
+// ——— SAFELY DEFINE $ (getElementById) ———
+if (typeof window.$ === 'undefined') {
+  window.$ = (id) => document.getElementById(id);
+}
+
+// ——— SAFELY DEFINE currentUsername ———
+window.currentUsername ??= 
+  window.username || 
+  new URLSearchParams(location.search).get('username') || 
+  new URLSearchParams(location.search).get('u') || 
+  'unknown';
+
+let clickChannel = null;
+
+// ——— PREMIUM CHECK + OPEN (100% FIXED FOR LOGGED-IN USERS) ———
+const openInsights = async () => {
+  try {
+    // 1. Get the logged-in user first
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      showToast('You must be logged in to view insights', 'warning');
+      return;
+    }
+    
+    // 2. Now fetch their profile using auth user ID
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('is_premium, username')
+      .eq('id', user.id) // ← THIS IS THE CORRECT WAY
+      .single();
+    
+    if (error || !profile) {
+      console.error('Profile fetch error:', error);
+      showToast('Profile not found', 'error');
+      return;
+    }
+    
+    // Optional: Update window.currentUsername so the rest of the code works perfectly
+    window.currentUsername = profile.username;
+    
+    if (!profile.is_premium) {
+      showToast('Upgrade to Premium to unlock Link Insights', 'warning');
+      return;
+    }
+    
+  
+
+    $('insightsOverlay')?.classList.add('show');
+    await loadInsights();
+
+  } catch (err) {
+    console.error(err);
+    showToast('Error checking premium status', 'error');
+  }
+};
+
+// ——— CLOSE ———
+const closeInsights = () => {
+  $('insightsOverlay')?.classList.remove('show');
+  if (clickChannel) {
+    supabase.removeChannel(clickChannel);
+    clickChannel = null;
+  }
+};
+
+// ——— LOAD INSIGHTS ———
+const loadInsights = async () => {
+  if (clickChannel) {
+    supabase.removeChannel(clickChannel);
+    clickChannel = null;
+  }
+
+  try {
+    const { data } = await supabase
+      .from('link_clicks')
+      .select('ip_address, phone_brand, phone_model, os, city, region, country, clicked_at, sent_message')
+      .eq('username', window.currentUsername)
+      .order('clicked_at', { ascending: false })
+      .limit(100);
+
+    updateInsightsUI(data || []);
+    subscribeToClicks();
+
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to load insights', 'error');
+  }
+};
+
+// ——— REAL-TIME ———
+const subscribeToClicks = () => {
+  clickChannel = supabase.channel(`insights_${window.currentUsername}`)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'link_clicks',
+      filter: `username=eq.${window.currentUsername}`
+    }, payload => {
+      prependVisitor(payload.new);
+      showToast('New visitor just opened your link!', 'success', 3000);
+    })
+    .subscribe();
+};
+
+// ——— PREPEND NEW VISITOR ———
+const prependVisitor = (c) => {
+  const list = $('clicksList');
+  if (list) list.prepend(createClickItem(c));
+};
+
+// ——— CREATE ITEM ———
+const createClickItem = (c) => {
+  const device = c.phone_model || c.phone_brand || 'Unknown Device';
+  const location = c.city ? `${c.city}, ${c.country || ''}`.trim() : (c.country || 'Hidden');
+  const flag = getFlag(c.country);
+  const timeAgo = formatTime(c.clicked_at);
+  const status = c.sent_message ? '✅ Sent Message' : '👻 Ghosted';
+  const statusClass = c.sent_message ? 'sent' : 'ghost';
+
+  const div = document.createElement('div');
+  div.className = `click-item ${statusClass}`;
+  div.innerHTML = `
+    <div class="top">
+      <div class="device-model">${device}</div>
+      <div class="location"><span class="flag">${flag}</span> ${location}</div>
+    </div>
+    <div class="meta">
+      <span>${c.os || 'Unknown OS'}</span>
+      <span>${timeAgo}</span>
+      <span class="status">${status}</span>
+    </div>
+  `;
+  return div;
+};
+
+// ——— UPDATE FULL LIST ———
+const updateInsightsUI = (clicks) => {
+  const total = clicks.length;
+  const unique = new Set(clicks.map(c => c.ip_address).filter(Boolean)).size;
+  const ghostRate = total ? Math.round((clicks.filter(c => !c.sent_message).length / total) * 100) : 0;
+
+  if ($('totalClicks')) $('totalClicks').textContent = total;
+  if ($('uniqueVisitors')) $('uniqueVisitors').textContent = unique;
+  if ($('ghostRate')) $('ghostRate').textContent = ghostRate + '% 👻';
+
+  const list = $('clicksList');
+  if (!list) return;
+
+  list.innerHTML = total === 0 
+    ? '<p class="no-data"><i class="fas fa-ghost" style="font-size:32px;opacity:0.3;"></i><br>No visitors yet. Share your link!</p>'
+    : '';
+
+  clicks.slice(0, 50).forEach(c => list.appendChild(createClickItem(c)));
+};
+
+// ——— HELPERS ———
+const getFlag = (c) => ({
+  'Nigeria':'🇳🇬','United States':'🇺🇸','India':'🇮🇳','United Kingdom':'🇬🇧',
+  'Germany':'🇩🇪','France':'🇫🇷','Canada':'🇨🇦','Brazil':'🇧🇷','Japan':'🇯🇵'
+}[c] || '🌍');
+
+const formatTime = (iso) => {
+  const m = Math.floor((Date.now() - new Date(iso)) / 60000);
+  if (m < 1) return 'Just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+};
+
+// ——— EVENT LISTENERS ———
+document.querySelector('[data-panel="insights"]')?.addEventListener('click', openInsights);
+$('closeInsights')?.addEventListener('click', closeInsights);
+$('insightsOverlay')?.addEventListener('click', e => {
+  if (e.target === $('insightsOverlay')) closeInsights();
+});
+
+$('buyBtn')?.addEventListener('click', async () => {
+  try {
+    // Step 1: Get fresh session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      alert("Please log in again");
+      return;
+    }
+    
+    // Step 2: ALWAYS fetch the REAL username from the profiles table
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (error || !profile?.username) {
+      alert("Please complete your profile with a username first!");
+      return;
+    }
+    
+    // Step 3: Now go to buy page with 100% correct username
+    location.href = `buy.html?user=${profile.username}`;
+    
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong. Try again.");
+  }
+});
+
+
+$('upgradeBtn')?.addEventListener('click', async () => {
+  try {
+    // Get fresh session (more reliable than getUser() in some cases)
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      alert("Please log in again");
+      return;
+    }
+    
+    // ALWAYS fetch the real username from the profiles table (never trust user_metadata!)
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (error || !profile?.username) {
+      alert("Please complete your profile with a username first!");
+      return;
+    }
+    
+    // Now redirect with 100% correct username
+    location.href = `upgrade.html?user=${profile.username}`;
+    
+  } catch (err) {
+    console.error("Upgrade button error:", err);
+    alert("Something went wrong. Try again.");
+  }
+});
+
+
+
+
+
+// --- ELEMENTS ---
+const notificationsCard = document.querySelector('[data-panel="notifications"]');
+const overlay = document.getElementById('notificationsOverlay');
+const notCloseBtn = document.getElementById('closeNotifications');
+const notificationsList = document.getElementById('notificationsList');
+const noNotifications = document.getElementById('noNotifications');
+const deleteAllBtn = document.getElementById('deleteAllBtn');
+const unreadBadge = document.getElementById('unreadBadge');
+
+// --- OPEN & CLOSE OVERLAY ---
+notificationsCard.addEventListener('click', async () => {
+  overlay.style.display = 'flex';
+  await loadNotifications();
+  markAllNotificationsRead();
+});
+notCloseBtn.addEventListener('click', () => overlay.style.display = 'none');
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.style.display = 'none'; });
+
+const markAllNotificationsRead = async () => {
+  await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .neq('is_welcome', true); // welcome remains always visible
+
+  await loadNotifications();
+};
+
+
+// --- LOAD NOTIFICATIONS ---
+// --- LOAD NOTIFICATIONS ---
+const loadNotifications = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    notificationsList.innerHTML = '';
+
+    // --- EMPTY STATE ---
+    if (!data || data.length === 0) {
+      noNotifications.style.display = 'block';
+      unreadBadge.style.display = 'none';
+      unreadBadge.textContent = '0';
+      return;
+    }
+
+    noNotifications.style.display = 'none';
+
+    // --- UNREAD COUNTER ---
+    const unreadCount = data.filter(n => !n.is_read).length;
+    unreadBadge.style.display = unreadCount > 0 ? 'block' : 'none';
+    unreadBadge.textContent = unreadCount;
+
+    // --- RENDER ALL NOTIFICATIONS ---
+    data.forEach(item => {
+      const li = document.createElement('li');
+      li.style.display = 'flex';
+      li.style.justifyContent = 'space-between';
+      li.style.alignItems = 'center';
+
+      // Message
+      li.innerHTML = `<span>${item.message}</span>`;
+
+      // --- DELETE BUTTON (Only for non-welcome notifications) ---
+      if (!item.is_welcome) {
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.className = 'delete-btn';
+
+        delBtn.addEventListener('click', async () => {
+          const { error: deleteError } = await supabase
+            .from('notifications')
+            .delete()
+            .eq('id', item.id);
+
+          if (deleteError) {
+            showToast("Failed to delete", "error", 2000);
+            return;
+          }
+
+          // Toast on delete
+          showToast("Notification deleted", "success", 2000);
+
+          await loadNotifications();
+        });
+
+        li.appendChild(delBtn);
+      }
+
+      notificationsList.appendChild(li);
+    });
+
+  } catch (err) {
+    console.log("notificationsList =", notificationsList);
+console.log("noNotifications =", noNotifications);
+console.log("unreadBadge =", unreadBadge);
+
+    console.error('Failed to load notifications', err);
+  }
+};
+
+
+// --- DELETE ALL (EXCEPT WELCOME) ---
+deleteAllBtn.addEventListener('click', async () => {
+  if (!confirm('Are you sure you want to delete all notifications?')) return;
+  try {
+    await supabase.from('notifications').delete().neq('is_welcome', true);
+    await loadNotifications();
+  } catch (err) {
+    console.error('Failed to delete notifications', err);
+  }
+});
+
+// --- ENSURE PERMANENT WELCOME MESSAGE ---
+const ensureWelcomeMessage = async () => {
+  const { data } = await supabase.from('notifications').select('*').eq('is_welcome', true).limit(1);
+  if (!data || data.length === 0) {
+    await supabase.from('notifications').insert({
+      message: 'Welcome! Stay tuned for updates here.',
+      is_welcome: true,
+      created_at: new Date().toISOString()
+    });
+  }
+};
+ensureWelcomeMessage();
+
+// --- REAL-TIME SUBSCRIPTION ---
+const subscription = supabase
+  .channel('public-notifications')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, payload => {
+    console.log('New notification:', payload.new);
+    unreadBadge.style.display = 'block';
+    // Optionally auto-refresh overlay if open
+    if (overlay.style.display === 'flex') loadNotifications();
+  })
+  .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'notifications' }, payload => {
+    if (overlay.style.display === 'flex') loadNotifications();
+  })
+  .subscribe();
+  
+  
+  const welcomeModal = document.getElementById('welcomeModal');
+const agreeBtn = document.getElementById('agreeBtn');
+const welcomeClose = document.getElementById('welcomeClose');
+
+// --- Show modal only if user hasn't agreed before ---
+const hasAgreed = localStorage.getItem('anon_welcome_agreed');
+if (!hasAgreed) {
+  welcomeModal.style.display = 'block';
+}
+
+// --- Function to store acknowledgment in localStorage ---
+const acknowledgeWelcome = async () => {
+  localStorage.setItem('anon_welcome_agreed', 'true');
+  welcomeModal.style.display = 'none';
+  
+  // Optionally, store that this user saw welcome in public notifications (for admin tracking)
+  try {
+    await supabase.from('notifications').insert({
+      message: 'A new user has acknowledged the welcome message.',
+      is_welcome: false,
+      created_at: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Failed to log welcome acknowledgment:', err);
+  }
+};
+
+// --- Event listeners ---
+agreeBtn.addEventListener('click', acknowledgeWelcome);
+welcomeClose.addEventListener('click', acknowledgeWelcome);
+// === ELEMENTS ===
+const inboxCard = document.querySelector('.dash-card[data-panel="inbox"]');
+const inboxModal = document.getElementById('inboxModal');
+const closeBtn = document.getElementById('closeBtn');
+const closeBtn2 = document.getElementById('closeBtn2');
+const conversationsList = document.getElementById('conversationsList');
+const chatView = document.getElementById('chatView');
+const chatHeader = document.getElementById('chatHeader');
+const messagesContainer = document.getElementById('messagesContainer');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const attachBtn = document.getElementById('attachBtn');
+const micBtn = document.getElementById('micBtn');
+
+let username = null;
+let isPremium = false;
+let activeChatWith = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let unreadCount = 0;
+let unreadConversations = new Set();
+let messageChannel = null;
+
+// === BADGE SETUP ===
+const inboxBadge = document.createElement('span');
+inboxBadge.className = 'inbox-badge';
+inboxBadge.style.cssText = `
+  position: absolute; top: 10px; right: 10px; background: #ff0066; color: white;
+  font-size: 12px; min-width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-weight: bold;
+  padding: 0 6px; z-index: 10; animation: pulse 2s infinite;
+`;
+inboxCard.style.position = 'relative';
+inboxCard.appendChild(inboxBadge);
+inboxBadge.style.display = 'none';
+
+const updateBadge = (count) => {
+  unreadCount = count;
+  if (count > 0) {
+    inboxBadge.textContent = count > 99 ? '99+' : count;
+    inboxBadge.style.display = 'flex';
+  } else {
+    inboxBadge.style.display = 'none';
+  }
+};
+
+// === FETCH USER ===
+const fetchUserData = async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      showToast('Please log in to view messages', 'error');
+      return false;
+    }
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('username, full_name, image, is_premium')
+      .eq('id', session.user.id)
+      .single();
+
+    if (error || !profile?.username) {
+      showToast('Please complete your profile first', 'error');
+      return false;
+    }
+
+    username = profile.username;
+    isPremium = profile.is_premium === true;
+    localStorage.setItem('currentInboxUser', username);
+    return true;
+  } catch (err) {
+    console.error('fetchUserData error:', err);
+    showToast('Failed to load profile', 'error');
+    return false;
+  }
+};
+
+// === GET SENDER PROFILE ===
+const getSenderProfile = async (senderUsername) => {
+  if (!senderUsername || senderUsername === 'anonymous') {
+    return { full_name: null, image: null };
+  }
+  const { data } = await supabase
+    .from('profiles')
+    .select('full_name, image')
+    .eq('username', senderUsername)
+    .single();
+  return data || { full_name: null, image: null };
+};
+
+
+
+
+// === CONVERSATION LIST ===
+const loadConversations = async () => {
+  if (!await fetchUserData()) {
+    conversationsList.innerHTML = '<div class="inbox-empty">Please log in</div>';
+    updateBadge(0);
+    return;
+  }
+
+  const { data: messages = [] } = await supabase
+    .from('messages')
+    .select('*')
+    .or(`to_username.eq.${username},reply_username.eq.${username}`)
+    .order('sent_at', { ascending: false });
+
+  if (!messages.length) {
+    conversationsList.innerHTML = `<div class="inbox-empty">
+      <i class="fas fa-comments" style="font-size:60px; color:#8b5cf6;"></i>
+      <p>No messages yet.<br>Share your link!</p>
+    </div>`;
+    updateBadge(0);
+    unreadConversations.clear();
+    return;
+  }
+
+  const { data: receipts = [] } = await supabase
+    .from('read_receipts')
+    .select('sender_username, last_read_at')
+    .eq('user_username', username);
+
+  const readMap = Object.fromEntries(receipts.map(r => [r.sender_username, r.last_read_at]));
+  const convos = {};
+  let totalUnread = 0;
+  unreadConversations.clear();
+
+  for (const msg of messages) {
+    const isIncoming = msg.to_username === username;
+    const sender = isIncoming ? msg.reply_username : msg.to_username;
+
+    const key = sender || "anonymous";
+
+    if (!convos[key]) {
+
+      // SAFE: Always anonymous, premium or not
+      const displayName = "Anonymous";
+
+      const lastMsgText =
+        msg.message_type === "text"
+          ? (msg.message || "Media").slice(0, 35) +
+            ((msg.message || "").length > 35 ? "..." : "")
+          : msg.message_type === "image"
+          ? "Photo"
+          : msg.message_type === "video"
+          ? "Video"
+          : msg.message_type === "audio"
+          ? "Voice message"
+          : "Media";
+
+      convos[key] = {
+        username: sender,
+        displayName,          // 👈 ALWAYS ANONYMOUS
+        avatar: "",           // 👈 No profile photos in inbox
+        lastMessage: lastMsgText,
+        time: msg.sent_at,
+        hasUnread: false
+      };
+    }
+
+    // --- Unread logic ---
+    if (isIncoming && sender !== username) {
+      const lastRead = readMap[sender];
+      const isUnread =
+        !lastRead || new Date(msg.sent_at) > new Date(lastRead);
+
+      if (isUnread) {
+        convos[key].hasUnread = true;
+        unreadConversations.add(key);
+        totalUnread++;
+      }
+    }
+
+    if (new Date(msg.sent_at) > new Date(convos[key].time)) {
+      convos[key].time = msg.sent_at;
+    }
+  }
+
+  updateBadge(totalUnread);
+  renderConversationList(Object.values(convos));
+};
+
+const renderConversationList = (convos) => {
+  if (!convos.length) {
+    conversationsList.innerHTML = '<div class="inbox-empty">No conversations yet</div>';
+    return;
+  }
+
+  conversationsList.innerHTML = convos
+    .sort((a, b) => new Date(b.time) - new Date(a.time))
+    .map(
+      (c) => `
+      <div class="convo-item ${c.hasUnread ? "unread" : ""}" onclick="openChat('${
+        c.username || "anonymous"
+      }')">
+        <div class="avatar">${"A"}</div>
+        <div class="convo-info">
+          <div class="convo-name" style="font-weight: ${
+            c.hasUnread ? "700" : "500"
+          };">${c.displayName}</div>
+          <div class="last-msg">${c.lastMessage}</div>
+        </div>
+        <div class="convo-time">${formatMessageTime(c.time)}</div>
+        ${c.hasUnread ? '<div class="unread-dot"></div>' : ""}
+      </div>
+    `
+    )
+    .join("");
+};
+
+// === OPEN CHAT ===
+window.openChat = async (senderUsername) => {
+  if (!username) return;
+
+  activeChatWith = senderUsername || "anonymous";
+
+  const isAnon = !activeChatWith || activeChatWith === "anonymous";
+  const senderToMark = isAnon ? null : activeChatWith;
+
+  try {
+    await supabase.from("read_receipts").upsert(
+      {
+        user_username: username,
+        sender_username: senderToMark,
+        last_read_at: new Date().toISOString(),
+      },
+      { onConflict: "user_username,sender_username" }
+    );
+  } catch (err) {
+    console.error("Failed to mark as read:", err);
+  }
+
+  if (unreadConversations.has(senderToMark)) {
+    unreadConversations.delete(senderToMark);
+    updateBadge(unreadCount - 1);
+  }
+// --- Load messages ---
+let filterA = isAnon
+  ? `and(to_username.eq.${username},reply_username.is.null)`
+  : `and(to_username.eq.${username},reply_username.eq.${activeChatWith})`;
+let filterB = isAnon
+  ? `and(to_username.is.null,reply_username.eq.${username})`
+  : `and(to_username.eq.${activeChatWith},reply_username.eq.${username})`;
+
+const { data: messages = [] } = await supabase
+  .from('messages')
+  .select('*')
+  .or(`${filterA},${filterB}`)
+  .order('sent_at', { ascending: true });
+
+// --- Safe profile fetch & defaults ---
+let profile = { full_name: null, image: null };
+try {
+  const fetched = await getSenderProfile(isAnon ? null : activeChatWith);
+  // If the function returns null/undefined or something unexpected, fall back.
+  if (fetched && typeof fetched === 'object') {
+    profile = {
+      full_name: fetched.full_name ?? null,
+      image: fetched.image ?? null
+    };
+  }
+} catch (err) {
+  // don't break the UI if fetching profile fails
+  console.warn('Failed to load profile for chat header:', err);
+  profile = { full_name: null, image: null };
+}
+
+// Username must always be anonymous (do not reveal real name even for premium)
+const displayName = "Anonymous";
+
+// Avatar background only when we have an image; otherwise show a letter
+const avatarStyle = profile.image ? `background-image: url('${profile.image}')` : '';
+const avatarLetter = !profile.image ? (displayName[0]?.toUpperCase() || 'A') : '';
+
+chatHeader.innerHTML = `
+  <button onclick="backToList()" class="back-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></button>
+  <div class="avatar" style="${avatarStyle}">${avatarLetter}</div>
+  <div class="chat-name">${displayName}</div>
+  <button id="closeBtn2" class="close-btn" aria-label="Close">×</button>
+`;
+document.getElementById('closeBtn2')?.addEventListener('click', closeModal);
+
+
+// --- Render messages ---
+messagesContainer.innerHTML = messages.map(msg => {
+  const isSent = msg.reply_username === username;
+  const isIncoming = !isSent;
+
+  // Show reveal/upgrade only for incoming messages
+  const showRevealSection = isIncoming;
+
+  const safeUsername = msg.reply_username ? String(msg.reply_username).replace(/"/g, '&quot;') : "";
+
+  const time = new Date(msg.sent_at).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  return `
+    <div class="message-bubble ${isSent ? 'sent' : 'received'}">
+
+      ${showRevealSection ? `
+        <div class="sender-reveal-overlay">
+
+          ${!isPremium ? `
+            <!-- NOT PREMIUM: show upgrade -->
+            <div class="premium-lock-new">
+              <i class="fas fa-crown"></i>
+              <span>Upgrade to Premium to see who sent this</span>
+              <a href="upgrade.html" class="upgrade-btn-small" onclick="goToUpgrade(event)">Upgrade →</a>
+            </div>
+          ` : `
+            <!-- PREMIUM: still must pay 1000 coins -->
+         <div class="reveal-btn" onclick="openPremiumReveal('${safeUsername}')">
+  Reveal sender (1000 coins)
+</div>
+          `}
+
+        </div>
+      ` : ''}
+
+      ${msg.message_type === 'image'
+        ? `<img src="${msg.message}" class="chat-media">`
+        : msg.message_type === 'video'
+          ? `<video src="${msg.message}" controls class="chat-media"></video>`
+          : msg.message_type === 'audio'
+            ? `<audio src="${msg.message}" controls></audio>`
+            : `<div class="bubble-text">${(msg.message || '').replace(/\n/g, '<br>')}</div>`
+      }
+
+      <div class="bubble-time">${time}</div>
+    </div>
+  `;
+}).join('');
+
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  conversationsList.style.display = 'none';
+  chatView.style.display = 'flex';
+  setTimeout(loadConversations, 300);
+};
+
+function goToUpgrade(e) {
+  e.preventDefault();
+  supabase.auth.getUser().then(res => {
+    const user = res.data.user;
+    const username = user?.user_metadata?.username || user?.email.split('@')[0] || user?.id;
+    window.location.href = `upgrade.html?user=${encodeURIComponent(username)}`;
+  });
+}
+
+// === REAL-TIME SETUP ===
+const setupRealtimeMessages = () => {
+  if (!username) return;
+
+  if (messageChannel) supabase.removeChannel(messageChannel);
+
+  messageChannel = supabase.channel('inbox-realtime');
+  messageChannel
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages'
+    }, (payload) => {
+      const msg = payload.new;
+      const isIncoming = msg.to_username === username;
+      if (!isIncoming) return;
+
+      const sender = msg.reply_username || 'anonymous';
+
+      showToast('New message received!', 'success', 2000);
+
+      if (activeChatWith !== sender) {
+        unreadCount++;
+        unreadConversations.add(sender);
+        updateBadge(unreadCount);
+      } else {
+        const senderToMark = sender === 'anonymous' ? null : sender;
+        supabase.from('read_receipts')
+          .upsert({ user_username: username, sender_username: senderToMark, last_read_at: new Date().toISOString() }, { onConflict: 'user_username,sender_username' });
+      }
+
+      loadConversations();
+      if (activeChatWith === sender) openChat(activeChatWith);
+    })
+    .subscribe();
+};
+
+// REAL-TIME COINS & PREMIUM — FIXED & SAFE (no crash)
+let statusChannel = null;
+
+async function setupRealtimeStatus() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  
+  // Remove old channel if exists (prevents duplicates)
+  if (statusChannel) {
+    supabase.removeChannel(statusChannel);
+  }
+  
+  statusChannel = supabase
+    .channel('user-status')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'profiles',
+      filter: `id=eq.${user.id}` // ← correct, no await inside template
+    }, (payload) => {
+      console.log('Your profile changed (coins/premium)', payload);
+      refreshUserStatus(); // ← triggers toast + crown + coins update
+    })
+    .subscribe();
+}
+
+
+// === SEND MESSAGE / MEDIA UNIFIED ===
+const sendMessage = async (content, type = 'text') => {
+  if (!content || !activeChatWith) return;
+
+  let messageToSend = content;
+
+  if (type !== 'text') {
+    // Upload media
+    const { data, error } = await supabase.storage
+      .from('messages-media')
+      .upload(`${username}/${Date.now()}_${content.name || 'file'}`, content);
+
+    if (error) {
+      showToast('Upload failed', 'error');
+      return;
+    }
+
+    messageToSend = supabase.storage.from('messages-media').getPublicUrl(data.path).data.publicUrl;
+  }
+
+  await supabase.from('messages').insert({
+    to_username: activeChatWith === 'anonymous' ? null : activeChatWith,
+    message: messageToSend,
+    message_type: type,
+    is_anonymous: true,
+    reply_username: username,
+    sent_at: new Date().toISOString()
+  });
+
+  if (type === 'text') messageInput.value = '';
+  openChat(activeChatWith);
+};
+
+// === ATTACH FILE ===
+attachBtn.onclick = () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*,video/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (file) sendMessage(file, file.type.startsWith('image') ? 'image' : 'video');
+  };
+  input.click();
+};
+
+// === AUDIO RECORD ===
+micBtn.onclick = async () => {
+  if (mediaRecorder?.state === 'recording') {
+    mediaRecorder.stop();
+    micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+  } else {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        await sendMessage(audioBlob, 'audio');
+      };
+      mediaRecorder.start();
+      micBtn.innerHTML = '<i class="fas fa-stop"></i>';
+      showToast('Recording...');
+    } catch (err) {
+      showToast('Microphone access denied', 'error');
+    }
+  }
+};
+
+// === MODAL CLOSE ===
+const closeModal = () => {
+  inboxModal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  supabase.removeAllChannels();
+  if (mediaRecorder?.state === 'recording') mediaRecorder.stop();
+};
+closeBtn.onclick = closeModal;
+closeBtn2?.addEventListener('click', closeModal);
+inboxModal.onclick = e => { if (e.target === inboxModal) closeModal(); };
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchUserData();
+  setupRealtimeMessages();
+  loadConversations();
+
+  inboxCard?.addEventListener('click', async () => {
+    inboxModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    await loadConversations();
+  });
+
+  sendBtn.onclick = () => sendMessage(messageInput.value.trim());
+  messageInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(messageInput.value.trim());
+    }
+  });
+
+  window.addEventListener('focus', loadConversations);
+});
+
+// === BACK TO LIST ===
+window.backToList = () => {
+  chatView.style.display = 'none';
+  conversationsList.style.display = 'block';
+  activeChatWith = null;
+};
+
+// === TIME FORMAT ===
+function formatMessageTime(date) {
+  const d = new Date(date);
+  const now = new Date();
+  return (now - d < 86400000)
+    ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : d.toLocaleDateString();
+}
+
+
+let currentPremiumUsername = null;
+
+// ————— 1. YOUR ORIGINAL FREE PROFILE (kept 100% working) —————
+window.showSenderProfile = async (senderUsername, event) => {
+  if (event) event.stopPropagation();
+
+  const profile = await getSenderProfile(senderUsername);
+
+  document.getElementById('overlayAvatar').style.backgroundImage =
+    profile.image ? `url('${profile.image}')` : '';
+  document.getElementById('overlayName').textContent =
+    profile.full_name || senderUsername || 'Anonymous';
+  document.getElementById('overlayUsername').textContent =
+    senderUsername || 'anonymous';
+  document.getElementById('overlayBio').textContent =
+    profile.bio || 'No bio yet.';
+
+  const { data: stats } = await supabase
+    .from('profiles')
+    .select('likes_count, messages_count')
+    .eq('username', senderUsername)
+    .single();
+
+  document.getElementById('overlayLikes').textContent = stats?.likes_count || 0;
+  document.getElementById('overlayMessages').textContent = stats?.messages_count || 0;
+
+  document.getElementById('senderProfileOverlay').style.display = 'flex';
+};
+
+// ————— 2. PREMIUM REVEAL ENTRY POINT —————
+window.openPremiumReveal = async (senderUsername) => {
+  currentPremiumUsername = senderUsername;
+
+  if (localStorage.getItem('revealed_' + senderUsername) === 'true') {
+    return await premiumRevealProfile(senderUsername);
+  }
+
+  document.getElementById('revealPrompt').style.display = 'block';
+  document.getElementById('revealedProfile').style.display = 'none';
+  document.getElementById('senderProfileOverlay').style.display = 'flex';
+};
+
+// ————— 3. PAY BUTTON —————
+window.payAndRevealSender = async () => {
+  const button = document.querySelector('.reveal-btn-pay');
+  button.disabled = true;
+  button.textContent = 'Processing…';
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Log in required');
+
+    const { data: buyer } = await supabase.from('profiles').select('coins').eq('id', user.id).single();
+    if (!buyer || buyer.coins < 1000) throw new Error(`Not enough coins! You have ${buyer?.coins || 0}`);
+
+    await supabase.from('profiles').update({ coins: buyer.coins - 1000 }).eq('id', user.id);
+
+    localStorage.setItem('revealed_' + currentPremiumUsername, 'true');
+    await premiumRevealProfile(currentPremiumUsername);
+
+    document.getElementById('revealPrompt').style.display = 'none';
+    document.getElementById('revealedProfile').style.display = 'block';
+    button.style.display = 'none';
+
+  } catch (err) {
+    alert(err.message || 'Error');
+    button.disabled = false;
+    button.textContent = 'Reveal Sender (1000 coins)';
+  }
+};
+
+// ————— 4. PREMIUM REVEAL – NOW 100% WORKING WITH LOCKED MYSTERY —————
+window.premiumRevealProfile = async (senderUsername) => {
+  // First get the real profile exactly like your free version does
+  const profile = await getSenderProfile(senderUsername);
+
+  // NOW check if locked (we fetch the flag directly from DB)
+  const { data: dbProfile } = await supabase
+    .from('profiles')
+    .select('is_locked')
+    .eq('username', senderUsername)
+    .single();
+
+  // Show the overlay
+  document.getElementById('senderProfileOverlay').style.display = 'flex';
+  document.getElementById('revealPrompt').style.display = 'none';
+  document.getElementById('revealedProfile').style.display = 'block';
+
+  // ——— IF LOCKED → ETERNAL MYSTERY (even after paying) ———
+  if (dbProfile?.is_locked) {
+    document.getElementById('overlayAvatar').style.backgroundImage = 'none';
+    document.getElementById('overlayAvatar').innerHTML = `
+      <div style="width:120px;height:120px;background:linear-gradient(135deg,#000,#1a0033);
+        border-radius:50%;display:flex;align-items:center;justify-content:center;
+        box-shadow:0 0 30px #a855ff;animation:pulse 3s infinite;">
+        <i class="fas fa-user-secret" style="font-size:76px;color:#a855ff;"></i>
+      </div>`;
+
+    document.getElementById('overlayName').textContent = 'Hidden Soul';
+    document.getElementById('overlayUsername').textContent = '???';
+    document.getElementById('overlayBio').innerHTML = `
+      <i style="color:#e0b0ff;">"Even your coins couldn't pierce the veil...<br>
+      This soul remains an eternal mystery.</i> 🔒✨`;
+    document.getElementById('overlayLikes').textContent = '?';
+    document.getElementById('overlayMessages').textContent = '?';
+    document.getElementById('overlayProfileLink').style.display = 'none';
+    return;
+  }
+
+  // ——— NOT LOCKED → SHOW REAL PROFILE EXACTLY LIKE FREE ONE ———
+  document.getElementById('overlayAvatar').style.backgroundImage =
+    profile.image ? `url('${profile.image}')` : '';
+  document.getElementById('overlayAvatar').innerHTML = ''; // clear any previous innerHTML
+
+  document.getElementById('overlayName').textContent =
+    profile.full_name || senderUsername || 'Anonymous';
+  document.getElementById('overlayUsername').textContent =
+    senderUsername || 'anonymous';
+  document.getElementById('overlayBio').textContent =
+    profile.bio || 'No bio yet.';
+
+  const { data: stats } = await supabase
+    .from('profiles')
+    .select('likes_count, messages_count')
+    .eq('username', senderUsername)
+    .single();
+
+  document.getElementById('overlayLikes').textContent = stats?.likes_count || 0;
+  document.getElementById('overlayMessages').textContent = stats?.messages_count || 0;
+
+  const link = document.getElementById('overlayProfileLink');
+  link.href = `/profile/${senderUsername}`;
+  link.style.display = 'block';
+};
+
+// Pulse animation for locked souls
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 20px #a855ff; }
+    50% { box-shadow: 0 0 40px #c644fc; }
+  }
+`;
+document.head.appendChild(style);
+
+
+async function loadProfileLock() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_premium, is_locked')
+    .eq('id', user.id)
+    .single()
+  
+  const lockBox = document.getElementById('premiumLockSection')
+  const upgradeBox = document.getElementById('nonPremiumLockMessage')
+  const toggle = document.getElementById('lockMyProfile')
+  const statusText = document.getElementById('lockStatus')
+  
+  if (profile?.is_premium) {
+    lockBox.style.display = 'block'
+    upgradeBox.style.display = 'none'
+    toggle.checked = profile.is_locked || false
+    statusText.textContent = profile.is_locked ? 'LOCKED 🔒' : 'Public'
+    statusText.style.color = profile.is_locked ? '#ff3366' : '#fff'
+    
+    toggle.onchange = async () => {
+      await supabase.from('profiles').update({ is_locked: toggle.checked }).eq('id', user.id)
+      statusText.textContent = toggle.checked ? 'LOCKED 🔒' : 'Public'
+    }
+  } else {
+    lockBox.style.display = 'none'
+    upgradeBox.style.display = 'block'
+    upgradeBox.onclick = showToast
+  }
+}
+
+// ONLY THIS ONE LINE — NO onAuthStateChange!
+loadProfileLock()
+
+
+// FULLSCREEN MESSAGE PREVIEW + CLEAN STATUS IMAGE (FINAL - NOV 2025)
+// No errors, no duplicate variables, perfect branding
+
+let previewMessages = [];
+let currentPreviewIndex = 0;
+
+// DOM Elements
+const previewOverlay = document.getElementById('messagePreviewOverlay');
+const previewContainer = document.getElementById('previewMessageContainer');
+const previewCounter = document.getElementById('previewCounter');
+const previewTotal = document.getElementById('previewTotal');
+const closePreviewBtn = document.getElementById('closePreviewBtn');
+const prevMsgBtn = document.getElementById('prevMsgBtn');
+const nextMsgBtn = document.getElementById('nextMsgBtn');
+const previewAllBtn = document.getElementById('previewAllMessagesBtn');
+const saveAsStatusBtn = document.getElementById('saveAsStatusBtn');
+const canvas = document.getElementById('statusCanvas');
+const ctx = canvas.getContext('2d');
+
+// Safe username (no redeclaration)
+const getUsername = () => {
+  return window.username || 
+         localStorage.getItem('currentInboxUser') || 
+         'you';
+};
+
+// Show preview
+const showMessagePreview = (messages, startIndex = 0) => {
+  if (!messages?.length) return showToast('No messages to preview', 'info');
+  previewMessages = messages;
+  currentPreviewIndex = startIndex;
+  renderCurrentPreview();
+  previewOverlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+
+const renderCurrentPreview = () => {
+  const msg = previewMessages[currentPreviewIndex];
+  if (!msg) return;
+  
+  const contentDiv = document.getElementById('previewMessageContent');
+  const username = getUsername();
+  
+  // Update branding link
+  document.querySelector('.preview-branding .branding-pill').innerHTML = `
+    <div style="font-weight:bold; font-size:48px; color:#8b5cf6;">Anonconnect</div>
+    <div style="font-size:38px; color:#e0d4ff; margin-top:8px;">anonconnect/${username}</div>
+  `;
+  
+  let content = '';
+  if (msg.message_type === 'image') {
+    content = `<img src="${msg.message}" loading="lazy">`;
+  } else if (msg.message_type === 'video') {
+    content = `<video src="${msg.message}" controls autoplay loop muted playsinline></video>`;
+  } else if (msg.message_type === 'audio') {
+    content = `<div style="color:#8b5cf6; font-size:48px;">Voice Message<br><span style="font-size:32px; color:#ccc;">Tap to play</span></div>`;
+  } else {
+    content = `<div>${(msg.message || '').replace(/\n/g, '<br>')}</div>`;
+  }
+  
+  contentDiv.innerHTML = content;
+  
+  // Update counter
+  previewCounter.textContent = currentPreviewIndex + 1;
+  previewTotal.textContent = previewMessages.length;
+  prevMsgBtn.style.opacity = currentPreviewIndex === 0 ? '0.4' : '1';
+  nextMsgBtn.style.opacity = currentPreviewIndex === previewMessages.length - 1 ? '0.4' : '1';
+};
+// CLEAN STATUS IMAGE - ONLY MESSAGE + BRANDING
+// ULTRA PREMIUM STATUS IMAGE - LOOKS EXACTLY LIKE THE PREVIEW
+saveAsStatusBtn.onclick = async () => {
+  showToast('Creating premium status...', 'info');
+  
+  const msg = previewMessages[currentPreviewIndex];
+  const username = getUsername();
+  const userLink = `${window.location.origin}/${encodeURIComponent(username)}`;
+  
+  canvas.width = 720;
+  canvas.height = 1280;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // 1. FUN RADIAL NEON BACKGROUND
+  const grad = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.height);
+  grad.addColorStop(0, "#3b0a59");
+  grad.addColorStop(1, "#0a0a1a");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // 2. GLASS MESSAGE CONTAINER
+  const containerWidth = 640;
+  const containerHeight = 900;
+  const containerX = (canvas.width - containerWidth) / 2;
+  const containerY = (canvas.height - containerHeight) / 2 - 50;
+  
+  // Animated sparkles
+  for (let i = 0; i < 50; i++) {
+    const x = containerX + Math.random() * containerWidth;
+    const y = containerY + Math.random() * containerHeight;
+    const radius = Math.random() * 4 + 2;
+    const alpha = Math.random() * 0.6 + 0.4;
+    ctx.fillStyle = `rgba(255, 121, 198, ${alpha})`;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+  
+  // Glass background
+  ctx.fillStyle = "rgba(255,255,255,0.1)";
+  ctx.roundRect(containerX, containerY, containerWidth, containerHeight, 40);
+  ctx.fill();
+  
+  ctx.strokeStyle = "#ff79c6";
+  ctx.lineWidth = 4;
+  ctx.shadowColor = "#ff79c6";
+  ctx.shadowBlur = 20;
+  ctx.roundRect(containerX, containerY, containerWidth, containerHeight, 40);
+  ctx.stroke();
+  ctx.shadowColor = "transparent";
+  
+  // 3. MESSAGE CONTENT WITH FUN ICONS
+  if (msg.message_type === 'image' || msg.message_type === 'video') {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = msg.message + '?t=' + Date.now();
+    
+    await new Promise(r => {
+      img.onload = () => {
+        const maxW = containerWidth - 80;
+        const maxH = containerHeight - 200;
+        let { width, height } = img;
+        if (width > maxW || height > maxH) {
+          const ratio = Math.min(maxW / width, maxH / height);
+          width *= ratio;
+          height *= ratio;
+        }
+        const x = containerX + (containerWidth - width) / 2;
+        const y = containerY + (containerHeight - height) / 2;
+        
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = 30;
+        ctx.roundRect(x - 10, y - 10, width + 20, height + 20, 24);
+        ctx.clip();
+        ctx.drawImage(img, x, y, width, height);
+        ctx.restore();
+        
+        // Fun play icon for video
+        if (msg.message_type === 'video') {
+          ctx.fillStyle = "#ff79c6";
+          ctx.beginPath();
+          ctx.moveTo(x + width / 2 - 25, y + height / 2 - 30);
+          ctx.lineTo(x + width / 2 - 25, y + height / 2 + 30);
+          ctx.lineTo(x + width / 2 + 35, y + height / 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+        r();
+      };
+      img.onerror = () => r();
+    });
+  }
+  else if (msg.message_type === 'audio') {
+    ctx.fillStyle = "#ff79c6";
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, containerY + containerHeight / 2 - 40, 50, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 36px 'Segoe UI'";
+    ctx.textAlign = "center";
+    ctx.fillText("🎤", canvas.width / 2, containerY + containerHeight / 2 - 35);
+    
+    ctx.font = "500 36px 'Segoe UI'";
+    ctx.fillStyle = "#8be9fd";
+    ctx.fillText("Tap to play", canvas.width / 2, containerY + containerHeight / 2 + 50);
+  }
+  else {
+    ctx.font = "bold 60px 'Segoe UI', Arial";
+    const gradient = ctx.createLinearGradient(0, containerY, 0, containerY + containerHeight);
+    gradient.addColorStop(0, "#ff79c6");
+    gradient.addColorStop(1, "#8be9fd");
+    ctx.fillStyle = gradient;
+    ctx.shadowColor = "rgba(0,0,0,0.6)";
+    ctx.shadowBlur = 30;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    
+    const lines = wrapText(ctx, msg.message || "Someone sent you a message", containerWidth - 100);
+    const lineHeight = 80;
+    let y = containerY + (containerHeight - lines.length * lineHeight) / 2;
+    
+    lines.forEach(line => {
+      ctx.fillText(line, canvas.width / 2, y);
+      y += lineHeight;
+    });
+  }
+  
+  // 4. BRANDING + FUN LINK PILL
+  const brandY = containerY + containerHeight + 100;
+  
+  ctx.fillStyle = "rgba(255,255,255,0.15)";
+  ctx.roundRect(canvas.width / 2 - 270, brandY - 50, 540, 140, 70);
+  ctx.fill();
+  
+  // Brand name: cursive italic, bigger
+  ctx.font = "italic bold 56px cursive";
+  ctx.fillStyle = "#ff79c6";
+  ctx.shadowColor = "rgba(0,0,0,0.5)";
+  ctx.shadowBlur = 20;
+  ctx.fillText("Anonconnect", canvas.width / 2, brandY);
+  
+  // Link: smaller, fun color
+  ctx.font = "500 32px 'Segoe UI'";
+  ctx.fillStyle = "#8be9fd";
+  ctx.shadowBlur = 10;
+  ctx.fillText(userLink, canvas.width / 2, brandY + 65);
+  
+  // 5. SAVE IMAGE
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `anonconnect-premium-${Date.now()}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Premium status saved! Post it now', 'success');
+  }, 'image/png', 1.0);
+};
+// Helper: wrap text
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const word of words) {
+    const test = line + word + ' ';
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line.trim());
+      line = word + ' ';
+    } else line = test;
+  }
+  if (line) lines.push(line.trim());
+  return lines;
+}
+
+// Canvas roundRect
+CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+  if (w < 2*r) r = w/2;
+  if (h < 2*r) r = h/2;
+  this.beginPath();
+  this.moveTo(x+r, y);
+  this.arcTo(x+w, y, x+w, y+h, r);
+  this.arcTo(x+w, y+h, x, y+h, r);
+  this.arcTo(x, y+h, x, y, r);
+  this.arcTo(x, y, x+w, y, r);
+  this.closePath();
+  return this;
+};
+
+// Close preview
+const closePreview = () => {
+  previewOverlay.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  const v = previewContainer.querySelector('video');
+  if (v) v.pause();
+};
+
+// Navigation
+prevMsgBtn.onclick = () => { if (currentPreviewIndex > 0) { currentPreviewIndex--; renderCurrentPreview(); } };
+nextMsgBtn.onclick = () => { if (currentPreviewIndex < previewMessages.length-1) { currentPreviewIndex++; renderCurrentPreview(); } };
+closePreviewBtn.onclick = closePreview;
+previewOverlay.onclick = e => { if (e.target === previewOverlay) closePreview(); };
+
+// Swipe & keyboard
+let touchX = 0;
+previewOverlay.addEventListener('touchstart', e => touchX = e.touches[0].screenX);
+previewOverlay.addEventListener('touchend', e => {
+  const diff = e.changedTouches[0].screenX - touchX;
+  if (diff > 50) prevMsgBtn.click();
+  if (diff < -50) nextMsgBtn.click();
+});
+document.addEventListener('keydown', e => {
+  if (previewOverlay.style.display === 'flex') {
+    if (e.key === 'ArrowLeft') prevMsgBtn.click();
+    if (e.key === 'ArrowRight') nextMsgBtn.click();
+    if (e.key === 'Escape') closePreview();
+  }
+});
+
+// Open preview from inbox
+previewAllBtn.onclick = () => {
+  if (!activeChatWith) return showToast('Open a conversation first', 'info');
+
+  const msgs = Array.from(document.querySelectorAll('.message-bubble.received'))
+    .map(b => {
+      const txt = b.querySelector('.bubble-text')?.innerText.trim();
+      const img = b.querySelector('img')?.src;
+      const vid = b.querySelector('video')?.src;
+      const aud = b.querySelector('audio')?.src;
+      if (img) return { message_type: 'image', message: img };
+      if (vid) return { message_type: 'video', message: vid };
+      if (aud) return { message_type: 'audio', message: aud };
+      if (txt) return { message_type: 'text', message: txt };
+    })
+    .filter(Boolean);
+
+  if (!msgs.length) return showToast('No messages to preview', 'info');
+  showMessagePreview(msgs);
+};
+
+
+let currentCoins = 0; // ← Must be declared outside
+let isCurrentlyPremium = false;
+
+async function refreshUserStatus() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('coins, is_premium')
+    .eq('id', user.id)
+    .single();
+  
+  if (error || !profile) {
+    console.error("Profile fetch error:", error);
+    return;
+  }
+  
+  const totalCoins = profile.coins || 0;
+  const isPremium = profile.is_premium === true;
+  
+  // === Welcome Bonus Toast (only once) ===
+  if (!localStorage.getItem("welcomeBonusShown") && totalCoins >= 100 && currentCoins < 100) {
+    showToast("+100 Welcome Bonus Coins! 🎉", 'success', 6000);
+    localStorage.setItem("welcomeBonusShown", "true");
+  }
+  
+  // === Normal Coin Increase Toast ===
+  if (totalCoins > currentCoins && currentCoins >= 100) {
+    const added = totalCoins - currentCoins;
+    showToast(`+${added.toLocaleString()} Coins Added! 🪙`, 'success', 5000);
+  }
+  
+  // === Lifetime VIP Toast (only once) ===
+  if (isPremium && !isCurrentlyPremium && !localStorage.getItem("vipToastShown")) {
+    showToast(`Welcome LIFETIME VIP! 👑 Forever Unlocked`, 'premium', 8000);
+    localStorage.setItem("vipToastShown", "true");
+  }
+  
+  // === UPDATE UI (FIXED!) ===
+  const coinsEl = document.getElementById('coinsDisplay'); // ← CORRECT WAY
+  if (coinsEl) coinsEl.textContent = totalCoins.toLocaleString();
+  
+  const crown = document.getElementById('crownOverlay');
+  const badge = document.getElementById('premiumBadge');
+  const upgrade = document.getElementById('upgradeBtn');
+  
+  if (isPremium) {
+    if (crown) crown.style.display = 'block';
+    if (badge) badge.style.display = 'block';
+    if (upgrade) upgrade.style.display = 'none';
+  } else {
+    if (crown) crown.style.display = 'none';
+    if (badge) badge.style.display = 'none';
+    if (upgrade) upgrade.style.display = 'block';
+  }
+  
+  // === UPDATE TRACKING VARIABLES (MUST BE LAST!) ===
+  currentCoins = totalCoins;
+  if (isPremium) isCurrentlyPremium = true;
+}
+
+// Run now + every 10 seconds
+refreshUserStatus();
+setInterval(refreshUserStatus, 10000);
+
+const toast = (msg, type = 'info', duration = 3000) => showToast(msg, type, duration);
+
+// Global variables (declared only ONCE)
+let currentUserId = null;
+
+/* ====================== LOAD REFERRAL DATA ====================== */
+async function loadReferralData() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  
+  currentUserId = user.id; // UUID
+  
+  // Fetch profile once
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("username, coins")
+    .eq("id", currentUserId)
+    .maybeSingle();
+  
+  if (error || !profile?.username) {
+    document.getElementById("referralCode").innerText = "Loading...";
+    return;
+  }
+  
+  currentUsername = profile.username;
+  const coins = profile.coins || 0;
+  
+  // Update UI
+  document.getElementById("referralCode").innerText = currentUsername;
+  document.getElementById("coinEarned").innerText = coins.toLocaleString();
+  
+  // Fetch referrals count
+  const { data: referrals } = await supabase
+    .from("referrals")
+    .select("referred_user")
+    .eq("referrer", currentUsername);
+  
+  const totalReferrals = referrals?.length || 0;
+  document.getElementById("referralCount").innerText = totalReferrals;
+  
+  // Progress
+  const progressPercent = Math.min((totalReferrals / 100) * 100, 100);
+  document.getElementById("referralProgress").style.width = progressPercent + "%";
+  document.getElementById("progressText").innerText = `${totalReferrals} / 100 referrals`;
+  
+  // List
+  const listEl = document.getElementById("referralList");
+  if (totalReferrals === 0) {
+    listEl.innerHTML = `<p class="no-data">
+      <i class="fas fa-user-plus" style="font-size:32px;opacity:0.3;margin-bottom:12px;display:block;"></i>
+      No referrals yet. Share your code to get started!
+    </p>`;
+  } else {
+    listEl.innerHTML = "";
+    referrals.forEach(r => {
+      const div = document.createElement("div");
+      div.className = "referral-item";
+      div.innerHTML = `<i class="fas fa-user"></i> @${r.referred_user}`;
+      listEl.appendChild(div);
+    });
+  }
+}
+
+/* ====================== COPY & SHARE ====================== */
+window.copyReferralLink = () => {
+  const link = `${window.location.origin}?ref=${currentUsername}`;
+  navigator.clipboard.writeText(link);
+  toast("Referral link copied! 🚀", "success", 2000);
+};
+
+window.shareWhatsApp = () => {
+  const link = `${window.location.origin}?ref=${currentUsername}`;
+  window.open(`https://api.whatsapp.com/send?text=Join me! Use my code: ${currentUsername} 🔥\n${link}`, '_blank');
+};
+
+window.shareInstagram = window.shareSnap = () => {
+  const link = `${window.location.origin}?ref=${currentUsername}`;
+  navigator.clipboard.writeText(link);
+  toast("Link copied! Paste in Instagram/Snapchat 📱", "success", 3000);
+};
+
+async function loadLeaderboard() {
+const list = document.getElementById("leaderboardList");
+if (!list) return;
+
+list.innerHTML = `<p class="no-data">Loading leaderboard...</p>`;
+
+try {
+const { data: referrals = [], error: refError } = await supabase
+.from("referrals")
+.select("referrer, referrer_id, referred_user, earned_coins")
+.order("created_at", { ascending: false });
+if (refError) throw refError;
+
+const uuidReferrals = {};   // referrer_id => count
+const usernameReferrals = {}; // old referrer string => count
+
+referrals.forEach(r => {
+  if (r.referrer_id) uuidReferrals[r.referrer_id] = (uuidReferrals[r.referrer_id] || 0) + 1;
+  else if (r.referrer) usernameReferrals[r.referrer] = (usernameReferrals[r.referrer] || 0) + 1;
+});
+
+// Step 2: Fetch profiles only for valid UUIDs
+let profiles = [];
+if (Object.keys(uuidReferrals).length > 0) {
+  const { data, error: profError } = await supabase
+    .from("profiles")
+    .select("user_id, username, image, coins")
+    .in("user_id", Object.keys(uuidReferrals));
+  if (profError) throw profError;
+  profiles = data || [];
+}
+
+// Fetch profiles for old username-only referrals
+let oldProfiles = [];
+if (Object.keys(usernameReferrals).length > 0) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("user_id, username, image, coins")
+    .in("username", Object.keys(usernameReferrals));
+  if (!error) oldProfiles = data || [];
+}
+
+const profileMap = {};
+profiles.forEach(p => profileMap[p.user_id] = p);
+oldProfiles.forEach(p => profileMap[p.username] = p);
+
+// Step 3: Build leaderboard array
+const leaderboard = [];
+
+Object.entries(uuidReferrals).forEach(([id, count]) => {
+  const profile = profileMap[id] || {};
+  const username = profile.username || "unknown";
+  const image = profile.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=8b5cf6&color=fff`;
+  const coins = profile.coins || 0;
+  const isMe = username.toLowerCase() === currentUsername?.toLowerCase();
+  leaderboard.push({ username, count, image, coins, isMe });
+});
+
+Object.entries(usernameReferrals).forEach(([username, count]) => {
+  const profile = profileMap[username] || {};
+  const image = profile.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=8b5cf6&color=fff`;
+  const coins = profile.coins || 0;
+  const isMe = username.toLowerCase() === currentUsername?.toLowerCase();
+  leaderboard.push({ username, count, image, coins, isMe });
+});
+
+leaderboard.sort((a, b) => b.count - a.count || b.coins - a.coins);
+const topLeaderboard = leaderboard.slice(0, 50);
+
+// Step 4: Render
+list.innerHTML = "";
+if (topLeaderboard.length === 0) {
+  list.innerHTML = "<p class='no-data'>No referrals yet</p>";
+  return;
+}
+
+topLeaderboard.forEach((item, i) => {
+  const rankClass = i === 0 ? "lb-1" : i === 1 ? "lb-2" : i === 2 ? "lb-3" : "";
+  const crown = i === 0 ? "👑" : "";
+  const row = document.createElement("div");
+  row.className = `lb-item ${item.isMe ? 'lb-highlight' : ''}`;
+  row.innerHTML = `
+    <div class="lb-rank ${rankClass}">#${i + 1} ${crown}</div>
+    <div class="lb-photo" style="background-image:url('${item.image}')"></div>
+    <div class="lb-info">
+      <div class="lb-username">@${item.username}</div>
+      <div class="lb-bar">
+        <div class="lb-bar-fill" style="width:${Math.min(item.count * 8, 100)}%"></div>
+      </div>
+    </div>
+    <div class="lb-score">${item.count} referral${item.count !== 1 ? 's' : ''} | ${item.coins} coins</div>
+  `;
+  list.appendChild(row);
+});
+
+// Animate
+list.querySelectorAll(".lb-item").forEach((el, i) => {
+  el.style.opacity = "0";
+  el.style.transform = "translateY(20px)";
+  setTimeout(() => {
+    el.style.transition = "all 0.5s ease";
+    el.style.opacity = "1";
+    el.style.transform = "translateY(0)";
+  }, i * 80);
+});
+
+
+} catch (err) {
+console.error("Leaderboard failed:", err);
+list.innerHTML = `<p class='no-data text-red-400'>Error: ${err.message}</p>`;
+}
+}
+
+
+(function() {
+  const track = document.getElementById('luxTrack');
+  const slides = Array.from(track.children);
+  const slider = document.getElementById('luxSlider');
+  const dotsContainer = document.getElementById('luxDots');
+  const SLIDE_COUNT = slides.length;
+  let index = 0;
+  const INTERVAL = 4500; // 4.5s per slide
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'lux-dot';
+    if(i===0) dot.classList.add('active');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+  const dots = Array.from(dotsContainer.children);
+
+  function update() {
+    const x = -index * slider.clientWidth;
+    track.style.transform = `translateX(${x}px)`;
+
+    slides.forEach((s, i) => {
+      const img = s.querySelector('img');
+      const cap = s.querySelector('.lux-caption');
+      if(i === index){
+        img.style.transform = 'scale(1.08)';}
+    });
+
+    dots.forEach((d, i) => d.classList.toggle('active', i===index));
+  }
+
+  function next() {
+    index = (index + 1) % SLIDE_COUNT;
+    update();
+  }
+
+  function goTo(i) {
+    index = i;
+    update();
+    resetAutoplay();
+  }
+
+  let autoId = setInterval(next, INTERVAL);
+  function resetAutoplay() {
+    clearInterval(autoId);
+    autoId = setInterval(next, INTERVAL);
+  }
+
+  window.addEventListener('resize', update);
+  update();
+
+  // ===== Particle Effect =====
+  const particleContainer = document.getElementById('luxParticles');
+  const PARTICLE_COUNT = 60;
+
+  for(let i=0;i<PARTICLE_COUNT;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random()*2 + 1;
+    p.style.width = `${size}px`;
+    p.style.height = `${size}px`;
+    p.style.left = `${Math.random()*100}%`;
+    p.style.top = `${Math.random()*100}%`;
+    p.style.animationDuration = `${Math.random()*12 + 6}s`;
+    p.style.animationDelay = `${Math.random()*5}s`;
+    particleContainer.appendChild(p);
+  }
+})();
+
+
+
+/* ====================== INITIALIZE ====================== */
+document.addEventListener("DOMContentLoaded", () => {
+  loadReferralData();
+  loadLeaderboard();
+  
+  // Auto refresh every 15 seconds
+  setInterval(() => {
+    loadReferralData();
+    loadLeaderboard();
+  }, 15000);
+});
+
+
+// Close overlay
+window.closeSenderProfile = () => {
+  document.getElementById('senderProfileOverlay').style.display = 'none';
+};
+
+supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || !session) location.href = 'index.html';
+  });
+  
+</script>
+</body>
+</html>

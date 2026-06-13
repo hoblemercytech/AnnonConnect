@@ -1,0 +1,2187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lovely Luxe — Pickups, Wishes & Articles</title>
+
+<!-- Fonts & Icons -->
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+<style>
+    :root {
+      --bg-1: #07060b;
+      --bg-2: #0b0712;
+      --glass: rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.08);
+      --gold-1: linear-gradient(90deg,#ffd89b,#f6a6ff 60%);
+      --gold-glow: rgba(255,215,139,0.25);
+      --accent: rgba(255,185,111,0.9);
+      --muted: #c9c3d9;
+      --text: #ffffff;
+      --radius: 16px;
+      --btn-h: 48px;
+      --card-pad: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: "Cabinet Grotesk", system-ui, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.5s ease, color 0.5s ease;
+
+/* ====================== PREMIUM THEME TOGGLE ====================== */
+#themeToggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 99999;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  color: #ffb400;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#themeToggle:hover {
+  transform: scale(1.2) rotate(30deg);
+  background: var(--gold-1);
+  box-shadow: 0 0 50px var(--gold-glow);
+  color: #0f0b1a;
+}
+.light-mode #themeToggle { color: #9d4edd; }
+.light-mode #themeToggle:hover { color: white; }
+
+/* ====================== YOUR ORIGINAL STYLES (only fixed where needed) ====================== */
+.container { max-width:1150px; margin:28px auto; padding:0 20px; }
+
+/* Header */
+.header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+.brand { display:flex; gap:14px; align-items:center; }
+.logo {
+  width:68px; height:68px; border-radius:18px;
+  background: linear-gradient(135deg,#2b0736,#5a0f5c);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; color:white; font-size:28px;
+  box-shadow: 0 20px 60px rgba(90,15,92,0.28), inset 0 -6px 18px rgba(255,255,255,0.02);
+}
+.light-mode .logo {
+  background: linear-gradient(135deg,#9d4edd,#c77dff);
+  box-shadow: 0 20px 60px rgba(157,78,221,0.22);
+}
+.title {
+  font-size: 40px;
+  font-weight: 900;
+  font-family: "Cabinet Grotesk", system-ui;
+  background: linear-gradient(135deg, #9d4edd, #c77dff, #f6a6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 10px 0;
+  text-shadow: 
+    0 0 10px rgba(157,78,221,0.8),
+    0 0 20px rgba(198,125,255,0.6),
+    0 0 40px rgba(246,166,255,0.4);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+.subtitle { color:var(--muted); font-size:13px; }
+
+/* control buttons */
+/* GRID */
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  padding: 20px;
+}
+
+/* CARD BUTTON */
+.main-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  transition: 0.35s ease;
+  cursor: pointer;
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* GOLD + NEON HOVER */
+.main-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5),
+              0 0 5px rgba(255, 215, 0, 0.6);
+}
+
+/* ICON */
+.main-btn .icon {
+  font-size: 38px;
+  color: gold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+/* Title */
+.main-btn h3 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Sub text */
+.main-btn .sub {
+  font-size: 13px;
+  color: black;
+  margin-bottom: 8px;
+}
+
+/* Unlock button look */
+.main-btn .unlock {
+  background: linear-gradient(135deg, #FFD700, #F6C400, #FFEA8A);
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4a3600;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  transition: 0.3s ease;
+  animation: pulseGold 1.8s infinite ease-in-out;
+}
+
+/* Neon glow on hover */
+.main-btn:hover .unlock {
+  box-shadow: 0 0 12px gold;
+}
+
+/* Gold pulse animation */
+@keyframes pulseGold {
+  0% { transform: scale(1); box-shadow: 0 0 6px gold; }
+  50% { transform: scale(1.05); box-shadow: 0 0 18px gold; }
+  100% { transform: scale(1); box-shadow: 0 0 6px gold; }
+}
+
+/* Unlock shine effect */
+.main-btn .unlock::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255,255,255,0.4);
+  transform: skewX(-25deg);
+  animation: shine 2.4s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  50% { left: 130%; }
+  100% { left: 130%; }
+}
+
+/* overlay panel */
+.overlay {
+  position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+  z-index:9999; padding:28px;
+  background: linear-gradient(180deg, rgba(3,2,6,0.92), rgba(2,1,4,0.96));
+  backdrop-filter: blur(12px);
+}
+.overlay.show { display:flex; }
+.light-mode .overlay {
+  background: rgba(250,248,255,0.96);
+}
+
+/* panel container */
+.panel {
+  width:100%; max-width:1080px; height:calc(100% - 80px);
+  border-radius:20px; padding:18px; position:relative; overflow:hidden;
+  background: var(--glass);
+  border:1px solid var(--glass-border);
+  box-shadow:0 40px 120px rgba(3,2,6,0.8);
+  backdrop-filter: blur(16px);
+}
+
+/* close button */
+.close-x {
+  position:absolute; right:5px; top:-5px; border:0;
+  width:48px; height:48px; border-radius:12px; cursor:pointer;
+  background: var(--glass); color:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+}
+.close-x:hover {
+  background: var(--gold-1);
+  color: #0f0b1a;
+}
+
+/* panel header */
+.panel-head { display:flex; align-items:center; justify-content:space-between; padding:8px 6px 16px 6px; }
+.panel-title { font-size:18px; margin:0; }
+.panel-sub { color:var(--muted); font-size:13px; }
+
+/* layout: left list / right viewer */
+.panel-body { display:flex; gap:18px; height:calc(100% - 86px); }
+
+
+.left-col{width:420px;max-width:40%;overflow:auto;padding-right:8px;border-right:1px solid rgba(255,255,255,0.02)}
+.right-col{flex:1;overflow:auto;padding-left:8px;display:flex;flex-direction:column}
+
+/* search row */
+.search{display:flex;gap:8px;margin-bottom:12px}
+.input{flex:1;padding:12px;border-radius:12px;border:0;background:rgba(255,255,255,0.02);color:#fff;font-size:14px;outline:none}
+.small-btn{padding:10px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,#f6a6ff,#ffd89b);color:#061022;font-weight:700;cursor:pointer}
+
+/* GLASS card list item */
+.item{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:14px;padding:14px;margin-bottom:12px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;border:1px solid rgba(255,255,255,0.03);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.item:hover{ transform:translateY(-6px); box-shadow:0 18px 40px rgba(90,15,92,0.12) }
+.item .meta{flex:1}
+.item .title{font-weight:800;margin:0;font-size:14px}
+.item .sub{color:var(--muted);font-size:13px;margin-top:8px}
+.item .copy-icon{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+.item .copy-icon i{color: #f9e6d6}
+
+/* viewer big card (right) */
+.viewer{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:18px;border:1px solid rgba(255,255,255,0.03);flex:1;display:flex;flex-direction:column;gap:12px}
+.viewer-top{display:flex;align-items:center;justify-content:space-between}
+.viewer-title{font-weight:900;font-size:18px}
+.viewer-sub{color:var(--muted);font-size:13px}
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.008));
+  padding:var(--card-pad); border-radius:14px; border:1px solid rgba(255,255,255,0.02); font-size:18px; line-height:1.5; color:#fff;
+  box-shadow: 0 12px 30px rgba(2,1,4,0.6);
+  position:relative;
+}
+
+/* gold corner accent */
+.card::after{
+  content:''; position:absolute; right:12px; top:12px; width:56px;height:56px; border-radius:12px;
+  background: linear-gradient(135deg, rgba(255,230,180,0.08), rgba(246,166,255,0.04));
+  border:1px solid rgba(255,190,120,0.06);
+  pointer-events:none;
+}
+
+/* big copy in card */
+.card .card-cta{position:absolute; right:18px; bottom:18px;}
+.action-btn{
+  padding:10px 12px;border-radius:12px;border:0;background:linear-gradient(90deg,#ffd89b,#f6a6ff);
+  color:#061022;font-weight:800;cursor:pointer;display:inline-flex;gap:8px;align-items:center;
+}
+#listItems{
+  color: white;
+}
+
+/* pagination row */
+.pagination{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center;color: white;}
+.page-btn{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:#fff;cursor:pointer}
+.page-btn.active{background:linear-gradient(90deg,#ffd89b,#f6a6ff);color:#061022}
+
+/* wallpaper grid within viewer for wallpaper section */
+.wall-grid{display:grid;grid-template-columns: repeat(3,1fr);gap:12px}
+.wall-grid img{width:100%;height:220px;object-fit:cover;border-radius:12px;cursor:pointer}
+
+/* bottom sliding article drawer */
+.article-drawer{
+  position:fixed; left:0; right:0; bottom:-100%; height:85%; background: linear-gradient(180deg, rgba(4,2,8,0.98), rgba(8,6,16,0.99));
+  border-top-left-radius:18px;border-top-right-radius:18px;padding:18px;box-shadow:0 -30px 90px rgba(0,0,0,0.7);transition:bottom .36s cubic-bezier(.2,.9,.2,1);
+  z-index:12000; border:1px solid rgba(255,255,255,0.03);
+}
+.article-drawer.open{ bottom:0; }
+.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.drawer-title{font-weight:900}
+.drawer-content{overflow:auto;height:calc(100% - 72px);padding-right:6px}
+ /* ================= THEME TOGGLE ================= */
+ #themeToggle {
+   position: fixed;
+   top: 18px;
+   right: 20px;
+   z-index: 9999;
+   background: rgba(255, 255, 255, 0.1);
+   backdrop-filter: blur(6px);
+   border: 1px solid rgba(255, 255, 255, 0.2);
+   border-radius: 50%;
+   width: 48px;
+   height: 48px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   cursor: pointer;
+   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+   transition: all 0.3s ease;
+ }
+ 
+ #themeToggle:hover {
+   background: #a855ff;
+   transform: scale(1.1);
+   box-shadow: 0 0 20px rgba(168, 85, 255, 0.6);
+ }
+ 
+ #themeToggle i {
+   font-size: 20px;
+   color: #ffb400;
+   transition: transform 0.4s ease;
+ }
+ 
+ #themeToggle.active i {
+   transform: rotate(360deg);
+ }
+/* Glassy lock overlay */
+#overlay.section-locked::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 999;
+  pointer-events: none;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+}
+
+/* Blur left & right content */
+#overlay.section-locked .panel-body,
+#overlay.section-locked .left-col,
+#overlay.section-locked .right-col {
+  filter: blur(10px) brightness(0.85);
+  pointer-events: none;
+  user-select: none;
+  transition: all 0.4s ease;
+}
+
+/* Keep header visible */
+#overlay.section-locked .panel-head {
+  filter: none !important;
+  position: relative;
+  z-index: 1000;
+}
+
+/* Unlock prompt overlay with icon */
+#overlay.section-locked::after {
+  content: '🔒 Unlock this section to see all content';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(248, 2395, 18, 0.95);
+  color: #111;
+  padding: 18px 28px;
+  border-radius: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  z-index: 1001;
+  text-align: center;
+  max-width: 90%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  pointer-events: auto;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.4s ease;
+}
+
+/* Smooth transitions when locking/unlocking */
+#overlay.section-locked,
+#overlay.section-locked::before,
+#overlay.section-locked::after,
+#overlay.section-locked .panel-body {
+  transition: all 0.4s ease-in-out;
+}
+
+#toast {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(50px);
+  min-width: 220px;
+  max-width: 90%;
+  padding: 14px 24px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 2000;
+  transition: all 0.4s ease;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Type icons (emoji) */
+#toast.success::before { content: '✅'; }
+#toast.error::before { content: '❌'; }
+#toast.info::before { content: 'ℹ️'; }
+
+/* Progress bar */
+#toast .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.85);
+  width: 100%;
+  transform-origin: left;
+  animation: toastProgress linear forwards;
+}
+
+@keyframes toastProgress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+/* Close button */
+#toast .close-toast {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.9);
+  transition: color 0.2s ease;
+}
+
+#toast .close-toast:hover {
+  color: #fff;
+}
+hidden{
+  display: none !important;
+}
+
+
+/* YOUR ORIGINAL RESPONSIVE RULE (kept intact) */
+    @media (max-width:900px){
+      .controls{grid-template-columns:repeat(2,1fr)}
+      .panel-body{flex-direction:column}
+      .left-col{width:100%;max-width:100%;border-right:0;padding-bottom:8px}
+      .right-col{padding-left:0}
+      .wall-grid img{height:140px}
+    }
+
+    /* ================= EXTRA RESPONSIVE PERFECTION (only additions) ================= */
+
+    /* Tiny phones */
+    @media (max-width: 480px) {
+      .container { padding: 0 12px; margin: 16px auto; }
+      .header { flex-direction: column; text-align: center; gap: 12px; }
+      .title { font-size: 32px; }
+      .logo { width: 56px; height: 56px; font-size: 24px; }
+
+      .controls {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 14px;
+      }
+
+      .main-btn {
+        padding: 16px;
+      }
+      .main-btn .icon { font-size: 34px; }
+      .main-btn h3 { font-size: 17px; }
+
+      .panel { padding: 14px; border-radius: 16px; }
+      .left-col, .right-col { padding: 0; }
+      .item { padding: 12px; gap: 10px; }
+      .item .title { font-size: 13.5px; }
+      .viewer { padding: 14px; }
+      .card { font-size: 16px; padding: 16px; }
+
+      .wall-grid { grid-template-columns: repeat(2, 1fr); }
+      .wall-grid img { height: 120px; }
+
+      #themeToggle {
+        width: 48px; height: 48px; font-size: 20px;
+        top: 12px; right: 12px;
+      }
+    }
+
+    /* Extra small phones */
+    @media (max-width: 360px) {
+      .title { font-size: 28px; }
+      .main-btn h3 { font-size: 16px; }
+      .card { font-size: 15px; }
+    }
+
+    /* Tablet portrait */
+    @media (min-width: 481px) and (max-width: 900px) {
+      .controls { grid-template-columns: repeat(2, 1fr); }
+      .title { font-size: 36px; }
+    }
+
+    /* Large tablets & small desktops */
+    @media (min-width: 901px) and (max-width: 1200px) {
+      .controls { grid-template-columns: repeat(3, 1fr); }
+      .left-col { width: 360px; }
+    }
+
+    /* Full desktop – maximum luxury */
+    @media (min-width: 1201px) {
+      .container { max-width: 1280px; }
+      .controls { grid-template-columns: repeat(4, 1fr); }
+      .left-col { width: 460px; }
+    }
+
+    /* Landscape mobile – use full height */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .container { margin: 12px auto; }
+      .panel { height: 92vh; }
+      .article-drawer { height: 92vh; }
+    }
+
+    /* Prevent zoom on inputs */
+    input, button, textarea, select {
+      font-size: max(16px, 1em);
+    }
+  </style>
+</style>
+
+</head>
+<body>
+  
+<button id="themeToggle" class="hidden" >
+  <i class="fa-solid fa-moon hidden"></i>
+</button>
+
+
+<div class="container">
+  <div class="header">
+    <div class="brand">
+      <div class="logo"><img id="userAvatar" class="avatar" src="./badge-72.png" style="width: 100px; height: 100px; border-radius: 20px; margin:20px ;" alt="logo" /></div>
+      
+      <div>
+  </div>
+        <h1 class="title">AnonConnect</h1>
+        <div class="subtitle"></div>
+      </div>
+    </div>
+    <div style="text-align:right;color:var(--muted)">
+      <div>Elegant pickups, heartfelt wishes & luxe articles</div>
+    </div>
+  </div>
+
+<div class="controls" role="tablist" aria-label="Main sections">
+
+  <button class="main-btn" data-open="pickup">
+    <div class="icon"><i class="fas fa-heart"></i></div>
+    <h3>Pick Up Lines</h3>
+    <p class="sub" style="color:black;">You can still view without unlock</p>
+    <div class="unlock">
+      <i class="fas fa-coins"></i> Unlock – 200
+    </div>
+  </button>
+
+  <button class="main-btn" data-open="wishes">
+    <div class="icon"><i class="fas fa-gift"></i></div>
+    <h3>All Wishes</h3>
+    <p class="sub">You can still view without unlock</p>
+    <div class="unlock">
+      <i class="fas fa-coins"></i> Unlock – 200
+    </div>
+  </button>
+
+  <button class="main-btn" data-open="articles">
+    <div class="icon"><i class="fas fa-file-lines"></i></div>
+    <h3>Articles</h3>
+    <p class="sub">You can still view without unlock</p>
+    <div class="unlock">
+      <i class="fas fa-coins"></i> Unlock – 200
+    </div>
+  </button>
+
+  <button class="main-btn" data-open="wallpaper">
+    <div class="icon"><i class="fas fa-image"></i></div>
+    <h3>Screen Wallpapers</h3>
+    <p class="sub">You can still view without unlock</p>
+    <div class="unlock">
+      <i class="fas fa-coins"></i> Unlock – 200
+    </div>
+  </button>
+
+</div>
+
+<!-- FULLSCREEN OVERLAY -->
+<div id="overlay" class="overlay" aria-hidden="true">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+    <button class="close-x" id="closeOverlay" title="Close"><i class="fas fa-times"></i></button>
+
+    <div class="panel-head">
+      <div>
+        <div class="panel-title" id="panelTitle">Section</div>
+        <div class="panel-sub" id="panelSub">Subtext</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button id="prevItem" class="small-btn" title="Prev"><i class="fas fa-chevron-left"></i></button>
+        <button id="nextItem" class="small-btn" title="Next"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="left-col">
+        <div class="search">
+          <input id="searchInput" class="input" placeholder="Search… (title or content)" />
+          <button id="autoPlayToggle" class="small-btn" title="Toggle autoplay">Autoplay</button>
+        </div>
+        <div id="listItems" aria-live="polite"></div>
+
+        <div style="margin-top:12px">
+          <div class="pagination" id="pagesContainer"></div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="viewer">
+          <div class="viewer-top">
+            <div>
+              <div class="viewer-title" id="viewerTitle">Open an item</div>
+              <div class="viewer-sub" id="viewerSub">Select left to view</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button id="copyBtn" class="action-btn" title="Copy shown content"><i class="fas fa-copy"></i> Copy</button>
+              <button id="openAllBtn" class="action-btn" title="Open page of items"><i class="fas fa-list"></i> List</button>
+            </div>
+          </div>
+
+          <div class="card" id="viewerCard">
+            <div id="viewerContent" style="white-space:pre-wrap;color:#fff"></div>
+            <div style="position:absolute;right:18px;bottom:18px">
+              <button id="cardCopy" class="action-btn"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <div id="countInfo" style="color:var(--muted)"></div>
+            <div>
+              <button id="prevPage" class="page-btn">Prev</button>
+              <button id="nextPage" class="page-btn">Next</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Sliding Article Drawer -->
+<div id="articleDrawer" class="article-drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-title" id="drawerTitle">Article</div>
+      <div style="color:var(--muted);font-size:13px" id="drawerSub">Topic</div>
+    </div>
+    <div>
+      <button id="drawerClose" class="small-btn"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="drawer-content" id="drawerContent"></div>
+</div>
+
+<script type="module">
+  // ==== SUPABASE ====
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+/* ====================== SUPABASE ====================== */
+const SUPABASE_URL = 'https://ssyaklpnjhoxukfanyxb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzeWFrbHBuamhveHVrZmFueXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjA2NzUsImV4cCI6MjA5NjczNjY3NX0.H95B092ZXEAQz3l6-QefzWt44RZLpp5PdiEbLktstGE';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabase = supabase;
+
+// ====================== GLOBAL STATE ======================
+let currentUserId = null;
+let unlockedSections = new Set();
+let userCoins = 0;
+let currentSection = null; // optional: tracks currently open section
+
+// ====================== LOAD USER DATA ======================
+async function loadUserUnlocks() {
+  try {
+    // Use getSession() instead of getUser() for reliable session handling
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.user) {
+      console.log("No user logged in");
+      return false;
+    }
+
+    currentUserId = session.user.id;
+
+    // Fetch profile
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('unlocked_sections, coins')
+      .eq('id', currentUserId)
+      .single();
+
+    if (error || !profile) {
+      toast("Failed to load profile", "error");
+      return false;
+    }
+
+    // Update local state
+    unlockedSections = new Set(profile.unlocked_sections || []);
+    userCoins = profile.coins || 0;
+
+    // Update unlock buttons
+    document.querySelectorAll('.main-btn').forEach(btn => {
+      const section = btn.dataset.open;
+      const unlockEl = btn.querySelector('.unlock');
+      if (!unlockEl) return; // safety check
+      if (unlockedSections.has(section)) {
+        unlockEl.innerHTML = '✓ Unlocked';
+        unlockEl.classList.add('unlocked');
+      } else {
+        unlockEl.innerHTML = `<i class="fas fa-coins"></i> Unlock All – 200 Coins`;
+        unlockEl.classList.remove('unlocked');
+      }
+    });
+
+    return true;
+  } catch (err) {
+    console.error("loadUserUnlocks error:", err);
+    toast("Connection issue", "error");
+    return false;
+  }
+}
+
+// ====================== UNLOCK SECTION ======================
+async function unlockSection(section) {
+  if (!currentUserId) {
+    toast("Please sign in first", "error");
+    return;
+  }
+
+  if (unlockedSections.has(section)) {
+    toast("Already unlocked!", "success");
+    return;
+  }
+
+  if (userCoins < 200) {
+    toast(`Not enough coins! You have ${userCoins} 🪙`, "error");
+    return;
+  }
+
+  const newList = [...unlockedSections, section];
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      unlocked_sections: newList,
+      coins: userCoins - 200
+    })
+    .eq('id', currentUserId);
+
+  if (error) {
+    console.error("Unlock error:", error);
+    toast("Unlock failed – try again", "error");
+    return;
+  }
+
+  // Update local state
+  unlockedSections.add(section);
+  userCoins -= 200;
+
+  toast("Full access unlocked! Enjoy 🎉", "success", 4000);
+
+  // Update button safely
+  const btn = document.querySelector(`[data-open="${section}"] .unlock`);
+  if (btn) {
+    btn.innerHTML = '✓ Unlocked';
+    btn.classList.add('unlocked');
+  }
+
+  // Refresh current section if open
+  if (currentSection === section && typeof openSection === 'function') {
+    openSection(section);
+  }
+  
+}
+
+// ====================== ATTACH UNLOCK BUTTONS ======================
+function attachUnlockListeners() {
+  document.querySelectorAll('.unlock').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const btn = e.target.closest('.main-btn');
+      if (!btn) return;
+      const section = btn.dataset.open;
+      unlockSection(section);
+    };
+  });
+}
+
+
+
+// ====================== THEME TOGGLE (unchanged – perfect) ======================
+const toggle = document.getElementById('themeToggle');
+const root = document.documentElement;
+const moon = '<i class="fa-solid fa-moon"></i>';
+const sun = '<i class="fa-solid fa-sun"></i>';
+
+if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+  root.classList.add('light-mode');
+  toggle.innerHTML = sun;
+}
+
+toggle.addEventListener('click', () => {
+  root.classList.toggle('light-mode');
+  toggle.innerHTML = root.classList.contains('light-mode') ? sun : moon;
+  localStorage.setItem('theme', root.classList.contains('light-mode') ? 'light' : 'dark');
+});
+
+let toastTimeout;
+
+function toast(msg, type = 'info', duration = 3000) {
+  const t = document.getElementById('toast') || document.createElement('div');
+  t.id = 'toast';
+  t.textContent = msg;
+  t.className = type;
+  
+  t.style.background =
+    type === 'success' ? 'linear-gradient(135deg,#38b000,#69db7c)' :
+    type === 'error' ? 'linear-gradient(135deg,#d90429,#ef233c)' :
+    'linear-gradient(135deg,#0575e6,#00f5a0)';
+  
+  // Remove previous progress & close button if any
+  t.querySelectorAll('.progress, .close-toast').forEach(el => el.remove());
+  
+  // Add progress bar
+  const prog = document.createElement('div');
+  prog.className = 'progress';
+  prog.style.animationDuration = `${duration}ms`;
+  t.appendChild(prog);
+  
+  // Add close button
+  const closeBtn = document.createElement('span');
+  closeBtn.className = 'close-toast';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.addEventListener('click', () => {
+    t.classList.remove('show');
+    clearTimeout(toastTimeout);
+    setTimeout(() => { if (document.body.contains(t)) t.remove(); }, 300);
+  });
+  t.appendChild(closeBtn);
+  
+  if (!document.body.contains(t)) document.body.appendChild(t);
+  
+  clearTimeout(toastTimeout);
+  t.classList.remove('show');
+  
+  // Trigger reflow
+  void t.offsetWidth;
+  
+  // Show toast
+  t.classList.add('show');
+  
+  // Auto hide
+  toastTimeout = setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => { if (document.body.contains(t)) t.remove(); }, 500);
+  }, duration);
+}
+
+
+
+/* ---------------------
+   Configuration & Generators
+   --------------------- */
+const CONFIG = {
+  pickupCount: 200,
+  wishesPerCategory: 100,
+  itemsPerPage: 8,
+  autoplayMs: 4200
+};
+
+/* pickup parts */
+const pickupParts = {
+  openers: ["Are you","Do you believe in love at first sight","Is your name","Excuse me","I must be dreaming","Can I tell you","Quick question","Hey","If beauty were time","Do you have a map"],
+  middles: ["a magician?","a camera?","Wi-Fi?","an angel?","a work of art?","a song?","the sun?","a dream?","the reason I smile?","the missing piece?"],
+  tails: ["Because whenever I look at you, everyone else disappears.","Because you just made my day brighter.","Because I feel a connection.","Because I was hoping you'd notice me.","Because I can't stop smiling when you're near.","Because my heart just skipped a beat.","Because you light up the room.","— can I buy you a coffee?","— is it okay if I stay a while?","— I had to come say hi."],
+  compliments: ["Your smile is contagious.","Your laugh is my favorite sound.","You look amazing today.","You're exactly my kind of beautiful.","Talking to you feels like sunshine."]
+};
+
+/* wishes templates */
+const wishesTemplates = {
+  birthday: [
+  // Short
+  "Happy Birthday, {name}! Wishing you {wish}.",
+  "To a wonderful you — {wish} on your special day!",
+  "Cheers to {name}! Enjoy a year of {wish}.",
+  "Wishing you {wish} and smiles today.",
+  "May {wish} bring joy to your birthday.",
+  "Celebrate today with {wish} and laughter.",
+  // Medium
+  "May your birthday be filled with joy, laughter, and {wish}.",
+  "Wishing you a memorable birthday, {name}, full of {wish} and {wish2}.",
+  "Sending you birthday cheer and wishes of {wish}, {wish2}, and happiness.",
+  "On your special day, may you experience {wish} and the warmth of loved ones.",
+  "Another year of greatness ahead! Wishing you {wish} and unforgettable moments.",
+  "Happy Birthday! May every moment today remind you of {wish} and hope.",
+  "May your day overflow with {wish} and a touch of magic.",
+  "Celebrate {name}! May this birthday bring {wish} and sweet memories.",
+  // Slightly Long
+  "Wishing you a birthday filled with love, laughter, {wish}, and unforgettable moments.",
+  "May this new year of life bring {wish}, {wish2}, and endless joy to you and those you love.",
+  "Happy Birthday, {name}! May every day ahead be bright, full of {wish} and success.",
+  "On your special day, I hope {wish} surrounds you and {wish2} blesses your year.",
+  "May your birthday be a reflection of all the {wish} and kindness you share with others.",
+  "Cheers to {name}! Wishing a day filled with {wish}, cherished moments, and inspiration.",
+  "Happy Birthday! May your heart always be full of {wish} and happiness.",
+  "May this birthday bring {wish} to your life and {wish2} to your soul."
+  ],
+
+  marriage: [
+  // Short
+  "Congratulations! May your marriage be {wish}.",
+  "Wishing you a lifetime of {wish} and {wish2}.",
+  "To the newlyweds: may each day be more {wish} than the one before.",
+  "May your home be filled with {wish} and love.",
+  "Wishing you {wish} as you start this journey together.",
+  "Celebrate love and {wish} today and always.",
+  // Medium
+  "May your marriage bring {wish}, joy, and endless support for one another.",
+  "Warm congratulations! Wishing you {wish}, laughter, and countless shared memories.",
+  "May your union grow stronger with every sunrise and filled with {wish}.",
+  "Cheers to your love! May your life together be full of {wish} and comfort.",
+  "Congratulations on your marriage! Wishing a journey of {wish}, trust, and harmony.",
+  "May each day in your married life be filled with {wish} and peace.",
+  "Wishing you {wish} as you build a life together full of love and happiness.",
+  "May your hearts remain open and your home overflow with {wish} and joy.",
+  // Slightly Long
+  "Congratulations! May your marriage be blessed with {wish}, {wish2}, and countless beautiful memories.",
+  "Wishing you both a life filled with {wish}, laughter, and endless love.",
+  "May your journey together be guided by {wish} and strengthened by {wish2}.",
+  "Cheers to a partnership full of {wish}, understanding, and shared dreams.",
+  "May your love flourish, your hearts stay connected, and your home overflow with {wish}.",
+  "Wishing you both a lifetime where {wish} and {wish2} light every path you take.",
+  "May the years ahead be filled with {wish}, growth, and countless joyous moments."
+  ],
+
+  ceremony: [
+  // Short
+  "Congratulations on your ceremony — may it mark the start of {wish}.",
+  "Wishing you joy, peace, and {wish} today.",
+  "May this ceremony bring {wish} and beautiful memories.",
+  "Celebrate today with {wish} and happiness.",
+  "May {wish} guide every step you take.",
+  "Wishing a meaningful day filled with {wish}.",
+  // Medium
+  "Celebrating this milestone with you — may it overflow with {wish} and success.",
+  "May today be a meaningful milestone filled with {wish}.",
+  "Congratulations! May today be a turning point full of {wish} and hope.",
+  "Wishing you a ceremony filled with {wish} and opportunities for growth.",
+  "May this special day bring {wish}, harmony, and cherished memories.",
+  "On your ceremony, may {wish} guide every step you take.",
+  "May your achievement today open doors to {wish} and {wish2}.",
+  "Sending warm wishes for {wish} and happiness throughout this occasion.",
+  // Slightly Long
+  "May your ceremony be a celebration of {wish} and a foundation for {wish2} in your future.",
+  "Wishing you lasting memories, {wish}, and continued success on this important day.",
+  "Congratulations on reaching this milestone! May it bring {wish}, {wish2}, and inspiration.",
+  "May today’s ceremony mark the beginning of {wish}, growth, and wonderful experiences ahead.",
+  "Celebrating your ceremony with joy, wishing {wish}, and hope for all the days to come."
+  ],
+
+  birthdayBlessing: [
+  // Short
+  "Blessings to you, {name}! May {wish} follow you always.",
+  "Happy Birthday! May you receive {wish} and abundant blessings.",
+  "On your special day, I pray for {wish} and protection.",
+  "May {wish} guide your year ahead.",
+  "Wishing you {wish} and peace on your birthday.",
+  "Blessings of {wish} and happiness to you today.",
+  // Medium
+  "May God bless you with {wish}, {wish2}, and guidance every step of the way.",
+  "Wishing you divine protection and {wish} throughout this new year of life.",
+  "May your birthday bring {wish} and inspire {wish2} in everything you do.",
+  "Praying that {wish} fills your days and {wish2} surrounds your family.",
+  "Blessings on your birthday! May {wish} and {wish2} shine upon your life.",
+  "May your year ahead overflow with {wish}, hope, and abundant {wish2}.",
+  "Wishing {wish} and {wish2} accompany you throughout the coming year.",
+  "May {wish} be your guide and {wish2} your strength all year long.",
+  // Slightly Long
+  "On this special day, may {wish} enrich your heart and {wish2} bless your journey ahead.",
+  "May the year ahead bring {wish}, {wish2}, and countless wonderful experiences.",
+  "Praying for a year filled with {wish}, {wish2}, and lasting happiness.",
+  "Blessings to you, {name}! May {wish} and {wish2} light every step of your way.",
+  "May your birthday be a reflection of {wish}, hope, and the love that surrounds you."
+  ]
+};
+
+
+const wishWords = {
+  wish: ["joy","love","laughter","good health","prosperity","peace","abundance","adventure","beautiful memories","dreams come true","kindness","endless smiles","success","warm friendships","serenity"],
+  wish2: ["happiness","sweet surprises","beautiful days","unwavering support","delightful moments","blessings","everlasting love","wonderful opportunities"],
+  names: ["dear","friend","beloved","darling","champ","star","sunshine","angel"]
+};
+
+const ARTICLES = [
+  { title: "How to Build Confidence", text: `Confidence is not an innate trait that some people are simply born with; it is a skill that can be cultivated through awareness, action, and mindset. At its core, confidence is the ability to trust yourself, even when facing uncertainty, challenges, or criticism. Building confidence is about believing in your abilities, embracing your imperfections, and taking action despite fear.
+The first step to developing confidence is self-awareness. Understanding your strengths, weaknesses, values, and passions lays a foundation for authentic confidence. Start by reflecting on what you excel at and what brings you joy. At the same time, recognize areas for growth, not as flaws, but as opportunities for improvement. By knowing yourself deeply, you stop relying on external validation and begin building a self-assured mindset.
+Another critical element is setting small, achievable goals. Confidence grows when you accomplish tasks and notice tangible progress. Start with goals that stretch you slightly beyond your comfort zone. For instance, if public speaking intimidates you, begin by speaking to a small, supportive audience. Each success reinforces the belief that you are capable, and over time, these small victories accumulate into significant self-assurance.
+Positive self-talk is also essential. The internal dialogue you maintain with yourself profoundly influences your confidence. Replace thoughts like “I can’t do this” with statements such as, “I may struggle at first, but I can learn and improve.” This conscious shift reduces anxiety and helps you approach challenges with courage.
+Body language further strengthens confidence. Standing tall, making eye contact, and speaking clearly sends signals to your brain—and to others—that you are competent and capable. Even simple “power poses,” where you adopt a strong, upright stance for a couple of minutes, can increase feelings of confidence before a stressful situation.
+Confidence is also closely tied to competence and preparation. The more knowledgeable and skilled you are in an area, the more confident you naturally feel. Whether it’s preparing for a presentation, learning a new skill, or practicing a hobby, thorough preparation reduces fear and uncertainty. Competence builds self-trust, and self-trust forms the foundation of lasting confidence.
+Equally important is embracing failure. Fear of failure is one of the most common obstacles to confidence. Accept that setbacks are part of growth and a natural aspect of learning. Each mistake provides insight and resilience, and viewing failure as feedback rather than judgment allows your confidence to remain intact, even in challenging situations.
+To make confidence tangible, here’s a 30-day practical plan you can follow:
+Week 1 – Self-Awareness & Mindset: Reflect on strengths and achievements, practice positive self-talk, identify limiting beliefs, and develop a personal mission statement. Mirror exercises and journaling reinforce self-recognition and optimism.
+Week 2 – Small Wins & Action: Set and achieve daily small goals, compliment others, speak clearly, try power poses, and engage in minor risks or creative activities. Each small victory builds courage and reinforces self-belief.
+Week 3 – Competence & Skills: Learn new skills, prepare thoroughly for tasks, teach others, seek feedback, and confront slightly intimidating activities. Competence builds mastery, which directly boosts confidence.
+Week 4 – Resilience & Long-Term Confidence: Reflect on past failures, take calculated risks, maintain a success journal, practice mindfulness, and visualize your ideal confident self. Celebrate your progress and solidify the habits that will maintain confidence beyond 30 days.
+Additionally, you can create a daily 5-minute confidence routine: Stand tall in front of a mirror, repeat positive affirmations, recall one achievement, set a small goal for the day, and visualize success. Doing this consistently strengthens your mindset and primes you for action.
+In conclusion, confidence is cultivated through self-awareness, small consistent actions, skill-building, positive mindset, and resilience. It is not about perfection or fearlessness, but about trusting yourself and taking action in spite of doubt. By following structured exercises, setting achievable goals, embracing failure as a learning tool, and practicing daily habits, you can build authentic confidence that lasts a lifetime. Remember, the most confident people are not those who never feel fear—they are the ones who act despite it.` },
+  { title: "Top 10 Habits of Successful People", text: `1. Goal Setting
+Successful people set clear, specific goals. They know what they want to achieve and create actionable steps to reach it. Goals provide focus, direction, and motivation. Rather than vague aspirations like “I want to be successful,” they break it down into measurable targets, like “I will increase my sales by 20% in three months.”
+How to implement: Write down your goals daily or weekly. Break them into smaller tasks and track progress consistently.
+2. Time Management
+Highly successful people treat time as their most valuable resource. They plan their day, prioritize important tasks, and minimize distractions. They understand that consistent effort over time yields results.
+How to implement: Use tools like planners, digital calendars, or the Pomodoro technique. Focus on high-impact activities and avoid time-wasting habits.
+3. Continuous Learning
+Success requires constant growth. Successful people read, take courses, attend seminars, and learn from mentors. They never stop improving their knowledge and skills, which keeps them ahead in their field.
+How to implement: Dedicate at least 30 minutes daily to reading, online courses, or skill development. Keep a “learning list” for books, podcasts, or videos to consume regularly.
+4. Discipline & Consistency
+Discipline is the ability to do what needs to be done even when you don’t feel like it. Successful people are consistent with their routines, habits, and work ethic.
+How to implement: Create a daily routine and stick to it. Focus on consistency rather than motivation—it’s easier to act habitually than wait for inspiration.
+5. Networking & Relationship Building
+Successful individuals understand the power of connections. They build meaningful relationships, collaborate, and learn from others. Strong networks open doors to opportunities and mentorship.
+How to implement: Attend events, join online communities, or reach out to people in your industry. Focus on genuine relationships, not just transactional contacts.
+6. Positive Mindset
+A positive mindset helps you overcome challenges and setbacks. Successful people see obstacles as opportunities and maintain optimism even under pressure. They focus on solutions rather than problems.
+How to implement: Practice daily affirmations, gratitude journaling, and reframing negative thoughts into constructive ones.
+7. Health & Fitness
+Physical and mental health is a priority for high achievers. Exercise, sleep, and nutrition enhance energy, focus, and mental clarity, allowing them to perform at their best.
+How to implement: Commit to regular exercise, maintain a balanced diet, and ensure 7–8 hours of sleep each night. Even short daily walks can boost productivity.
+8. Risk-Taking & Courage
+Successful people are willing to take calculated risks. They step outside their comfort zone and embrace uncertainty to pursue growth opportunities.
+How to implement: Start with small risks in areas like public speaking, starting a new project, or trying a new skill. Evaluate potential outcomes but don’t let fear paralyze you.
+9. Reflection & Self-Improvement
+Self-reflection allows for growth. Successful people review their actions, learn from mistakes, and adjust strategies. They are honest with themselves and continually improve.
+How to implement: Keep a journal to reflect on achievements, challenges, and lessons learned. Weekly reviews help you identify what’s working and what needs change.
+10. Gratitude & Giving Back
+Many successful people practice gratitude and help others. This builds resilience, fosters relationships, and creates a sense of purpose beyond material success.
+How to implement: Write daily gratitude lists, acknowledge people who help you, and find ways to mentor or give back to your community.
+Conclusion:
+Success is not accidental; it is a result of intentional habits. By setting goals, managing time effectively, committing to learning, maintaining discipline, building relationships, nurturing a positive mindset, caring for health, taking risks, reflecting on progress, and practicing gratitude, anyone can cultivate a life of achievement. Habits compound over time—small daily actions eventually produce extraordinary results.` },
+  { title: "How to Maintain Healthy Relationships", text: `1. Effective Communication
+Communication is the foundation of any strong relationship. Healthy individuals express their thoughts, feelings, and needs clearly, while also actively listening to the other person. Misunderstandings and conflicts often arise when communication breaks down.
+How to practice:
+Be honest but gentle with your words.
+Listen without interrupting.
+Use “I” statements instead of blaming, e.g., “I feel hurt when…” instead of “You always…”
+2. Trust and Honesty
+Trust is the backbone of healthy relationships. Without it, insecurity and doubt can create tension. Being honest, keeping promises, and respecting boundaries strengthens trust over time.
+How to practice:
+Be reliable in your words and actions.
+Avoid lying, even about small things.
+Admit mistakes and work to make amends when necessary.
+3. Respect Boundaries
+Every individual has personal boundaries—emotional, physical, and mental. Healthy relationships respect these boundaries without trying to control or manipulate the other person.
+How to practice:
+Ask about and acknowledge boundaries.
+Don’t push someone to share or do something they are uncomfortable with.
+Be clear about your own limits.
+4. Quality Time
+Spending time together builds connection and shared experiences. Whether it’s a romantic partner, family member, or friend, quality time strengthens emotional bonds.
+How to practice:
+Dedicate time to be fully present without distractions.
+Engage in activities you both enjoy.
+Regularly check in to show you care about their life and feelings.
+5. Empathy and Understanding
+Healthy relationships thrive on empathy—the ability to put yourself in someone else’s shoes. Understanding how the other person feels reduces conflicts and promotes compassion.
+How to practice:
+Listen actively and try to feel what the other person is experiencing.
+Validate their emotions, even if you disagree.
+Avoid judgment or dismissive responses.
+6. Conflict Resolution
+Disagreements are natural, but handling them constructively keeps relationships healthy. Avoiding fights or responding aggressively can damage trust.
+How to practice:
+Address conflicts calmly and respectfully.
+Focus on solving the problem, not attacking the person.
+Be willing to compromise and find common ground.
+7. Appreciation and Gratitude
+Expressing appreciation strengthens relationships by showing the other person they matter. Small gestures of gratitude or verbal affirmations create positivity and emotional security.
+How to practice:
+Say “thank you” for both small and big actions.
+Compliment qualities or efforts you value.
+Celebrate achievements and special moments together.
+8. Support and Encouragement
+Healthy relationships are built on mutual support, especially during challenging times. Encouraging personal growth and being there emotionally reinforces trust and commitment.
+How to practice:
+Offer help and encouragement when needed.
+Celebrate successes and motivate each other to reach goals.
+Listen without immediately trying to fix problems—sometimes emotional support is enough.
+9. Healthy Independence
+While connection is important, healthy relationships also allow space for individuality. Being too dependent or controlling can strain a bond.
+How to practice:
+Pursue your own hobbies and goals.
+Respect the other person’s need for personal space.
+Balance togetherness with independence.
+10. Forgiveness and Patience
+No one is perfect. Holding grudges damages relationships, while forgiveness allows healing and growth. Patience helps navigate differences and misunderstandings.
+How to practice:
+Let go of minor irritations and focus on the bigger picture.
+Address serious issues calmly and work toward resolution.
+Understand that people grow at different paces.
+Conclusion:
+Maintaining healthy relationships requires effort, empathy, and self-awareness. By practicing open communication, honesty, trust, respect, empathy, conflict resolution, appreciation, support, independence, and forgiveness, you create a strong foundation for long-lasting and fulfilling connections. Relationships thrive when both parties are committed to understanding, supporting, and valuing each other.` },
+  { title: "Self-Care Rituals That Stick", text: `Why Self-Care Matters
+Self-care is not just pampering—it’s a proactive approach to maintaining physical, mental, and emotional well-being. When practiced consistently, it boosts energy, reduces stress, enhances focus, and improves overall life satisfaction. The key to effective self-care is creating rituals that are simple, consistent, and sustainable rather than sporadic indulgences.
+1. Start Small and Be Consistent
+One of the biggest mistakes people make is overloading themselves with complex routines that are hard to sustain. The trick is starting small and committing to consistency.
+Example:
+Drink a glass of water first thing in the morning.
+Take 5 minutes to stretch or meditate.
+Consistency is more important than duration. A 5-minute ritual done daily is more powerful than a 1-hour ritual done sporadically.
+2. Morning Rituals to Set the Tone
+Mornings are ideal for rituals because they shape your mindset for the day. Incorporate practices that energize, focus, and ground you.
+Examples:
+Hydration: Drink water to rehydrate your body.
+Mindfulness: Spend 5–10 minutes meditating, journaling, or visualizing your day.
+Movement: Stretch, do yoga, or a short workout to wake up your body.
+Starting your day intentionally builds momentum and strengthens self-discipline.
+3. Evening Rituals to Unwind
+Evening self-care helps you relax, reflect, and prepare for restful sleep. Good evening habits prevent burnout and improve resilience.
+Examples:
+Journaling: Write down 3 things you’re grateful for.
+Digital Detox: Put your phone away 30–60 minutes before bed.
+Skincare: A simple routine can feel nurturing and grounding.
+Reading: Engage your mind with a book instead of scrolling social media.
+4. Mindful Movement
+Physical activity is essential for self-care because it releases endorphins, reduces stress, and boosts energy. Choose activities you enjoy rather than forcing routines you hate.
+Ideas:
+Walking in nature or around your neighborhood.
+Dancing, yoga, or stretching at home.
+Short, high-intensity workouts for energy and focus.
+5. Mental Self-Care
+Self-care is not only physical—it’s mental and emotional. Nourish your mind with activities that stimulate, calm, and reset it.
+Examples:
+Meditation or deep breathing exercises.
+Journaling thoughts, ideas, or worries.
+Learning something new or practicing a hobby.
+Limiting exposure to negative news or toxic social media.
+6. Social Self-Care
+Healthy relationships are part of holistic self-care. Surround yourself with people who support, inspire, and uplift you.
+Examples:
+Schedule regular catch-ups with friends or family.
+Set boundaries with draining relationships.
+Engage in group activities or hobbies that create community.
+7. Habit Stacking for Lasting Rituals
+To make self-care stick, attach a new ritual to an existing habit—a strategy called habit stacking.
+Example:
+After brushing your teeth, immediately drink a glass of water.
+After your morning coffee, spend 5 minutes journaling.
+Before checking emails, take 3 deep breaths to center yourself.
+This technique makes rituals easier to remember and less overwhelming.
+8. Reflect and Adjust
+Self-care is personal. What works for someone else may not work for you. Reflect on your routines weekly and adjust as needed. Ask yourself:
+Which practices make me feel energized?
+Which feel like chores and drain me?
+How can I simplify or enhance my rituals?
+Conclusion
+Self-care rituals that stick are simple, intentional, and consistent. By starting small, incorporating mindful mornings and evenings, moving your body, nourishing your mind, fostering healthy relationships, stacking habits, and reflecting regularly, you create sustainable routines that improve your well-being over time. Remember, self-care is not selfish—it’s necessary for a balanced, happy, and productive life.` },
+  { title: "Creative Date Ideas", text: `1. Outdoor Adventures
+Getting outside is great for bonding, physical activity, and experiencing new things together.
+Ideas:
+Hiking or Nature Walks: Explore a nearby trail or park. Bring snacks and enjoy a picnic at a scenic spot.
+Kayaking or Paddleboarding: Fun water activities build teamwork and excitement.
+Stargazing Night: Drive out of the city to see the stars, bring blankets and hot drinks.
+2. Creative Workshops
+Learning something new together fosters teamwork and shared memories.
+Ideas:
+Pottery or Art Class: Try pottery, painting, or sculpture—it’s hands-on and fun.
+Cooking or Baking Class: Make a dish together and enjoy the results.
+Dance Lessons: Salsa, ballroom, or hip-hop; moving together builds closeness.
+3. Unique Dining Experiences
+Shake up the usual dinner date by turning it into an adventure.
+Ideas:
+Food Truck Crawl: Sample different dishes from various food trucks or street vendors.
+Themed Picnic: Pack a picnic with a theme—like “Italian Night” with pasta and wine.
+Progressive Dinner: Visit three different restaurants for appetizer, main, and dessert.
+4. Entertainment with a Twist
+Fun experiences create laughter and memorable stories.
+Ideas:
+Escape Room: Work together to solve puzzles and “escape” the room—it’s a test of teamwork.
+Karaoke Night: Sing your hearts out and don’t be afraid to be silly.
+Trivia or Game Night: Attend a local trivia night or play board games at home.
+5. Culture and Exploration
+Engage your minds and discover new perspectives.
+Ideas:
+Museum or Art Gallery: Explore exhibits, discuss interpretations, and share thoughts.
+Historical Walking Tour: Learn about your city’s history together.
+Local Market or Fair: Wander stalls, try local foods, and discover unique items.
+6. Seasonal and Outdoor Fun
+Make the most of the time of year for a unique date.
+Ideas:
+Spring/Summer: Fruit picking, beach day, outdoor concerts, or a botanical garden visit.
+Fall: Pumpkin patch, hayride, apple picking, or autumn festival.
+Winter: Ice skating, holiday markets, or a cozy hot chocolate date.
+7. Adventure and Thrill
+For couples who love excitement, trying new adventures together strengthens bonds.
+Ideas:
+Amusement Park or Arcade: Ride roller coasters and play games.
+Rock Climbing: Indoor or outdoor climbing for teamwork and trust-building.
+Ziplining or Adventure Parks: Share a thrill and create unforgettable memories.
+8. At-Home Experiences
+Not every date requires going out—home can be just as fun.
+Ideas:
+DIY Spa Night: Give each other massages, facials, or foot baths.
+Cook-Off Challenge: Compete to make the best dish with the same ingredients.
+Movie Marathon with a Theme: Pick a series or genre and create a cozy setup.
+9. Random Acts of Fun
+Spontaneous dates often leave the best memories.
+Ideas:
+Surprise Road Trip: Pick a nearby town or attraction and go explore for the day.
+Scavenger Hunt: Create a scavenger hunt around your city or neighborhood.
+Photo Adventure: Take cameras or phones and explore creative photo opportunities.
+10. Give Back Together
+Acts of kindness can deepen emotional connections.
+Ideas:
+Volunteer Together: Help at an animal shelter, community garden, or charity event.
+Plant a Garden: Create something meaningful together that grows over time.
+Charity Run or Walk: Combine activity, fun, and giving back.
+Tips for Creative Dates
+Focus on the experience, not perfection: It’s about connection, not impressing.
+Mix new and familiar activities: Balance comfort with adventure.
+Be present: Phones off, attention on each other.
+Tailor to shared interests: Even unique dates work best when you both enjoy them.
+Creative dates are all about shared experiences, laughter, and memory-making. They show effort, thoughtfulness, and a willingness to explore life together. Whether it’s an adventurous outing, a cozy night in, or learning something new, the best dates create stories you’ll remember for years.` },
+  { title: "Simple Mindfulness Practices", text: `1. Focused Breathing
+Breathing exercises are the simplest way to start mindfulness. By paying attention to your breath, you anchor yourself in the present.
+How to practice:
+Sit comfortably with a straight spine.
+Inhale deeply through your nose for 4 counts.
+Hold your breath for 2 counts.
+Exhale slowly through your mouth for 6 counts.
+Repeat for 5 minutes, noticing the sensation of your breath.
+This helps calm your mind, reduce stress, and improve mental clarity.
+2. Body Scan
+A body scan helps you become aware of tension and sensations in your body.
+How to practice:
+Lie down or sit comfortably.
+Close your eyes and bring attention to your toes. Slowly move your focus upward through your legs, torso, arms, and head.
+Notice any areas of tension or discomfort without judgment.
+Take a few deep breaths and release tension where you feel it.
+This practice promotes relaxation and mind-body connection.
+3. Mindful Walking
+Walking can become a meditative practice when done mindfully.
+How to practice:
+Walk slowly and focus on each step.
+Feel your feet touching the ground, your muscles moving, and your breath syncing with your steps.
+Notice the sounds, smells, and sights around you.
+If your mind wanders, gently bring your attention back to your walking.
+This is especially helpful if you find it difficult to sit still for meditation.
+4. Mindful Eating
+Eating mindfully improves digestion, reduces overeating, and helps you appreciate food.
+How to practice:
+Eat slowly and focus on the taste, texture, and aroma of each bite.
+Notice how your body feels before, during, and after eating.
+Avoid distractions like phones or TV while eating.
+This cultivates gratitude and awareness in everyday life.
+5. Five Senses Exercise
+Engaging your senses anchors you to the present moment.
+How to practice:
+Pause and notice:
+5 things you can see
+4 things you can touch
+3 things you can hear
+2 things you can smell
+1 thing you can taste
+Take a deep breath and notice how this brings your mind to the now.
+This exercise is perfect for quick stress relief during busy days.
+6. Mindful Journaling
+Writing your thoughts mindfully helps process emotions and clear mental clutter.
+How to practice:
+Set a timer for 5–10 minutes.
+Write without censoring yourself—just flow with your thoughts.
+Focus on your feelings, observations, and experiences.
+Reflect on patterns or insights without judgment.
+Journaling increases self-awareness and emotional clarity.
+7. Guided Meditation
+Guided meditations provide structure and support for beginners.
+How to practice:
+Use apps like Calm, Headspace, or YouTube guided meditations.
+Follow the voice instructions while keeping your focus on your body, breath, or visualization.
+Start with 5–10 minutes and gradually increase as you feel comfortable.
+Guided sessions make mindfulness accessible even if your mind is restless.
+8. Gratitude Practice
+Focusing on gratitude promotes a positive mindset and reduces stress.
+How to practice:
+Each morning or evening, write down 3 things you are grateful for.
+Reflect on why they matter to you and how they impact your life.
+Take a moment to fully feel gratitude as you write.
+Gratitude combined with mindfulness fosters emotional balance and contentment.
+Tips to Make Mindfulness Stick
+Start small: Even 5 minutes daily is effective.
+Be consistent: Pick a regular time—morning, lunch break, or bedtime.
+Remove distractions: Create a quiet, comfortable environment.
+Be gentle with yourself: If your mind wanders, simply bring it back without judgment.
+Combine with daily activities: Practice mindfulness while washing dishes, showering, or commuting.
+Conclusion:
+Simple mindfulness practices—like focused breathing, body scans, mindful walking and eating, using your senses, journaling, guided meditation, and gratitude exercises—can be integrated into daily life without stress. The key is consistency and awareness, not perfection. Over time, mindfulness helps you feel calmer, more focused, and more connected to the present moment, improving both mental and physical well-being.` },
+  { title: "Goal Setting That Works", text: `Why Goal Setting Matters
+Goal setting is essential for turning dreams into actionable plans. Without goals, it’s easy to drift aimlessly or get overwhelmed by distractions. Setting effective goals gives you focus, motivation, and a clear path to success. However, not all goals are created equal—goals must be structured and intentional to work.
+1. Use the SMART Framework
+One of the most effective methods for goal setting is the SMART framework. SMART stands for:
+S – Specific: Define exactly what you want to achieve. “I want to get fit” is vague. “I want to run 5 km three times a week” is specific.
+M – Measurable: Make your goal quantifiable so you can track progress.
+A – Achievable: Your goal should stretch you but remain realistic.
+R – Relevant: Ensure the goal aligns with your values and long-term vision.
+T – Time-bound: Set a clear deadline to create urgency and focus.
+Example: “I will save $200 per month for the next 6 months to build an emergency fund.”
+2. Break Goals into Smaller Steps
+Large goals can feel overwhelming. Breaking them into smaller, actionable steps makes them manageable and keeps you motivated.
+Example:
+Goal: Write a book.
+Smaller steps:
+Week 1: Outline chapters.
+Week 2: Write 500 words per day.
+Week 3: Revise and edit one chapter.
+This approach allows you to celebrate small wins along the way, reinforcing progress and confidence.
+3. Write Your Goals Down
+Putting goals on paper or digital notes makes them real and tangible. Writing also engages your brain differently than just thinking about them.
+How to implement:
+Use a journal, planner, or note-taking app.
+Include both long-term goals and daily/weekly action items.
+Review them regularly to stay focused.
+4. Visualize Your Success
+Visualization strengthens your commitment and motivation. When you imagine achieving your goal in detail, your brain starts to anticipate the positive outcome, increasing the likelihood of follow-through.
+How to practice:
+Close your eyes and picture yourself achieving the goal.
+Imagine how it feels, what you see, hear, and experience.
+Spend 5 minutes daily visualizing your success.
+5. Track Progress and Adjust
+Tracking your progress keeps you accountable and helps identify challenges early.
+How to implement:
+Use charts, apps, or journals to mark milestones.
+Reflect weekly: What worked? What didn’t?
+Adjust your plan if needed—goals are not rigid; flexibility is key.
+6. Build Accountability
+Sharing goals with someone or having an accountability partner increases the chance of success.
+How to implement:
+Tell a friend, family member, or mentor about your goals.
+Schedule check-ins to report progress.
+Celebrate successes together.
+7. Stay Motivated
+Motivation can fluctuate, so it’s essential to connect your goals to your deeper purpose. Ask yourself why the goal matters and how it aligns with your values.
+Tips to maintain motivation:
+Reward yourself for achieving milestones.
+Remind yourself daily of your “why.”
+Surround yourself with supportive, like-minded people.
+8. Embrace Challenges and Learn
+Obstacles are inevitable. Successful goal-setters see challenges as opportunities to learn and grow, rather than reasons to quit.
+How to implement:
+When facing setbacks, ask: What can I learn from this?
+Adjust your strategy, not your commitment.
+Keep a growth mindset—focus on progress, not perfection.
+Conclusion
+Goal setting that works combines clarity, structure, action, and reflection. Use the SMART framework, break goals into manageable steps, write them down, visualize success, track progress, build accountability, and stay motivated. Remember, achieving goals is a journey—it’s the small, consistent actions taken daily that ultimately lead to success. By setting intentional, realistic goals and following through with discipline and flexibility, you can turn your ambitions into tangible achievements.` },
+  { title: "Ways to Show Appreciation", text: `1. Express Gratitude Verbally
+Sometimes, the simplest approach is the most effective. Saying “thank you” sincerely can make a big difference.
+Examples:
+Tell a coworker, friend, or family member, “I really appreciate what you did for me.”
+Compliment someone on their effort, e.g., “I noticed how much work you put into that project—it really made a difference.”
+Acknowledge small acts, not just major accomplishments.
+2. Write a Note or Letter
+Written words can be cherished and revisited. Taking the time to write shows thoughtfulness and intention.
+Examples:
+Send a handwritten thank-you card to someone who helped you.
+Write a heartfelt email or message to express gratitude for support or encouragement.
+Leave a sticky note with a kind message for a family member or coworker.
+3. Give Thoughtful Gifts
+Gifts don’t have to be expensive—they should show that you know and value the person.
+Examples:
+A book they’ve mentioned wanting to read.
+Homemade treats or a personal craft.
+A small plant or flowers for their space.
+4. Spend Quality Time
+Giving someone your undivided attention communicates appreciation. Sharing moments together shows that you value them.
+Examples:
+Take a friend out for coffee or a walk.
+Have a dedicated date night or family night without distractions.
+Simply sit and have a meaningful conversation.
+5. Acts of Service
+Actions often speak louder than words. Doing something helpful shows appreciation and care.
+Examples:
+Help a coworker with a task without being asked.
+Cook a meal for a friend or family member.
+Run an errand or do a chore for someone who’s busy or stressed.
+6. Public Recognition
+Acknowledging someone in front of others reinforces their value and shows respect for their contributions.
+Examples:
+Praise a coworker during a meeting for their efforts.
+Post a shoutout on social media celebrating a friend or team member.
+Share achievements with family or community groups to highlight their impact.
+7. Thoughtful Touch
+Physical gestures can be meaningful when appropriate and consensual.
+Examples:
+A hug, high-five, or handshake to celebrate or encourage.
+A pat on the back for recognition.
+Holding hands or gentle touch to show care and connection.
+8. Listen Actively
+Sometimes, listening attentively is the best way to show appreciation. It demonstrates that you value their thoughts and feelings.
+How to practice:
+Give them your full attention without interrupting.
+Reflect back what they say to show understanding.
+Ask thoughtful questions that show you care about their perspective.
+9. Celebrate Milestones
+Acknowledging special moments communicates that you notice and value the person’s achievements.
+Examples:
+Celebrate birthdays, promotions, anniversaries, or personal milestones.
+Throw small surprises or parties to honor accomplishments.
+Send a congratulatory note or gift for achievements.
+10. Consistent Small Gestures
+Regular, small acts of appreciation are often more meaningful than one big gesture.
+Examples:
+Saying “thank you” every day for routine tasks.
+Sending a quick “thinking of you” message.
+Bringing coffee or a snack to a colleague or friend.
+Tips for Showing Appreciation
+Be sincere: Authenticity is key—don’t force gestures.
+Be timely: Express appreciation as soon as possible to reinforce impact.
+Know the person: Tailor your appreciation to what they value.
+Balance words and actions: Combine verbal acknowledgment with meaningful actions.
+Make it a habit: Regular appreciation strengthens relationships and trust.
+Conclusion:
+Showing appreciation strengthens connections, boosts morale, and fosters positivity in both personal and professional relationships. Whether through words, actions, gifts, or quality time, small intentional gestures can have a lasting impact. Consistent, sincere appreciation communicates that you notice, value, and care for others, creating stronger bonds and a more supportive environment.` },
+  { title: "Balancing Work & Joy", text: `Why Balancing Work and Joy Matters
+In today’s fast-paced world, people often get caught up in work—chasing deadlines, promotions, or financial goals—while neglecting personal happiness. Over time, this imbalance can lead to stress, burnout, and reduced productivity. Balancing work and joy is not about doing less but about integrating fulfillment, rest, and passion alongside responsibility. When you strike this balance, you boost creativity, energy, and overall well-being.
+1. Prioritize What Truly Matters
+Start by identifying your core values and what brings you genuine joy. This helps you make conscious choices about where to invest your time and energy.
+How to implement:
+List your top 3–5 personal and professional priorities.
+Align daily tasks with these priorities.
+Learn to say “no” to activities that don’t support your goals or happiness.
+2. Set Boundaries
+Healthy boundaries separate work from personal life, preventing burnout and preserving joy.
+How to implement:
+Define specific work hours and stick to them.
+Avoid checking emails or messages after hours.
+Communicate your boundaries clearly to colleagues and family.
+3. Schedule Joy
+Just as you schedule meetings, schedule activities that bring happiness and fulfillment. Treat them as non-negotiable.
+Examples:
+Daily walks, exercise, or meditation.
+Weekly hobbies, such as painting, music, or cooking.
+Time with loved ones or social outings.
+Scheduling joy ensures it doesn’t get pushed aside by work.
+4. Practice Mindfulness
+Mindfulness helps you fully engage in the present moment, whether at work or leisure. This reduces stress and enhances satisfaction in both areas of life.
+How to practice:
+Take short breaks to focus on your breath or surroundings.
+Fully engage in activities—eat, walk, or talk without multitasking.
+Notice moments of joy, no matter how small.
+5. Batch and Prioritize Tasks
+Efficient work management frees up time for personal enjoyment. Use task batching and prioritization to prevent work from spilling into your personal life.
+How to implement:
+Group similar tasks together to stay focused.
+Tackle high-priority tasks during your peak energy hours.
+Delegate or postpone non-essential tasks when possible.
+6. Combine Work and Play
+Sometimes, you can blend responsibility with joy. This integration keeps work stimulating and reduces stress.
+Examples:
+Listen to music, podcasts, or audiobooks while doing routine tasks.
+Take walking meetings or brainstorm sessions outside the office.
+Gamify tasks by setting mini-challenges and rewarding yourself.
+7. Nurture Relationships
+Time with family, friends, and loved ones provides emotional joy that work alone cannot replace.
+How to implement:
+Schedule regular quality time, even in short bursts.
+Celebrate achievements and milestones together.
+Communicate openly about work pressures to maintain support and connection.
+8. Take Care of Your Health
+Physical and mental well-being are essential for balancing work and joy. Without energy and resilience, it’s hard to enjoy either.
+How to implement:
+Prioritize sleep, nutrition, and regular exercise.
+Incorporate relaxation techniques like meditation or deep breathing.
+Schedule occasional “digital detox” periods to recharge.
+9. Reflect and Adjust
+Balance is dynamic. Regular reflection allows you to assess whether your current routines support both work and joy.
+How to practice:
+Weekly review: Are you satisfied with your work-life balance?
+Identify areas where stress outweighs joy.
+Adjust schedules, priorities, or habits as needed.
+10. Celebrate Small Wins
+Recognizing progress and achievements boosts morale and reinforces a sense of joy.
+How to implement:
+Celebrate completing tasks, hitting milestones, or personal achievements.
+Reward yourself with small treats, relaxation, or experiences you enjoy.
+Reflect on your successes to cultivate gratitude and motivation.
+Conclusion
+Balancing work and joy requires intentionality, self-awareness, and proactive planning. By prioritizing what matters, setting boundaries, scheduling joy, practicing mindfulness, batching tasks, combining work with play, nurturing relationships, taking care of health, reflecting regularly, and celebrating small wins, you create a life where productivity and happiness coexist. Balance doesn’t mean perfection—it’s about making space for both responsibility and fulfillment, ensuring that you thrive professionally and personally.` },
+  { title: "Keeping Friendships Alive", text: `Why Maintaining Friendships Matters
+Friendships are vital for emotional support, happiness, and overall well-being. Strong social connections reduce stress, increase resilience, and improve life satisfaction. However, friendships require effort and attention—without regular nurturing, even the closest bonds can fade over time.
+1. Communicate Regularly
+Frequent communication is the backbone of strong friendships. It keeps you connected and informed about each other’s lives.
+How to practice:
+Send a quick message or voice note just to check in.
+Schedule regular calls, video chats, or meetups.
+Share updates about your life and show interest in theirs.
+Even short, consistent communication shows that you value the friendship.
+2. Be Present
+Being fully present strengthens connections and shows genuine care. Quality matters more than quantity.
+How to practice:
+When spending time together, avoid distractions like phones.
+Listen actively—acknowledge feelings and experiences.
+Engage in shared activities that foster meaningful interactions.
+3. Celebrate Achievements and Milestones
+Acknowledging successes and life events shows that you care and pay attention.
+Examples:
+Send congratulations for promotions, birthdays, or personal achievements.
+Celebrate milestones with small gestures like a card, gift, or thoughtful message.
+Attend important events whenever possible.
+4. Be Supportive During Tough Times
+Friendships deepen when you offer support in challenges. Being empathetic and reliable strengthens trust.
+How to practice:
+Listen without judgment.
+Offer help or advice only if requested.
+Check in periodically, even after the immediate crisis has passed.
+5. Make Time for Shared Experiences
+Shared memories create lasting bonds. Doing activities together keeps the friendship vibrant and meaningful.
+Examples:
+Plan outings, trips, or hobby-related activities.
+Try new experiences together to create excitement and shared stories.
+Regularly schedule casual hangouts, even if brief.
+6. Practice Forgiveness and Patience
+Conflicts and misunderstandings are normal. Handling them with grace prevents friendships from breaking down.
+How to practice:
+Let go of minor annoyances.
+Address serious issues calmly and honestly.
+Accept that people make mistakes and focus on understanding rather than blame.
+7. Show Appreciation
+Expressing gratitude for your friends strengthens emotional bonds. Small gestures of recognition go a long way.
+Examples:
+Say “thank you” for their support or companionship.
+Compliment qualities you admire, like kindness or loyalty.
+Surprise them with thoughtful acts, messages, or small gifts.
+8. Respect Boundaries and Differences
+Healthy friendships respect individual space, choices, and values. Differences don’t have to divide—they can enrich the relationship.
+How to practice:
+Honor their personal time and commitments.
+Accept differing opinions without judgment.
+Avoid controlling or overbearing behavior.
+9. Keep in Touch Despite Distance
+Long-distance friendships can thrive with intentional effort.
+How to practice:
+Schedule regular virtual hangouts or phone calls.
+Send letters, postcards, or care packages to stay connected.
+Share experiences digitally—photos, videos, or messages about daily life.
+10. Invest in Mutual Growth
+Friendships flourish when both parties evolve together. Encourage growth, learning, and shared goals.
+How to practice:
+Explore new hobbies or projects together.
+Motivate each other to pursue goals and dreams.
+Share insights, ideas, or experiences that inspire growth.
+Conclusion
+Keeping friendships alive requires communication, presence, support, and mutual respect. By celebrating achievements, sharing experiences, showing appreciation, practicing forgiveness, respecting boundaries, and nurturing growth, you maintain strong, lasting connections. Friendships thrive on effort and intention—consistent care and attention transform casual acquaintances into lifelong companions.` },
+  { title: "How to have a longer relationship", text: `1. Prioritize Communication
+Clear and honest communication is the foundation of long-lasting relationships. Misunderstandings and unspoken expectations can erode trust over time.
+How to practice:
+Share your thoughts, feelings, and needs openly.
+Listen actively without interrupting.
+Use “I” statements instead of blaming, e.g., “I feel hurt when…” rather than “You always…”
+2. Build and Maintain Trust
+Trust is essential for stability in any relationship. Long-term couples invest in reliability, honesty, and transparency.
+How to practice:
+Keep promises and follow through on commitments.
+Admit mistakes and make amends when necessary.
+Avoid secrets or actions that could damage trust.
+3. Practice Patience and Understanding
+No relationship is perfect. Differences in habits, opinions, or life goals can create tension. Patience and empathy are key to resolving conflicts and growing together.
+How to practice:
+Seek to understand your partner’s perspective before reacting.
+Avoid reacting impulsively during disagreements.
+Accept that both of you are growing and evolving over time.
+4. Keep the Romance Alive
+Long-term relationships thrive when couples continue to express love, appreciation, and attraction. Romance is not just for the beginning—it’s a continuous effort.
+How to practice:
+Surprise your partner with thoughtful gestures or small gifts.
+Plan regular date nights or shared activities.
+Compliment and express affection daily.
+5. Support Each Other’s Growth
+Healthy relationships allow each person to pursue personal goals and evolve. Supporting your partner strengthens the bond and prevents resentment.
+How to practice:
+Encourage their passions, hobbies, and ambitions.
+Celebrate achievements together.
+Share growth experiences and learn from each other.
+6. Learn to Resolve Conflicts Constructively
+Disagreements are inevitable, but the way you handle them determines relationship longevity.
+How to practice:
+Focus on the issue, not personal attacks.
+Compromise and find win-win solutions.
+Forgive and let go of grudges once resolved.
+7. Maintain Emotional Intimacy
+Emotional closeness keeps partners connected beyond physical attraction. Sharing vulnerabilities, fears, and dreams strengthens trust and empathy.
+How to practice:
+Have regular check-ins about feelings and experiences.
+Share personal challenges and support each other emotionally.
+Show empathy and validation consistently.
+8. Balance Togetherness and Independence
+While spending quality time together is vital, maintaining personal space and independence keeps the relationship healthy.
+How to practice:
+Pursue your own hobbies, friendships, and goals.
+Respect your partner’s need for personal time.
+Avoid codependency—support, don’t control.
+9. Practice Gratitude and Appreciation
+Acknowledging your partner’s efforts and expressing appreciation strengthens the relationship.
+How to practice:
+Say “thank you” for small and big acts of kindness.
+Compliment your partner regularly.
+Celebrate milestones and achievements together.
+10. Keep Fun and Laughter Alive
+Shared joy and lighthearted moments strengthen bonds. Couples who laugh together often stay closer and more resilient.
+How to practice:
+Play games, watch comedies, or try new activities together.
+Be playful and spontaneous in small ways.
+Don’t let stress overshadow moments of joy.
+Conclusion
+Longer, lasting relationships are built on communication, trust, empathy, shared growth, and consistent care. By investing in emotional intimacy, resolving conflicts constructively, maintaining romance, and balancing independence with togetherness, couples create a strong foundation for enduring love. Relationships require ongoing effort, patience, and mutual respect, but the reward is a fulfilling, lasting connection built on understanding and shared happiness.` },
+  { title: "way of a responsible man and woman (", text: `Regular check-ins, shared rituals, low-pressure plans, and remembering small details keep friendships thriving.` }
+];
+
+/* seeded RNG */
+function seededRandom(seed) {
+  let s = seed % 2147483647;
+  if (s <= 0) s += 2147483646;
+  return function() { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+}
+
+/* generators */
+function generatePickups(n) {
+  const r = seededRandom(123456);
+  const set = new Set();
+  let attempts = 0;
+  while(set.size < n && attempts < n * 12) {
+    attempts++;
+    const o = pickupParts.openers[Math.floor(r()*pickupParts.openers.length)];
+    const m = pickupParts.middles[Math.floor(r()*pickupParts.middles.length)];
+    const t = pickupParts.tails[Math.floor(r()*pickupParts.tails.length)];
+    const addCompliment = r() > 0.75;
+    const c = addCompliment ? " " + pickupParts.compliments[Math.floor(r()*pickupParts.compliments.length)] : "";
+    const line = `${o} ${m} ${t}${c}`.replace(/\s+/g,' ').trim();
+    set.add(line);
+  }
+  return Array.from(set);
+}
+
+function generateWishes(cat, n) {
+  const templates = wishesTemplates[cat];
+  const r = seededRandom(34567 + cat.length);
+  const out = new Set();
+  let attempts = 0;
+  while(out.size < n && attempts < n * 12) {
+    attempts++;
+    const t = templates[Math.floor(r()*templates.length)];
+    const w1 = wishWords.wish[Math.floor(r()*wishWords.wish.length)];
+    const w2 = wishWords.wish2[Math.floor(r()*wishWords.wish2.length)];
+    const name = wishWords.names[Math.floor(r()*wishWords.names.length)];
+    let s = t.replaceAll("{wish}", w1).replaceAll("{wish2}", w2).replaceAll("{name}", name);
+    if (r() > 0.82) s += ` ❤️ Sending you ${w1} and ${w2}.`;
+    out.add(s);
+  }
+  return Array.from(out);
+}
+
+/* generate content arrays */
+const PICKUPS = generatePickups(CONFIG.pickupCount);
+const WISHES = {
+  birthday: generateWishes('birthday', CONFIG.wishesPerCategory),
+  marriage: generateWishes('marriage', CONFIG.wishesPerCategory),
+  ceremony: generateWishes('ceremony', CONFIG.wishesPerCategory),
+  birthdayBlessing: generateWishes('birthdayBlessing', CONFIG.wishesPerCategory)
+};
+const WALLS = Array.from({length:24}).map((_,i)=> `https://picsum.photos/900/1600?random=${i+1}`);
+
+/* ---------------------
+   UI State & DOM refs
+   --------------------- */
+let baseList = []; // original unfiltered list
+let titles = [];
+let currentList = []; // possibly filtered list
+let currentPage = 1;
+let totalPages = 1;
+let viewerIndex = 0;
+let autoplay = false;
+let autoplayTimer = null;
+
+const overlay = document.getElementById('overlay');
+const listItems = document.getElementById('listItems');
+const pagesContainer = document.getElementById('pagesContainer');
+const viewerTitle = document.getElementById('viewerTitle');
+const viewerSub = document.getElementById('viewerSub');
+const viewerContent = document.getElementById('viewerContent');
+const viewerCard = document.getElementById('viewerCard');
+const countInfo = document.getElementById('countInfo');
+const searchInput = document.getElementById('searchInput');
+const autoPlayToggle = document.getElementById('autoPlayToggle');
+const articleDrawer = document.getElementById('articleDrawer');
+const drawerTitle = document.getElementById('drawerTitle');
+const drawerSub = document.getElementById('drawerSub');
+const drawerContent = document.getElementById('drawerContent');
+
+/* wire top buttons */
+document.querySelectorAll('.main-btn').forEach(b => b.addEventListener('click', ()=> openSection(b.dataset.open)));
+document.getElementById('closeOverlay').addEventListener('click', closeOverlay);
+document.getElementById('prevItem').addEventListener('click', ()=> changeViewerIndex(viewerIndex - 1));
+document.getElementById('nextItem').addEventListener('click', ()=> changeViewerIndex(viewerIndex + 1));
+document.getElementById('prevPage').addEventListener('click', ()=> goPage(currentPage - 1));
+document.getElementById('nextPage').addEventListener('click', ()=> goPage(currentPage + 1));
+document.getElementById('copyBtn').addEventListener('click', copyViewerText);
+document.getElementById('cardCopy').addEventListener('click', copyViewerText);
+document.getElementById('openAllBtn').addEventListener('click', openAllListView);
+document.getElementById('drawerClose').addEventListener('click', ()=> closeArticleDrawer());
+autoPlayToggle.addEventListener('click', toggleAutoplay);
+searchInput.addEventListener('input', onSearchChange);
+
+/* click outside overlay to close */
+overlay.addEventListener('click', (e)=> { if (e.target === overlay) closeOverlay(); });
+document.addEventListener('keydown', (e)=> { if (e.key === 'Escape') { if (articleDrawer.classList.contains('open')) closeArticleDrawer(); else if (overlay.classList.contains('show')) closeOverlay(); } });
+
+
+function isSectionUnlocked(sectionName) {
+  if (!currentUserId) return false;
+  return unlockedSections.has(sectionName);
+}
+
+/* ---------------------
+   Section loaders
+   --------------------- */
+function openSection(name) {
+  currentSection = name;
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden', 'false');
+
+  searchInput.value = '';
+  currentPage = 1;
+  viewerIndex = 0;
+  autoplay = false;
+  clearAutoplay();
+  autoPlayToggle.textContent = 'Autoplay';
+
+  const unlocked = isSectionUnlocked(name);
+  const isFree = name === 'articles';
+
+  // Reset blur
+  overlay.classList.remove('section-locked');
+
+  // Set section content
+  switch(name) {
+    case 'pickup':
+      document.getElementById('panelTitle').textContent = 'Pick Up Lines';
+      document.getElementById('panelSub').textContent = unlocked || isFree
+        ? `${PICKUPS.length} playful pickup lines • Tap to open & copy`
+        : `Only first ${CONFIG.itemsPerPage} shown • Unlock for all 200+`;
+      baseList = PICKUPS.slice();
+      titles = baseList.map((_, i) => `Line #${i + 1}`);
+      break;
+
+    case 'wishes':
+      document.getElementById('panelTitle').textContent = 'All Wishes';
+      document.getElementById('panelSub').textContent = unlocked || isFree
+        ? 'Birthday, Marriage, Ceremony & Birthday Blessings'
+        : `Only first ${CONFIG.itemsPerPage} wishes shown • Unlock for 400+`;
+      baseList = [];
+      titles = [];
+      ['birthday','marriage','ceremony','birthdayBlessing'].forEach(cat => {
+        WISHES[cat].forEach((w, i) => {
+          const pretty = cat === 'birthday' ? 'Birthday' :
+                         cat === 'marriage' ? 'Marriage' :
+                         cat === 'ceremony' ? 'Ceremony' : 'Birthday Blessing';
+          baseList.push(w);
+          titles.push(`${pretty} #${i + 1}`);
+        });
+      });
+      break;
+
+    case 'articles':
+      document.getElementById('panelTitle').textContent = 'Articles';
+      document.getElementById('panelSub').textContent = 'Tap a topic to open a full article (drawer)';
+      baseList = ARTICLES.map(a => a.text);
+      titles = ARTICLES.map((a, i) => `${i + 1}. ${a.title}`);
+      break;
+
+    case 'wallpaper':
+      document.getElementById('panelTitle').textContent = 'Wallpapers';
+      document.getElementById('panelSub').textContent = unlocked || isFree
+        ? 'Tap an image to preview & download'
+        : `Only first ${CONFIG.itemsPerPage} shown • Unlock all 24 HD`;
+      baseList = WALLS.slice();
+      titles = baseList.map((_, i) => `Wallpaper #${i + 1}`);
+      break;
+  }
+
+  currentList = baseList.slice(0, unlocked || isFree ? baseList.length : CONFIG.itemsPerPage);
+  renderListPage(1); // show first page
+
+  // If locked, automatically show blur after 5 seconds
+  if (!unlocked && !isFree) {
+    setTimeout(() => {
+      overlay.classList.add('section-locked');
+      document.getElementById('panelSub').textContent = `Only first ${CONFIG.itemsPerPage} items shown • Unlock for full content`;
+    }, 7000); // 5 seconds
+  }
+}
+
+/* close overlay */
+function closeOverlay() {
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+  clearAutoplay();
+}
+
+/* ---------------------
+   Pagination & render
+   --------------------- */
+function renderListPage(page) {
+  const unlocked = isSectionUnlocked(currentSection);
+  const isFree = currentSection === 'articles';
+
+  const maxVisible = unlocked || isFree ? currentList.length : CONFIG.itemsPerPage;
+  currentList = baseList.slice(0, maxVisible);
+
+  const totalPages = unlocked || isFree ? Math.ceil(baseList.length / CONFIG.itemsPerPage) : 1;
+
+  // If user tries to go beyond first page while locked → show blur
+  if (!unlocked && !isFree && page > 1) {
+    overlay.classList.add('section-locked');
+    toast("Unlock this section to see more", "info", 4000);
+    page = 1; // force page 1
+  } else {
+    overlay.classList.remove('section-locked');
+  }
+
+  currentPage = page;
+  const per = CONFIG.itemsPerPage;
+  const start = (page - 1) * per;
+  const end = Math.min(currentList.length, start + per);
+
+  // Render items
+  listItems.innerHTML = '';
+  for (let i = start; i < end; i++) {
+    const idx = i;
+    const itm = document.createElement('div');
+    itm.className = 'item';
+    itm.tabIndex = 0;
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const ttl = document.createElement('div');
+    ttl.className = 'title';
+    ttl.innerText = titles[idx] || `Item ${idx+1}`;
+    const sub = document.createElement('div');
+    sub.className = 'sub';
+    if (currentSection === 'wallpaper') sub.innerText = 'Tap to preview & download';
+    else sub.innerText = (currentList[idx].slice(0,140) + (currentList[idx].length > 140 ? '…' : ''));
+    meta.appendChild(ttl);
+    meta.appendChild(sub);
+
+    const copyWrap = document.createElement('div');
+    copyWrap.className = 'copy-icon';
+    copyWrap.title = 'Copy';
+    copyWrap.innerHTML = '<i class="fas fa-copy"></i>';
+    copyWrap.addEventListener('click', ev => {
+      ev.stopPropagation();
+      copyText(currentList[idx]);
+      flash('Copied');
+    });
+
+    itm.appendChild(meta);
+    itm.appendChild(copyWrap);
+
+    itm.addEventListener('click', () => {
+      if (currentSection === 'articles') openArticleDrawer(idx);
+      else openViewerIndex(idx);
+    });
+
+    listItems.appendChild(itm);
+  }
+
+  // Pagination buttons
+  pagesContainer.innerHTML = '';
+  for (let p = 1; p <= totalPages; p++) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn' + (p === currentPage ? ' active' : '');
+    btn.textContent = p;
+    btn.disabled = !unlocked && !isFree && p > 1;
+    btn.style.opacity = btn.disabled ? '0.3' : '';
+    btn.addEventListener('click', () => renderListPage(p));
+    pagesContainer.appendChild(btn);
+  }
+
+  // Viewer index default
+  viewerIndex = Math.max(start, Math.min(viewerIndex, end - 1));
+  showViewerItem(viewerIndex);
+  countInfo.innerText = `${currentList.length} items`;
+
+  // Disable next/prev buttons visually if locked
+  const atEndOfPreview = viewerIndex >= CONFIG.itemsPerPage - 1;
+  document.getElementById('nextItem').style.opacity = (!unlocked && !isFree && atEndOfPreview) ? '0.3' : '1';
+  document.getElementById('nextItem').style.pointerEvents = (!unlocked && !isFree && atEndOfPreview) ? 'none' : 'auto';
+}
+
+/* go to page */
+function goPage(p) { if (p < 1) p = 1; if (p > totalPages) p = totalPages; renderListPage(p); }
+
+/* ---------------------
+   Viewer functions
+   --------------------- */
+function openViewerIndex(globalIndex) {
+  // ensure page change if needed
+  const per = CONFIG.itemsPerPage;
+  const targetPage = Math.floor(globalIndex / per) + 1;
+  if (targetPage !== currentPage) renderListPage(targetPage);
+  viewerIndex = globalIndex;
+  showViewerItem(viewerIndex);
+  if (autoplay) startAutoplay();
+}
+
+function showViewerItem(index) {
+  if (!currentList.length) {
+    viewerTitle.innerText = 'No items';
+    viewerSub.innerText = '';
+    viewerContent.innerText = 'No content';
+    return;
+  }
+  index = Math.max(0, Math.min(currentList.length - 1, index));
+  viewerIndex = index;
+  viewerTitle.innerText = titles[index] || `Item ${index+1}`;
+  viewerSub.innerText = `#${index+1} • ${currentSection === 'pickup' ? 'Pick Up' : currentSection === 'wishes' ? 'Wishes' : currentSection === 'wallpaper' ? 'Wallpapers' : currentSection}`;
+
+  if (currentSection === 'wallpaper') {
+    viewerContent.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px">
+      <div style="border-radius:12px;overflow:hidden;max-width:640px"><img src="${currentList[index]}" style="width:100%;height:auto;display:block;border-radius:12px" /></div>
+      <div style="display:flex;gap:8px">
+        <a href="${currentList[index]}" download="wallpaper-${index+1}.jpg" class="action-btn" style="text-decoration:none">Download</a>
+        <button class="action-btn" onclick="shareImage('${currentList[index]}')"><i class="fas fa-share-alt"></i> Share</button>
+      </div>
+    </div>`;
+  } else {
+    // big text card
+    viewerContent.innerHTML = `<div style="font-size:18px;color:#fff;line-height:1.6">${escapeHtml(currentList[index])}</div>`;
+  }
+
+  // update pagination info within page
+  const per = CONFIG.itemsPerPage;
+  const pageStart = Math.floor(index / per) * per;
+  const posInPage = index - pageStart + 1;
+  // update page buttons highlight
+  Array.from(pagesContainer.children).forEach(btn => btn.classList.toggle('active', btn.textContent == currentPage));
+    // Disable next button if locked and not on first "page" of content
+  const locked = !isSectionUnlocked(currentSection) && currentSection !== 'articles';
+  document.getElementById('nextItem').style.opacity = locked && viewerIndex >= CONFIG.itemsPerPage - 1 ? '0.3' : '1';
+  document.getElementById('nextItem').style.pointerEvents = locked && viewerIndex >= CONFIG.itemsPerPage - 1 ? 'none' : 'auto';
+}
+
+/* next/prev viewer */
+function changeViewerIndex(newIdx) {
+  if (!currentList.length) return;
+  if (newIdx < 0) newIdx = currentList.length - 1;
+  if (newIdx >= currentList.length) newIdx = 0;
+  openViewerIndex(newIdx);
+}
+/* copy viewer content */
+function copyViewerText() {
+  if (!currentList.length) return;
+  copyText(currentList[viewerIndex]);
+  flash('Copied');
+}
+
+/* open all list view in viewer */
+function openAllListView() {
+  if (!currentList.length) return;
+  const per = CONFIG.itemsPerPage;
+  const start = (currentPage - 1) * per;
+  const end = Math.min(currentList.length, start + per);
+  const html = currentList.slice(start, end).map((t,i)=> `<div style="margin-bottom:12px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.02)"><strong style="display:block;margin-bottom:8px">${escapeHtml(t.slice(0,60))}</strong><div style="color:#cfe6ff">${escapeHtml(t)}</div></div>`).join('');
+  viewerContent.innerHTML = html;
+}
+
+/* ---------------------
+   Autoplay
+   --------------------- */
+function startAutoplay() {
+  clearAutoplay();
+  autoplay = true;
+  autoPlayToggle.textContent = 'Autoplay (On)';
+  autoplayTimer = setInterval(()=> {
+    changeViewerIndex(viewerIndex + 1);
+  }, CONFIG.autoplayMs);
+}
+function clearAutoplay() {
+  autoplay = false;
+  autoPlayToggle.textContent = 'Autoplay';
+  if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+}
+function toggleAutoplay() { if (autoplay) clearAutoplay(); else startAutoplay(); }
+
+/* ---------------------
+   Search/filter
+   --------------------- */
+function onSearchChange() {
+  const q = (searchInput.value || '').trim().toLowerCase();
+  if (!q) { currentList = baseList.slice(); titles = titlesFromBase(); renderListPage(1); return; }
+  const filtered = [];
+  const tts = [];
+  for (let i=0;i<baseList.length;i++){
+    if ((baseList[i] + ' ' + (titles[i]||'')).toLowerCase().includes(q)) { filtered.push(baseList[i]); tts.push(titles[i]); }
+  }
+  currentList = filtered;
+  // replace titles used for render
+  // temporarily override titles variable (we keep base titles in outer `titles`)
+  // create a shadow variable visible to renderListPage by replacing titles var:
+  // we keep titles global but reconstruct indices for filtered view
+  // easiest: store oldTitles then set titlesFiltered
+  window._titlesFiltered = tts;
+  // for renderListPage we will prefer window._titlesFiltered if present
+  renderListPage(1);
+}
+
+/* helper to produce titles from base (if search cleared) */
+function titlesFromBase() {
+  // if current section is 'wishes' we need to re-generate titles (they exist in global titles but may have been overwritten)
+  if (currentSection === 'pickup') return PICKUPS.map((_,i)=> `Line #${i+1}`);
+  if (currentSection === 'wishes') {
+    const arr = [];
+    ['birthday','marriage','ceremony','birthdayBlessing'].forEach(cat=>{
+      WISHES[cat].forEach((_,i)=> {
+        const pretty = cat === 'birthday' ? 'Birthday' : cat === 'marriage' ? 'Marriage' : cat === 'ceremony' ? 'Ceremony' : 'Birthday Blessing';
+        arr.push(`${pretty} #${i+1}`);
+      });
+    });
+    return arr;
+  }
+  if (currentSection === 'articles') return ARTICLES.map((a,i)=> `${i+1}. ${a.title}`);
+  if (currentSection === 'wallpaper') return WALLS.map((_,i)=> `Wallpaper #${i+1}`);
+  return baseList.map((_,i)=> `Item ${i+1}`);
+}
+
+/* adjust renderListPage to respect filtered titles when search active */
+const originalRenderListPage = renderListPage;
+renderListPage = function(page) {
+  // override titles if search active
+  if (window._titlesFiltered && window._titlesFiltered.length) {
+    // use filtered titles for the display, but keep `titles` for global indexing
+    const tempTitles = titles;
+    titles = window._titlesFiltered;
+    originalRenderListPage(page);
+    titles = tempTitles;
+  } else {
+    originalRenderListPage(page);
+  }
+};
+
+/* ---------------------
+   Articles drawer (sliding)
+   --------------------- */
+function openArticleDrawer(articleIndex) {
+  const art = ARTICLES[articleIndex];
+  drawerTitle.innerText = art.title;
+  drawerSub.innerText = `Article • ${articleIndex + 1}`;
+  drawerContent.innerHTML = `<div style="padding:8px 4px;color:#fff;line-height:1.7">${escapeHtml(art.text)}</div>
+    <div style="margin-top:16px;display:flex;gap:8px">
+      <button class="action-btn" onclick="copyArticle(${articleIndex})"><i class="fas fa-copy"></i> Copy Article</button>
+      <button class="action-btn" onclick="shareArticle(${articleIndex})"><i class="fas fa-share-alt"></i> Share</button>
+    </div>`;
+  articleDrawer.classList.add('open');
+  articleDrawer.setAttribute('aria-hidden','false');
+}
+function closeArticleDrawer() {
+  articleDrawer.classList.remove('open');
+  articleDrawer.setAttribute('aria-hidden','true');
+}
+function copyArticle(i) { copyText(ARTICLES[i].text); flash('Article copied'); }
+function shareArticle(i) {
+  const url = location.href;
+  if (navigator.share) navigator.share({title:ARTICLES[i].title,text:ARTICLES[i].text,url}).catch(()=>flash('Share canceled'));
+  else { copyText(ARTICLES[i].text); flash('Article copied'); }
+}
+
+/* ---------------------
+   Utilities
+   --------------------- */
+function copyText(text) {
+  navigator.clipboard?.writeText(text).catch(()=> {});
+}
+function flash(msg) {
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.position = 'fixed';
+  el.style.left = '50%';
+  el.style.transform = 'translateX(-50%)';
+  el.style.bottom = '28px';
+  el.style.padding = '10px 16px';
+  el.style.borderRadius = '12px';
+  el.style.background = 'linear-gradient(90deg,#ffd89b,#f6a6ff)';
+  el.style.color = '#061022';
+  el.style.fontWeight = '800';
+  el.style.zIndex = 20000;
+  document.body.appendChild(el);
+  setTimeout(()=> el.style.opacity = '0', 1100);
+  setTimeout(()=> el.remove(), 1600);
+}
+function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function shareImage(url) {
+  if (navigator.share) navigator.share({title:'Wallpaper',url}).catch(()=>flash('Share canceled'));
+  else { copyText(url); flash('Wallpaper link copied'); }
+}
+// ====================== INITIALIZE ======================
+// Call this on page load
+(async () => {
+  await loadUserUnlocks();
+  attachUnlockListeners();
+})();
+</script>
+</body>
+</html>

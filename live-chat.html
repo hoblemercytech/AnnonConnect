@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AnonConnect – Live Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ================= GLOBAL RESET & TYPOGRAPHY ================= */
+/* ================ ALL YOUR ORIGINAL STYLE – 100% UNTOUCHED ================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      background: linear-gradient(135deg, #0a0014 0%, #2a005a 50%, #000 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 150px 0;
+    }
+
+    h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+    button, input, textarea { font-family: inherit; }
+
+    /* ================= LIGHT MODE ROOT COLORS ================= */
+    :root {
+      --bg-gradient-start: #f8f9ff;
+      --bg-gradient-mid:   #e0e7ff;
+      --bg-gradient-end:   #c7d2fe;
+      --text-primary:      #1a1a2e;
+      --text-secondary:    #4a4a68;
+      --card-bg:           rgba(255, 255, 255, 0.85);
+      --card-border:       rgba(99, 102, 241, 0.25);
+      --accent-primary:    #6366f1;
+      --accent-secondary:  #a78bfa;
+      --accent-danger:     #ef4444;
+      --shadow-soft:       rgba(0, 0, 0, 0.08);
+      --shadow-glow:       rgba(99, 102, 241, 0.2);
+      --blur-bg:           rgba(255, 255, 255, 0.7);
+    }
+
+    #greetingScreen{
+      text-align:center;padding:2rem;max-width:380px;background:rgba(99, 102, 241, 0.38);
+      border-radius:18px;box-shadow:var(--shadow-soft);z-index:10;
+    }
+    #greetingScreen h2{color:var(--primary);margin-bottom:1rem;font-size:1.5rem;}
+    #greetingScreen p{color:var (--bg-gradient-mid);font-size:1rem;line-height:1.5;margin-bottom:1.5rem;}
+    #startChatBtn{
+      background:var(--primary);color:white;border:none;
+      padding:0.9rem 2rem;border-radius:50px;font-size:1rem;
+      font-weight:600;cursor:pointer;transition:.2s;box-shadow:0 4px 15px rgba(0,44,92,.3);
+    }
+    #startChatBtn:hover{background:var(--primary-light);transform:translateY(-2px);}
+
+    .chat-wrapper{
+      display:none;flex-direction:column;width:380px;height:580px;
+      background:white;border-radius:18px;box-shadow:var(--shadow-soft);
+      overflow:hidden;position:absolute; top:180px;z-index:9;
+    }
+    header{
+      background:var(--primary);color:#6366f1;padding:14px;
+      display:flex;align-items:center;gap:8px;font-weight:600;
+    }
+    #unreadBadge{
+      margin-left:auto;background:var(--danger);color:#6366f1;
+      font-size:.65rem;font-weight:bold;padding:2px 6px;
+      border-radius:12px;min-width:18px;display:none;
+      animation:pulse 1.5s infinite;
+    }
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+    #messages{
+      flex:1;padding:12px 12px 80px 12px;overflow-y:auto;
+      display:flex;flex-direction:column;gap:8px;
+    }
+    .msg-wrapper{display:flex;align-items:flex-end;gap:8px;max-width:85%;}
+    .msg-wrapper.user{flex-direction:row-reverse;}
+    .avatar{
+      width:34px;height:34px;border-radius:50%;
+      background:#6366f1;display:flex;align-items:center;
+      justify-content:center;font-size:16px;font-weight:700;color:var(--text-primary);
+    }
+    .msg{
+      padding:10px 14px;border-radius:12px;font-size:.9rem;
+      line-height:1.4;word-break:break-word;
+    }
+    .msg.user{background:#6366f1;color:var(--text-primary);}
+    .msg.agent{background:var(--text-primary);color:white;}
+    .msg.system{
+      align-self:center;background:transparent;color:#777;
+      font-size:0.8rem;font-style:italic;padding:0.4rem 0.8rem;
+    }
+
+    #typingIndicator{
+      display:none;align-self:flex-start;
+      background:#B19DEC30;padding:10px 14px;border-radius:12px;
+      font-size:.8rem;color:#black;
+    }
+    .typing-dots span{
+      display:inline-block;width:6px;height:6px;
+      background:black;border-radius:50%;
+      margin:0 2px;animation:typingDot 1.4s infinite both;
+    }
+    .typing-dots span:nth-child(2){animation-delay:.2s;}
+    .typing-dots span:nth-child(3){animation-delay:.4s;}
+    @keyframes typingDot{
+      0%,80%,100%{transform:scale(0.8);opacity:0.5}
+      40%{transform:scale(1.2);opacity:1}
+    }
+
+    .input-bar{
+      position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+      width:380px;background:#B19DEC30;padding:12px;
+      font-size: 16px;
+      border-top:1px solid var(--border);box-shadow:0 -2px 10px rgba(0,0,0,.1);
+      display:flex;gap:8px;z-index:100;
+    }
+    .input-bar input{
+      flex:1;padding:10px;border:1px solid #d7dce9;
+      border-radius:12px;font-size:16px;outline:none;
+    }
+    .input-bar input:focus{border-color:black;}
+    .input-bar button{
+      width:42px;height:42px;border-radius:50%;border:none;
+      background:#B19DEC30;color:white;font-size:18px;
+      cursor:pointer;transition:.2s;
+    }
+    .input-bar button:hover{background:var(--text-primary);}
+
+    .suggest-box{
+      position:absolute;bottom:0px;left:14px;right:14px;
+      background:var(--text-primary);border:1px solid #9EB5F2;border-radius:12px;
+      box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:9999999;
+      display:none;max-height:120px;overflow-y:auto;
+    }
+    .suggest-item{
+      padding:10px 12px;cursor:pointer;font-size:.9rem;
+    }
+    .suggest-item:hover{background:#f1f4ff;}
+
+    #inquiryForm{
+      display:none;background:#9EB5F2;padding:1.5rem;
+      border-radius:12px;box-shadow:var(--shadow-soft);max-width:340px;
+      margin:1rem auto;text-align:center;
+    }
+    #inquiryForm input, #inquiryForm textarea{
+      width:100%;padding:10px;margin:8px 0;
+      border:1px solid #ddd;border-radius:8px;font-size:16px;
+    }
+    #inquiryForm button{
+      background:#6366f1;color:white;border:none;
+      padding:10px 20px;border-radius:50px;font-size:1rem;
+      cursor:pointer;margin-top:10px;
+    }
+
+    .end-chat button{
+      background:var(--danger);color:#fff;border:none;
+      border-radius:8px;padding:0.55rem 1rem;font-size:0.9rem;
+      cursor:pointer;transition:all .2s;
+    }
+    .end-chat button:hover{background:#a00000;}
+    @media (max-width: 480px) {
+      body {
+        padding: 40px 15px;
+        align-items: center;
+      }
+
+      #greetingScreen {
+        width: 95%;
+        max-width: 360px;
+        padding: 1.8rem;
+      }
+
+      .chat-wrapper {
+        width: 95vw;
+        max-width: 380px;
+        height: 78vh;
+        min-height: 520px;
+        top: auto;
+        bottom: 80px;
+        left: 50% !important;
+        transform: translateX(-50%);
+        position: fixed !important;
+      }
+
+      .input-bar {
+        width: 95vw;
+        max-width: 380px;
+        left: 50% !important;
+        transform: translateX(-50%);
+        padding: 10px;
+        bottom: 0;
+        border-radius: 18px 18px 0 0;
+      }
+
+      .input-bar input {
+        font-size: 16px !important; /* Prevents iOS zoom */
+      }
+
+      #messages {
+        padding-bottom: 90px;
+      }
+
+      .suggest-box {
+        left: 10px;
+        right: 10px;
+        bottom: 58px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      #greetingScreen h2 { font-size: 1.4rem; }
+      #greetingScreen p { font-size: 0.95rem; }
+      #startChatBtn { padding: 0.8rem 1.8rem; }
+      
+      .msg { font-size: 0.88rem; padding: 9px 12px; }
+      .avatar { width: 32px; height: 32px; font-size: 15px; }
+    }
+
+    /* Tablet & landscape phones */
+    @media (min-width: 481px) and (max-width: 820px) {
+      body { padding: 80px 20px; }
+      .chat-wrapper { width: 420px; height: 620px; }
+      .input-bar { width: 420px; }
+    }
+
+    /* Desktop – keep original centered look */
+    @media (min-width: 821px) {
+      .chat-wrapper,
+      .input-bar {
+        width: 400px;
+      }
+      .input-bar {
+        width: 400px;
+      }
+    }
+
+    /* Very tall screens – prevent excessive empty space */
+    @media (min-height: 900px) {
+      body { padding: 180px 0; }
+    }
+
+    /* Landscape mobile – better height usage */
+    @media (max-height: 600px) and (orientation: landscape) {
+      body { padding: 20px 0; align-items: center; }
+      .chat-wrapper { height: 85vh; }
+      #greetingScreen { margin-top: 20px; }
+    }
+
+    /* Ensure input never triggers zoom on iOS */
+    input, textarea {
+      font-size: max(16px, 1em);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GREETING -->
+  <div id="greetingScreen">
+    <h2>AnonConnect Support</h2>
+    <p>We're here to help! Start the chat when you're ready.<br><span style="font-weight: 200; font-size: 18px; padding-top: 10px;"><strong>Note:</strong>This is a live chart program support,no need of grretings just go straight to the point and if you're not ok with the response reach out to us via email or phone number </span></p>
+    <button id="startChatBtn" onclick="startChat()">Start Chat</button>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-wrapper" id="chatWidget">
+    <header>AnonConnect Support <span id="unreadBadge">0</span></header>
+    <div id="messages"></div>
+
+    <!-- Typing -->
+    <div id="typingIndicator">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- Suggestion Box -->
+    <div class="suggest-box" id="suggestBox"></div>
+
+    <!-- Inquiry Form -->
+    <div id="inquiryForm">
+      <h3>Let Us Help You</h3>
+      <p>We couldn't answer your question. Please fill this form:</p>
+      <input type="text" id="inqName" placeholder="Full Name" required />
+      <input type="text" id="inqContact" placeholder="Email or Phone" required />
+      <textarea id="inqMessage" rows="3" placeholder="Your question..." required></textarea>
+      <button onclick="submitInquiry()">Submit</button>
+    </div>
+  </div>
+
+  <!-- FIXED INPUT BAR -->
+  <div class="input-bar" id="inputBar" style="display:none;">
+    <div class="end-chat"><button onclick="endChat()">End</button></div>
+    <input id="msgInput" placeholder="Type a message..." autocomplete="off" />
+    <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+
+<script>
+  // ────── DOM & STATE ──────
+  const greetingScreen = document.getElementById("greetingScreen");
+  const chatWidget     = document.getElementById("chatWidget");
+  const messagesBox    = document.getElementById("messages");
+  const input          = document.getElementById("msgInput");
+  const inputBar       = document.getElementById("inputBar");
+  const typingIndicator= document.getElementById("typingIndicator");
+  const suggestBox     = document.getElementById("suggestBox");
+  const inquiryForm    = document.getElementById("inquiryForm");
+  let chatUserId = null;
+
+  // ────── TOAST ──────
+  function showToast(msg, type = 'info') {
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  const toastCSS = `
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; padding: 12px 20px;
+      background: #333; color: white; border-radius: 8px; font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000;
+      animation: fade 0.3s ease-out;
+      pointer-events: none;
+    }
+    .toast-success { background: #28a745; }
+    .toast-warning { background: #ffc107; color: #212529; }
+    .toast-error { background: #dc3545; }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  `;
+  const style = document.createElement('style');
+  style.textContent = toastCSS;
+  document.head.appendChild(style);
+
+  // ────── LOCAL ID ──────
+  function getLocalUserId() {
+    let id = localStorage.getItem('nef_local_user_id');
+    if (!id) {
+      id = 'local_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('nef_local_user_id', id);
+    }
+    return id;
+  }
+
+  // ────── SUPABASE: ANON KEY ONLY ──────
+  let supabaseClient = null;
+
+  function initSupabase() {
+    if (typeof supabase === 'undefined') {
+      console.warn('Supabase CDN not loaded – retrying...');
+      setTimeout(initSupabase, 500);
+      return;
+    }
+
+    const SUPABASE_URL = 'https://xfxncdyyleyzteepdyuc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmeG5jZHl5bGV5enRlZXBkeXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyNTM1ODcsImV4cCI6MjA3ODgyOTU4N30.iaG_k6VkhPl294jhRE6RCcbfvlPQpWVf0wcrod_6MmA';
+
+    try {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('Supabase initialized');
+    } catch (e) {
+      console.error('Supabase init failed:', e);
+      showToast('Offline mode', 'warning');
+    }
+  }
+
+  initSupabase();
+
+// ────── AI ──────
+const quickReplies = [
+  "How do I send a message?",
+  "Can I see who sent a message?",
+  "How do I create a link?",
+  "What are premium features?",
+  "Can I join a group chat?",
+  "How do I play games?",
+  "How do I manage privacy?",
+  "Can I send multimedia?",
+  "Is my data safe?",
+  "How do I upgrade to premium?",
+  "What if I forget my password?",
+  "How will I login?",
+  "How to screenshot messages?",
+  "How will I post this on WhatsApp?",
+  "How do I block someone?",
+  "Can I delete messages?",
+  "How do I track link clicks?",
+  "Can I play games with friends?",
+  "What multimedia formats are supported?",
+  "How long does it take to see messages?",
+  "Can I use anonConnect on mobile?",
+  "How do I check my account info?",
+  "How do I change my username?",
+  "Can I hide my profile?",
+  "How do I report abuse?",
+  "How do I see notifications?",
+  "What if someone spams me?",
+  "Can I join multiple groups?",
+  "Can I mute a group chat?",
+  "How do I create a private group?",
+  "Can I share games with friends?",
+  "What is the difference between free and premium?",
+  "Can I upload multiple files at once?",
+  "How do I edit a message?",
+  "Can I reply to a specific message?",
+  "How do I see who clicked my link?",
+  "Can I invite friends to anonConnect?",
+  "How do I view my message history?",
+  "Can I send audio messages?",
+  "Can I send video messages?",
+  "Can I send GIFs?",
+  "Can I change my profile picture?",
+  "How do I logout?",
+  "Can I recover deleted messages?",
+  "What happens if I block a user?",
+  "Can I see blocked users?",
+  "How do I reset my privacy settings?",
+  "Can I play games anonymously?",
+  "How do I view premium game modes?",
+  "How do I get support?",
+  "Default"
+];
+
+const aiAnswers = {
+  "how do i send a message?": "Go to your dashboard → open a link or group chat → type your message, attach image/audio/video, and send. Free messages are fully anonymous; premium users can optionally attach their username.",
+
+  "can i see who sent a message?": "Free users cannot see senders. Premium users can view who sent messages if the sender allows it.",
+
+  "how do i create a link?": "Go to **anonymous link** → generate a unique link → share it. you can track who clicks their links.",
+
+  "what are premium features?": "Premium users can:\n- See message senders\n- Hide profile details from specific users\n- Track link clicks\n- Access advanced games and leaderboards\n- Customize group chat permissions\n- Priority multimedia processing",
+
+  "can i join a group chat?": "Yes! Go to **Group Chat** → join a public group or create a private one → chat anonymously or with a username depending on your settings. Admins can moderate groups.",
+
+  "how do i play games?": "Go to the **Games** section → select a game → play anonymously or with friends. Premium users unlock special modes, track scores, and see participants.",
+
+  "how do i manage privacy?": "Go to **Dashboard → Privacy Settings**. Free users have basic controls. Premium users can block users, hide profile details, and control visibility for groups and links.",
+
+  "can i send multimedia?": "Yes — you can send images (JPEG, PNG, GIF), audio (MP3, WAV), and video (MP4, MOV). Upload securely via messages or link creation.",
+
+  "is my data safe?": "Yes — all messages and multimedia are encrypted. Premium users control who can see their content, and free users remain fully anonymous.",
+
+  "how do i upgrade to premium?": "Go to **Dashboard → Subscription** → pay for your lifetime subscription → complete payment. Premium features are available immediately.",
+
+  "what if i forget my password?": "Go to **Login → Forgot Password** → follow the instructions sent to your email to reset it.",
+
+  "how will i login?": "Use your registered email **Login page**. If you’re premium, ensure your subscription is active.",
+
+  "how to screenshot messages?": "There's a camera icon on preview to screenshot also you can use your device’s screenshot function. On most devices: Windows (PrtSc), Mac (Shift+Cmd+4), iOS (Side + Volume Up), Android (Power + Volume Down).",
+
+  "how will i post this on WhatsApp?": "Copy your generated link → open WhatsApp → paste it in a chat or group → send. The recipient can click the link to view your content anonymously.",
+
+  "how do i track link clicks?": "You can track clicks by going to **Dashboard → Insight → Track Clicks**.then track your link",
+
+  "can i play games with friends?": "Yes! Create a private game room or join friends’ games. Premium users can see scores and identities.",
+
+  "what multimedia formats are supported?": "Images: JPEG, PNG, GIF. Audio: MP3, WAV. Video: MP4, MOV. All files are securely uploaded and linked via URLs.",
+
+  "how long does it take to see messages?": "Messages appear instantly once sent. Premium users’ metadata (sender info) is also updated in real time.",
+
+  "can i use anonConnect on mobile?": "Yes! The website is responsive. Future mobile apps for iOS and Android are planned.",
+
+  "how do i check my account info?": "Go to **Dashboard → Account Info** to see username, email, subscription status, and other profile details.",
+
+  "how do i change my username?": "**Dashboard → profile → Change Username**.",
+
+  "can i hide my profile?": "Yes, premium users can hide their profile or parts of it from specific users. Free users only have basic anonymity.",
+
+  "how do i report abuse?": "Go to **Dashboard → Support → Report Abuse** → fill the form. Our team reviews reports within 24 hours.",
+
+  "how do i see notifications?": "Click the **Notifications** icon on the dashboard to see messages, link clicks, group activity, and game invites.",
+
+  "what if someone spams me?": "Block the user via **Privacy Settings**. Premium users can also restrict them from seeing your content.",
+
+  "can i join multiple groups?": "Yes! You can join multiple public or private groups simultaneously.",
+
+  "how do i create a private group?": "Go to **Group Chat → Create Group** → select private → invite users → configure privacy and permissions.",
+
+  "can i share games with friends?": "Yes! Send them the game link or invite them to your private game room.",
+
+  "what is the difference between free and premium?": "Free users have anonymous messaging, basic groups, and games. Premium adds sender visibility, advanced games, link tracking, privacy controls, and faster multimedia handling.",
+
+  "can i upload multiple files at once?": "Yes — you can select multiple images, audio, or videos during link creation or messaging.",
+
+
+  "can i reply to a specific message?": "Yes — use the **reply** button next to a message to quote and respond.",
+
+  "how do i see who clicked my link?": "Premium users can go to **Dashboard → Links → Track Clicks** to view stats and usernames.",
+
+  "can i invite friends to anonConnect?": "Yes — share your referral link or invite them via the dashboard.",
+
+  "how do i view my message history?": "Go to **Dashboard → Messages** to see past messages and interactions.",
+
+  "can i send audio messages?": "Yes — supported formats are MP3 and WAV.",
+
+  "can i send video messages?": "Yes — supported formats are MP4 and MOV.",
+
+  "can i send GIFs?": "Yes — GIFs are supported in messaging and link creation.",
+
+  "can i change my profile picture?": "Premium users can go to **Dashboard → Account Settings → Profile Picture**. Free users remain default anonymous.",
+
+  "how do i logout?": "Click **Dashboard → Logout** to safely exit your account.",
+
+  "can i recover deleted messages?": "No — once deleted (premium), messages cannot be recovered.",
+
+
+
+
+  "can i play games anonymously?": "Yes — both free and premium users can play anonymously. Premium adds leaderboard and participant info.",
+
+  "how do i view premium game modes?": "Upgrade to premium → go to **Games → Premium Modes** → select and play.",
+
+  "how do i get support?": "Use the **live chat** (24/7) or email **support@anonconnect.com** — responses typically within 1 hour.",
+
+  "default": "Sorry, I don’t have an answer for that. Please check **Dashboard → Help** or contact support."
+};
+
+
+  function getAIResponse(q) {
+    q = q.toLowerCase().trim();
+    for (const key in aiAnswers) {
+      if (q.includes(key)) return aiAnswers[key];
+    }
+    return null;
+  }
+
+  function sanitize(t) { 
+    return t.replace(/</g, "&lt;").replace(/>/g, "&gt;"); 
+  }
+
+  function scrollBottom() { 
+    messagesBox.scrollTop = messagesBox.scrollHeight; 
+  }
+
+  function append(type, html) {
+    const wrap = document.createElement("div");
+    wrap.className = `msg-wrapper ${type}`;
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = type === "user" ? "U" : "A";
+    const bubble = document.createElement("div");
+    bubble.className = `msg ${type}`;
+    bubble.innerHTML = sanitize(html).replace(/\n/g, "<br>");
+    wrap.appendChild(avatar);
+    wrap.appendChild(bubble);
+    messagesBox.appendChild(wrap);
+    scrollBottom();
+  }
+
+  function showTyping() { 
+    typingIndicator.style.display = "flex"; 
+    scrollBottom(); 
+  }
+  function hideTyping() { 
+    typingIndicator.style.display = "none"; 
+  }
+
+  // ────── INIT USER ──────
+  async function initUser() {
+    let tries = 0;
+    while (!supabaseClient && tries < 100) {
+      await new Promise(r => setTimeout(r, 200));
+      tries++;
+    }
+
+    const localId = getLocalUserId();
+
+    if (!supabaseClient) {
+      chatUserId = localId;
+      showToast('Offline: Chat saved locally', 'warning');
+      return;
+    }
+
+    try {
+      // Check for existing user
+      const { data: existing, error: fetchErr } = await supabaseClient
+        .from('chat_users')
+        .select('id, user_name, user_email, user_phone')
+        .eq('local_id', localId)
+        .maybeSingle();
+
+      if (fetchErr) throw fetchErr;
+      if (existing) {
+        chatUserId = existing.id;
+        return;
+      }
+
+      // Prompt new user
+      const name = prompt("Please enter your name:");
+      const contact = prompt("Email or Phone (for contact):");
+      if (!name || !contact) {
+        showToast('Name & contact required', 'error');
+        chatUserId = localId;
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from('chat_users')
+        .insert({
+          local_id: localId,
+          user_name: name,
+          user_email: contact.includes('@') ? contact : null,
+          user_phone: contact.includes('@') ? null : contact
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      chatUserId = data.id;
+
+    } catch (e) {
+      console.warn('User init failed:', e.message);
+      chatUserId = localId;
+      showToast('Saving locally', 'warning');
+    }
+  }
+
+  // ────── LOAD HISTORY ──────
+  async function loadHistory() {
+    if (!supabaseClient || !chatUserId || chatUserId.startsWith('local_')) return;
+    try {
+      const { data, error } = await supabaseClient
+        .from('chat_messages')
+        .select('sender, message')
+        .eq('chat_user_id', chatUserId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      data?.forEach(m => append(m.sender, m.message));
+    } catch (e) {
+      console.warn('Load history failed:', e);
+    }
+  }
+
+  // ────── SEND MESSAGE ──────
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = "";
+    suggestBox.style.display = "none";
+    append("user", text);
+
+    // Save user message
+    if (supabaseClient && !chatUserId.startsWith('local_')) {
+      try {
+        await supabaseClient
+          .from('chat_messages')
+          .insert([{ 
+            chat_user_id: chatUserId, 
+            sender: "user", 
+            message: text 
+          }]);
+      } catch (e) {
+        showToast('Failed to send', 'error');
+      }
+    }
+
+    showTyping();
+
+    setTimeout(async () => {
+      hideTyping();
+      const reply = getAIResponse(text);
+
+      if (reply) {
+        append("agent", reply);
+        if (supabaseClient && !chatUserId.startsWith('local_')) {
+          try {
+            await supabaseClient
+              .from('chat_messages')
+              .insert([{ 
+                chat_user_id: chatUserId, 
+                sender: "agent", 
+                message: reply 
+              }]);
+          } catch (e) {
+            console.warn('Failed to save AI reply', e);
+          }
+        }
+      } else {
+        inquiryForm.style.display = "block";
+        append("agent", "I couldn't find an answer. Please fill out the form below and we'll get back to you.");
+      }
+    }, 1000 + Math.random() * 2000); // Human-like delay
+  }
+
+  // ────── SUGGESTIONS ──────
+  input.addEventListener("input", () => {
+    const v = input.value.toLowerCase().trim();
+    if (!v) {
+      suggestBox.style.display = "none";
+      return;
+    }
+    const matches = quickReplies
+      .filter(q => q.toLowerCase().includes(v))
+      .slice(0, 3);
+
+    if (!matches.length) {
+      suggestBox.style.display = "none";
+      return;
+    }
+
+    suggestBox.innerHTML = matches
+      .map(t => `<div class="suggest-item">${t}</div>`)
+      .join("");
+
+    suggestBox.style.display = "block";
+
+    suggestBox.querySelectorAll(".suggest-item").forEach(item => {
+      item.onclick = () => {
+        input.value = item.textContent;
+        suggestBox.style.display = "none";
+        sendMessage();
+      };
+    });
+  });
+
+  input.addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+  });
+window.submitInquiry = async () => {
+  const name = document.getElementById("inqName").value.trim();
+  const contact = document.getElementById("inqContact").value.trim();
+  const message = document.getElementById("inqMessage").value.trim();
+
+  if (!name || !contact || !message) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const payload = { name, contact, message, status: "pending" };
+  let userIdentifier = {};
+
+  if (chatUserId && !chatUserId.startsWith('local_')) {
+    userIdentifier.chat_user_id = chatUserId;
+  } else {
+    userIdentifier.local_user_id = chatUserId || getLocalUserId();
+  }
+
+  try {
+    // Insert inquiry
+    const { data: inquiry, error: inqError } = await supabaseClient
+      .from('inquiries')
+      .insert([{ ...payload, ...userIdentifier }])
+      .select()
+      .single();
+
+    if (inqError) throw inqError;
+
+    // Insert notification
+    const notificationPayload = {
+      title: "Inquiry Submitted",
+      message: "Your inquiry has been submitted. You will receive a response within 24 hours."
+    };
+
+    if (userIdentifier.chat_user_id) notificationPayload.chat_user_id = userIdentifier.chat_user_id;
+    else notificationPayload.local_user_id = userIdentifier.local_user_id;
+
+    const { error: notifError } = await supabaseClient
+      .from('notifications')
+      .insert([notificationPayload]);
+
+    if (notifError) throw notifError;
+
+    showToast('Thank you! We’ll reply soon.', 'success');
+    append("system", "Inquiry submitted. We’ll contact you soon.");
+
+  } catch (e) {
+    console.error("Inquiry submit failed:", e);
+    showToast('Failed to submit', 'error');
+  }
+
+  // Reset form
+  inquiryForm.style.display = "none";
+  document.getElementById("inqName").value = "";
+  document.getElementById("inqContact").value = "";
+  document.getElementById("inqMessage").value = "";
+};
+
+  // ────── START CHAT ──────
+  window.startChat = async () => {
+    greetingScreen.style.display = "none";
+    chatWidget.style.display = "flex";
+    inputBar.style.display = "flex";
+    input.focus();
+
+    await initUser();
+    await loadHistory();
+
+    const welcome = "Hi! You're welcome to AnonConnect support — how can I help?";
+    append("agent", welcome);
+
+    // Save welcome message
+    if (supabaseClient && chatUserId && !chatUserId.startsWith('local_')) {
+      try {
+        await supabaseClient.from('chat_messages').insert([{
+          chat_user_id: chatUserId,
+          sender: "agent",
+          message: welcome
+        }]);
+      } catch (e) {
+        console.warn('Failed to save welcome', e);
+      }
+    }
+  };
+</script>
+</body>
+</html>

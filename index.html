@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AnonConnect</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+    :root {
+      --violet: #6b4eff;
+      --gold: #e6c670;
+      --violet-dark: #5a3de6;
+      --shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cabinet Grotesk', sans-serif; }
+    body { 
+      background: linear-gradient(135deg, #0a0014, #1a0030, #000); 
+      color: white; 
+      animation: bg 15s ease infinite; 
+      overflow-x: hidden; 
+    }
+    @keyframes bg { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+    /* TOPBAR */
+    .topbar { 
+      display: flex; justify-content: space-between; padding: 1rem 2rem; 
+      background: rgba(10,0,20,0.6); backdrop-filter: blur(12px); 
+      position: sticky; top: 0; z-index: 1000; 
+    }
+    .brand { 
+      font-size: 1.8rem; font-weight: 800; 
+      background: linear-gradient(90deg, var(--violet), var(--gold)); 
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+    }
+    #openAuthModal { 
+      background: var(--violet); color: white; border: none; 
+      padding: 0.7rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; 
+    }
+
+    /* HERO */
+    .hero { 
+      height: 90vh; position: relative; overflow: hidden; 
+      display: flex; flex-direction: column; justify-content: center; 
+      align-items: center; text-align: center; 
+    }
+    .slideshow { 
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+      display: flex; transition: transform 0.8s ease; 
+    }
+    .slide { 
+      min-width: 100%; height: 100%; background-size: cover; 
+      background-position: center; position: relative; 
+    }
+    .slide::after { 
+      content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.55); 
+    }
+    .slide-text { 
+      position: relative; z-index: 2; max-width: 800px; padding: 2rem; 
+    }
+    .slide-text h2 { font-size: 3rem; margin-bottom: 1rem; }
+    .hero-cta { 
+      margin-top: 3rem; display: flex; gap: 1rem; z-index: 3; 
+    }
+    .hero-cta button { 
+      padding: 0.9rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; 
+    }
+    #tourBtn2 { 
+      background: transparent; border: 2px solid var(--gold); color: var(--gold); 
+    }
+
+    /* TOUR */
+    .tour { 
+      padding: 60px 8%; text-align: center; 
+      background: linear-gradient(120deg, #faf9ff 0%, #e6e6ff 100%); color: #333; 
+    }
+    .tour h2 { 
+      color: var(--violet-dark); font-size: clamp(1.6rem, 2.5vw, 2.2rem); 
+      margin-bottom: 20px; 
+    }
+    .tour ol { 
+      list-style: none; counter-reset: step; max-width: 700px; margin: 0 auto; text-align: left; 
+    }
+    .tour li { 
+      counter-increment: step; margin-bottom: 16px; 
+      background: linear-gradient(120deg, #fff, #f4f4ff); 
+      padding: 18px 22px; border-left: 6px solid var(--gold); 
+      border-radius: 12px; box-shadow: var(--shadow); 
+      font-size: 1.05rem; line-height: 1.6; 
+    }
+    .tour li::before { 
+      content: counter(step); font-weight: 700; color: var(--violet); margin-right: 10px; 
+    }
+
+    /* FAQ */
+    #faq-section { 
+      max-width: 800px; margin: 60px auto; padding: 2rem; 
+      background: #1a1a2e; border-radius: 12px; 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+    }
+    #faq-section h2 { 
+      text-align: center; color: var(--violet); margin-bottom: 2rem; font-size: 2rem; 
+    }
+    .faq-item { margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .faq-question { 
+      width: 100%; text-align: left; padding: 1rem; background: none; border: none; 
+      color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; 
+      display: flex; justify-content: space-between; align-items: center; 
+    }
+    .faq-question h3 { margin: 0; font-size: 1.1rem; }
+    .faq-arrow { transition: transform 0.3s ease; }
+    .faq-answer { 
+      max-height: 0; overflow: hidden; transition: max-height 0.4s ease; 
+      padding: 0 1rem; color: #ddd; 
+    }
+    .faq-answer.open { max-height: 600px; padding: 1rem; }
+
+    /* TERMS LINK */
+    .terms-link { text-align: center; margin: 40px auto; }
+    .terms-link a { color: var(--gold); font-size: 1.2rem; font-weight: 500; text-decoration: underline; }
+
+    /* MODAL */
+    .modal { 
+      display: none; position: fixed; inset: 0; 
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); 
+      align-items: center; justify-content: center; z-index: 2000; 
+    }
+    .modal.active { display: flex; }
+    .modal-content { 
+      background: rgba(20,10,40,0.95); border-radius: 20px; 
+      width: 90%; max-width: 460px; padding: 2rem; box-shadow: var(--shadow); 
+      position: relative; 
+    }
+    .close-modal { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: #aaa; cursor: pointer; }
+    .tabs { display: flex; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); position: relative; }
+    .tab { flex: 1; padding: 1rem; text-align: center; font-weight: 600; cursor: pointer; }
+    .tab.active { color: var(--violet); }
+    .tab-indicator { position: absolute; bottom: -1px; height: 3px; background: var(--violet); width: 50%; transition: transform 0.4s ease; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; opacity: 0.9; }
+    input { width: 100%; font-size: 16px; padding: 0.9rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; background: rgba(255,255,255,0.05); color: white; }
+    input:focus { outline: none; border-color: var(--violet); }
+    .password-wrapper { position: relative; }
+    .eye-toggle { position: absolute; right: 1rem; top: 65%; transform: translateY(-50%); cursor: pointer; color: #aaa; }
+    button.primary { width: 100%; padding: 1rem; background: var(--violet); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+    #successSection { display: none; text-align: center; }
+    .success-icon { font-size: 4rem; color: var(--gold); margin-bottom: 1rem; animation: bounce 1s; }
+    @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 2rem; right: 2rem; background: #222; color: white; padding: 1rem 1.5rem; border-radius: 12px; box-shadow: var(--shadow); z-index: 3000; display: none; }
+    #toast.error { background: #e74c3c; }
+
+   /* LOADING OVERLAY */
+#loadingOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(10, 0, 20, 0.95); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center; flex-direction: column;
+  z-index: 9999; color: white; text-align: center;
+}
+
+#loadingOverlay.active { display: flex; }
+
+.logo-loader {
+  width: 90px; height: 90px; margin-bottom: 1.5rem;
+  animation: pulse 1.5s ease-in-out infinite, blink 1.2s ease-in-out infinite;
+}
+
+/* PULSE SCALE */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* BLINK FADE */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.loading-text { 
+  font-size: 1.2rem; 
+  font-weight: 600; 
+  letter-spacing: 1px; 
+}
+
+.loading-dots::after {
+  content: '';() 
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+  
+}
+
+.success-box {
+  background: linear-gradient(135deg, #131123, #0c0718);
+  padding: 25px;
+  border-radius: 18px;
+  text-align: center;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.5s ease;
+}
+
+.success-icon {
+  font-size: 55px;
+  margin-bottom: 10px;
+  color: #87ff95;
+  text-shadow: 0 0 12px #3cff62;
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.success-text {
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+.referral-code {
+  margin: 12px 0;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffd86b;
+  text-shadow: 0 0 6px rgba(255, 215, 120, 0.6);
+}
+
+.success-note {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+      .topbar { padding: 0.8rem 1rem; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+      .brand { font-size: 1.5rem; }
+      #openAuthModal { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+
+      .hero { height: 80vh; padding: 0 1rem; }
+      .slide-text h2 { font-size: 2.2rem; }
+      .slide-text p { font-size: 1rem; }
+      .hero-cta { flex-direction: column; width: 90%; }
+      .hero-cta button { width: 100%; }
+
+      .tour { padding: 40px 5%; }
+      .tour li { padding: 16px; font-size: 1rem; }
+
+      #faq-section { margin: 40px 15px; padding: 1.5rem; }
+      #faq-section h2 { font-size: 1.7rem; }
+      .faq-question h3 { font-size: 1rem; }
+
+      .modal-content { width: 95%; padding: 1.5rem; }
+    }
+
+    @media (max-width: 360px) {
+      .slide-text h2 { font-size: 1.9rem; }
+      .brand { font-size: 1.4rem; }
+       .success-box {
+   padding: 18px;
+   border-radius: 14px;
+ }
+ 
+ .success-icon {
+   font-size: 45px;
+ }
+ 
+ .success-title {
+   font-size: 20px;
+ }
+ 
+ .referral-code {
+   font-size: 18px;
+   padding: 6px 10px;
+ }
+ 
+ .success-text,
+ .success-note {
+   font-size: 13px;
+ }
+ 
+    }
+
+    /* Tablet & larger phones */
+    @media (min-width: 481px) and (max-width: 768px) {
+      .hero { height: 85vh; }
+      .slide-text h2 { font-size: 2.8rem; }
+      .tour { padding: 50px 6%; }
+    }
+
+    /* Prevent iOS zoom on inputs */
+    @media (max-width: 768px) {
+      input, button { font-size: 16px !important; }
+    }
+
+    /* Short screens (landscape mobile) */
+    @media (max-height: 600px) {
+      .hero { height: 100vh; justify-content: center; }
+      .topbar { padding: 0.6rem 1rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay">
+    <div class="logo-loader">
+      <img src="./badge-72.png" alt="NEF" style="width: 90px; height:90px; border-radius: 18px;">
+      </div>
+    <div class="loading-text">Connecting...<span class="loading-dots"></span></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">AnonConnect</div>
+    <div id="auth-area"><button id="openAuthModal">Sign Up / Log In</button></div>
+      <a href="live-chat.html">
+    <i class="fa fa-headset" style="color: white; font-size: 22px;"></i>
+  </a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="slideshow" id="slideshow">
+        <div class="slide" style="background-image:url('./IMG_1279.jpeg')"><div class="slide-text"><h2>Connect anonymously</h2><p>Make friends, send secrets.</p></div></div>
+        <div class="slide" style="background-image:url('./IMG_1280.jpeg')"><div class="slide-text"><h2>Private share link</h2><p>Get anonymous messages.</p></div></div>
+        <div class="slide" style="background-image:url('./IMG_1279.jpeg')"><div class="slide-text"><h2>Join group chats</h2><p>Friendly, mature, controlled.</p></div></div>
+        <div class="slide" style="background-image:url('./IMG_1281.jpeg')"><div class="slide-text"><h2>Play quick games</h2><p>Truth & Dare.</p></div></div>
+        <div class="slide" style="background-image:url('./IMG_1281.jpeg')"><div class="slide-text"><h2>Any device</h2><p>Phones & desktop.</p></div></div>
+      </div>
+      <div class="hero-cta">
+        <button id="openAuthModal">Get Started</button>
+      </div>
+    </section>
+
+    <!-- TOUR -->
+    <section class="tour">
+      <h2>How AnonConnect Works</h2>
+      <ol>
+        <li>Sign up with your correct details (Same Username won't be available twice).</li>
+        <li>Make sure you edit your profile if is not yet edited before during anything.</li>
+        <li>Go to Dashboard and join groups or create a shareable anonymous link.</li>
+        <li>Share the link — anyone can send anonymous messages to your inbox and you can also reply to the person if the user already has an AnonConnect account.</li>
+        <li>Make sure you read our <strong>Terms and Conditions</strong> before you use this website.</li>
+      </ol>
+    </section>
+
+ <!-- FAQ -->
+<section id="faq-section">
+  <h2>Frequently Asked Questions</h2>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFAQ(this)">
+        <h3>What is Anon Group Chat?</h3>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Anon Group Chat is a fun, secure platform for anonymous messaging, group chats, and interactive games. Share thoughts anonymously, join themed groups, private message friends, or play Truth or Dare with view-once media (pics, videos, audio).</p>
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFAQ(this)">
+        <h3>How do I send anonymous messages?</h3>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Log in to your dashboard, generate a unique anonymous link (e.g., yoursite.com/anon.html?username=yourname), and share it. Others can use the link to send you messages without revealing their identity. Replies are possible if they provide their username.</p>
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFAQ(this)">
+        <h3>What are the terms and conditions for groups?</h3>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Before joining, read the terms on group.html:
+        <ul>
+          <li><strong>All Groups:</strong> Be 18+ for Mature/Naughty; respect others; no harassment, spam, or illegal content. Media (pics, videos, audio) is view-once and deleted after reading.</li>
+          <li><strong>Friendly:</strong> Keep it PG—family-friendly vibes only.</li>
+          <li><strong>Mature:</strong> Adult topics OK, but no explicit media without consent.</li>
+          <li><strong>Naughty:</strong> Flirty fun only; explicit content allowed but must follow consent rules—violations lead to bans.</li>
+        </ul>
+        Violations result in removal from groups and potential account suspension.
+        </p>
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFAQ(this)">
+        <h3>How does the Truth or Dare game work?</h3>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>In your dashboard or groups, start a Truth or Dare session with friends. Take turns answering truths or completing dares. Send view-once media (pics, videos, audio) for dares—it's encrypted and auto-deletes after viewing. Track scores and history in your insights panel. Perfect for group fun!</p>
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFAQ(this)">
+        <h3>Is my data private?</h3>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Yes! Anonymous messages don't reveal sender identities unless they choose to. Profile pics are stored as secure Base64 strings in supabase Database. View-once media is encrypted and deleted. We follow strict privacy rules—no data selling. Log in with supabase Auth for secure access.</p>
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFAQ(this)">
+        <h3>How do I get started?</h3>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>1. Sign up/log in.<br>2. Complete your profile (username, optional pic).<br>3. Generate an anonymous link in your dashboard.<br>4. Join a group on group.html (read terms first).<br>5. Chat, play Truth or Dare, or private message!</p>
+        <p>If you're new, check our welcome notification for tips.</p>
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFAQ(this)">
+        <h3>Need help or have issues?</h3>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Contact <a href="live-chat.html" style="font-weight: 700; font-size: 22px;">Support</a> For technical issues (e.g., links not working), check your browser console or ensure Firebase is enabled.</p>
+      </div>
+    </div>
+  </section> 
+
+    <div class="terms-link">
+      <a href="rule.html">Terms and Conditions</a>
+      <a href="documentation.html" style="padding-left: 10px;">Documentation</a>
+    </div>
+  </main>
+
+  <div id="toast"></div>
+
+  <!-- AUTH MODAL -->
+  <div class="modal" id="authModal">
+    <div class="modal-content">
+      <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+      <div class="tabs">
+        <div class="tab active" data-tab="login">Login</div>
+        <div class="tab" data-tab="signup">Signup</div>
+        <div class="tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="loginForm" class="form-section">
+        <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com" /></div>
+        <div class="form-group password-wrapper"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" /><i class="fas fa-eye eye-toggle" id="loginEye"></i></div>
+        <button class="primary" id="loginBtn">Login</button>
+      </div>
+     <!-- SIGNUP -->
+<div id="signupForm" class="form-section" style="display:none;">
+  <div class="form-group">
+    <label>Full Name</label>
+    <input type="text" id="fullName" placeholder="John Doe" />
+  </div>
+  <div class="form-group">
+    <label>Username</label>
+    <input type="text" id="username" placeholder="johndoe123" />
+  </div>
+  <div class="form-group">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="you@example.com" />
+  </div>
+  <div class="form-group password-wrapper">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••" />
+    <i class="fas fa-eye eye-toggle" id="signupEye"></i>
+  </div>
+  <div class="form-group">
+    <label>Profile Image</label>
+    <input type="file" id="profileImage" accept="image/*" />
+  </div>
+  <div class="form-group">
+    <label>Referral Code <small>(optional)</small></label>
+    <input type="text" id="referralCodeInput" placeholder="Enter referral code" />
+  </div>
+  <button class="primary" id="signupBtn">Create Account</button>
+</div>
+    
+      <!-- SUCCESS -->
+      <div id="successSection">
+        <i class="fas fa-check-circle success-icon"></i>
+        <div class="success-title">Welcome!</div>
+        <div class="success-msg">Your account is ready. Redirecting...</div>
+      </div>
+    </div>
+  </div>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+/* ====================== SUPABASE ====================== */
+const SUPABASE_URL = 'https://ssyaklpnjhoxukfanyxb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzeWFrbHBuamhveHVrZmFueXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNjA2NzUsImV4cCI6MjA5NjczNjY3NX0.H95B092ZXEAQz3l6-QefzWt44RZLpp5PdiEbLktstGE';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabase = supabase;
+
+/* ====================== HELPERS ====================== */
+const $ = id => document.getElementById(id);
+const modal = $('authModal');
+const loading = $('loadingOverlay');
+const showLoading = () => loading?.classList.add('active');
+const hideLoading = () => loading?.classList.remove('active');
+
+function toast(msg, error = false) {
+  const t = $('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = error ? 'error' : 'success';
+  t.style.display = 'block';
+  clearTimeout(t.timeout);
+  t.timeout = setTimeout(() => (t.style.display = 'none'), 4000);
+}
+
+async function isSupabaseUp() {
+  try {
+    const { data, error } = await supabase.from('profiles').select('id').limit(1);
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.error('Supabase unreachable:', err);
+    toast('Service unavailable. Please try later.', true);
+    return false;
+  }
+}
+
+/* ====================== IMAGE UPLOAD ====================== */
+async function getImageUrl(file) {
+  if (!file) {
+    const name = encodeURIComponent($('fullName').value.trim() || 'User');
+    return `https://ui-avatars.com/api/?name=${name}&background=8b5cf6&color=fff&bold=true&size=256`;
+  }
+  const ext = file.name.split('.').pop().toLowerCase();
+  const path = `profiles/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from('profile_images').upload(path, file, { upsert: true });
+  if (error) throw error;
+  const { data } = supabase.storage.from('profile_images').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+/* ====================== REFERRALS ====================== */
+async function handleNewReferral(referralCodeOrUsername, newUsername) {
+  if (!referralCodeOrUsername || !newUsername) return;
+  try {
+    const { data: referrer, error: findErr } = await supabase
+      .from('profiles')
+      .select('username, coins, image')
+      .or(`username.ilike.${referralCodeOrUsername},referral_code.ilike.${referralCodeOrUsername}`)
+      .single();
+    if (findErr || !referrer) return;
+
+    const { error: insertErr } = await supabase.from('referrals').insert({
+      referrer: referrer.username,
+      referred_user: newUsername,
+      referral_code_used: referralCodeOrUsername,
+      earned_coins: 5
+    });
+    if (insertErr && insertErr.code !== '23505') throw insertErr;
+
+    await supabase.from('profiles').update({ coins: (referrer.coins || 0) + 5 }).eq('username', referrer.username);
+    toast(`+5 Coins to @${referrer.username}!`);
+
+    const { count, error: countErr } = await supabase
+      .from('referrals')
+      .select('id', { count: 'exact', head: true })
+      .eq('referrer', referrer.username);
+    if (countErr) throw countErr;
+
+    const referralCount = count || 0;
+    await supabase.from('referral_leaderboard').upsert({
+      username: referrer.username,
+      image: referrer.image,
+      referral_count: referralCount
+    });
+  } catch (err) {
+    console.error('handleNewReferral error:', err);
+  }
+}
+window.handleNewReferral = handleNewReferral;
+
+/* ====================== MODAL ====================== */
+document.querySelectorAll('#openAuthModal').forEach(btn => btn.onclick = () => modal?.classList.add('active'));
+$('closeModal')?.addEventListener('click', () => modal?.classList.remove('active'));
+window.addEventListener('click', e => { if (e.target === modal) modal?.classList.remove('active'); });
+
+/* ====================== TAB SWITCH ====================== */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    const isLogin = tab.dataset.tab === 'login';
+    $('loginForm').style.display = isLogin ? 'block' : 'none';
+    $('signupForm').style.display = isLogin ? 'none' : 'block';
+    $('successSection').style.display = 'none';
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    $('tabIndicator').style.transform = isLogin ? 'translateX(0%)' : 'translateX(100%)';
+  };
+});
+
+/* ====================== PASSWORD TOGGLE ====================== */
+function toggleEye(inputId, iconId) {
+  const input = $(inputId);
+  const icon = $(iconId);
+  input.type = input.type === 'password' ? 'text' : 'password';
+  icon.classList.toggle('fa-eye');
+  icon.classList.toggle('fa-eye-slash');
+}
+$('loginEye')?.addEventListener('click', () => toggleEye('loginPassword', 'loginEye'));
+$('signupEye')?.addEventListener('click', () => toggleEye('password', 'signupEye'));
+
+/* ====================== SIGNUP ====================== */
+$('signupBtn')?.addEventListener('click', async () => {
+  if (!await isSupabaseUp()) return;
+
+  const fullName = $('fullName').value.trim();
+  const username = $('username').value.trim();
+  const email = $('email').value.trim().toLowerCase();
+  const password = $('password').value;
+  const file = $('profileImage').files[0];
+  const referralInput = $('referralCodeInput')?.value.trim().toUpperCase();
+
+  if (!fullName || !username || !email || !password) return toast('Fill all fields', true);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast('Invalid email', true);
+  if (password.length < 6) return toast('Password too short', true);
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) return toast('Username must be letters/numbers/_', true);
+
+  showLoading();
+  try {
+    const { data, error: authErr } = await supabase.auth.signUp({ email, password });
+    if (authErr) throw authErr;
+    const user = data.user;
+    if (!user) throw new Error('Signup failed');
+
+    const imgUrl = await getImageUrl(file);
+    const newReferralCode = username.toUpperCase();
+
+    const { error: profErr } = await supabase.from('profiles').upsert({
+  id: user.id,            // <-- Use auth user id here
+  username,               // Keep exactly as inputted
+  full_name: fullName,
+  email,
+  image: imgUrl,
+  coins: 100,
+  is_premium: false,
+  referral_code: newReferralCode
+});
+
+    if (profErr) throw profErr;
+
+    hideLoading();
+    toast(`Welcome @${username}!`);
+
+    $('signupForm').style.display = 'none';
+    $('successSection').style.display = 'block';
+    $('successSection').innerHTML = `
+      <div class="success-box">
+        <div class="success-icon">✔</div>
+        <h2 class="success-title">Account Created!</h2>
+        <p class="success-text">Your referral code:</p>
+        <div class="referral-code">${newReferralCode}</div>
+        <p class="success-note">Share it to earn more coins!</p>
+      </div>
+    `;
+    setTimeout(() => location.href = 'dashboard.html', 2500);
+
+    if (referralInput && referralInput !== newReferralCode) handleNewReferral(referralInput, username);
+
+  } catch (err) {
+    hideLoading();
+    console.error(err);
+    toast(err.message || 'Signup failed', true);
+  }
+});
+
+/* ====================== LOGIN ====================== */
+$('loginBtn')?.addEventListener('click', async () => {
+  if (!await isSupabaseUp()) return;
+
+  const email = $('loginEmail').value.trim().toLowerCase();
+  const password = $('loginPassword').value;
+  if (!email || !password) return toast('Enter email and password', true);
+
+  showLoading();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  hideLoading();
+  if (error) return toast(error.message, true);
+
+  location.href = 'dashboard.html';
+});
+
+/* ====================== AUTO REDIRECT ====================== */
+window.addEventListener('load', async () => {
+  hideLoading();
+  try {
+    if (!await isSupabaseUp()) return;
+    const { data } = await supabase.auth.getSession();
+    if (data.session) location.href = 'dashboard.html';
+  } catch {
+    toast('Service unavailable. Try again later.', true);
+  }
+});
+
+/* ====================== SLIDESHOW ====================== */
+let idx = 0;
+setInterval(() => {
+  idx = (idx + 1) % 5;
+  $('slideshow')?.style.setProperty('transform', `translateX(-${idx * 100}%)`);
+}, 5000);
+
+/* ====================== FAQ ====================== */
+window.toggleFAQ = function(btn) {
+  const answer = btn.nextElementSibling;
+  const arrow = btn.querySelector('.faq-arrow');
+  answer.classList.toggle('open');
+  arrow.textContent = answer.classList.contains('open') ? 'Up' : 'Down';
+};
+</script>
+
+
+</body>
+</html>

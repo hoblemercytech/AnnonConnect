@@ -1,0 +1,1873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Truth & Dare — Multiplayer</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+</head>
+<body>
+<div class="container">
+
+  <!-- ====================== HEADER ====================== -->
+  <header>
+    <div>
+      <h1 style="font-size:20px">Truth & Dare — Multiplayer</h1>
+      <div class="muted" id="gameMeta">Not connected</div>
+    </div>
+  </header>
+     <!-- Your Profile -->
+ <div style="display:flex; align-items:center; gap:16px; padding:16px; background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01)); border-radius:16px; margin:8px 0;">
+   <img id="profilePic" src="" alt="You" style="width:64px; height:64px; border-radius:50%; border:4px solid var(--accent);">
+   <div>
+     <div class="small muted">You are playing as</div>
+     <div id="usernameDisplay" style="font-weight:900; font-size:1.4em; color:var(--accent);">Loading...</div>
+     <span id="youHostBadge" style="display:none; background:#f39c12; color:white; padding:3px 10px; border-radius:20px; font-weight:bold; font-size:0.85em;">HOST</span>
+   </div>
+ </div>
+ 
+
+  <!-- ====================== LOBBY: Create / Join ====================== -->
+  <div style="text-align:center; margin:20px 0;" id="hide">
+    <div style="display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap;">
+      <button class="btn ghost" id="createBtn"><i class="fas fa-plus-circle"></i> Create Game</button>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input id="joinCode" class="input" style="width:120px; text-transform:uppercase;" placeholder="CODE" maxlength="6">
+        <button class="btn" id="btnJoin"><i class="fas fa-sign-in-alt"></i> Join</button>
+      </div>
+    </div>
+
+    <div id="gameCodeDisplay" style="margin-top:16px; padding:16px; background:rgba(0,255,0,0.15); border-radius:12px; display:none; align-items:center; gap:12px; justify-content:center;">
+      <strong style="font-size:1.3em; letter-spacing:2px;">GAME CODE: <span id="displayCode" style="color:#0f0;">------</span></strong>
+      <button id="copyCodeBtn" title="Copy"><i class="fas fa-copy"></i></button>
+    </div>
+
+    <div id="startGameSection" style="margin-top:20px; display:none;">
+      <button id="btnStartGame" class="btn large" style="background:#f39c12; padding:14px 32px; font-size:1.2em;"><i class="fas fa-play-circle"></i> Start Game</button>
+    </div>
+  </div>
+
+ <!-- Players Grid -->
+ <div id="playersContainer" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin:16px 0; padding:16px; background:var(--glass); border-radius:var(--radius); border:1px solid rgba(255,255,255,0.08); min-height:120px;">
+   <div class="center muted" style="grid-column:1/-1; padding:30px 0;">Waiting for players to join...</div>
+ </div>
+
+<!-- ====================== MAIN APP ====================== -->
+<div id="gameScreen" style="display:none;">
+  <div class="app">
+    
+    <!-- LEFT: Tasks & Controls -->
+    <div class="card left">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="font-weight:900">Live Preview</div>
+        <div class="timer" id="timerDisplay">00:00</div>
+      </div>
+      
+      <!-- Task Preview Screen -->
+      <div id="taskPreview" style="display:none; margin:30px auto; padding:30px; background:rgba(0,0,0,0.8); color:white; border-radius:20px; max-width:90%; text-align:center;">
+        <h2 id="previewType" style="margin-bottom:20px;">TRUTH</h2>
+        <p id="previewText" style="font-size:24px; margin:20px 0; word-wrap:break-word;"></p>
+        <small id="previewBy" style="display:block; margin-top:10px; color:#ccc;"></small>
+      </div>
+      
+     
+      
+      <!-- TURN BANNER – MOVED OUTSIDE .controls FOR BETTER LAYOUT -->
+      <div id="turnBanner" style="text-align:center; font-size:2em; margin:30px 0; padding:20px; background:rgba(0,0,0,0.6); border-radius:16px; display:none;">
+        <strong id="currentPlayerTurn" style="color:#fff;"></strong>
+      </div>
+      
+      <!-- Main Buttons -->
+      <div class="controls">
+        <button class="btn" id="btnTruth">Truth</button>
+        <button class="btn" id="btnDare">Dare</button>
+        <button class="btn ghost" id="btnClear">Clear</button>
+        
+        <div style="margin-top:25px; text-align:center;">
+          <button id="doneBtn" class="btn large" style="background:deeppink; font-size:1.0em; padding:10px 30px; display:none;">
+            Done!
+          </button>
+        </div>
+      </div>
+      
+      <!-- Task Selection -->
+      <div style="margin-top:14px" id="taskCreator">
+        <div class="select-container" style="margin-bottom:8px;">
+          <label for="taskSelect" style="display:block; margin-bottom:4px; font-weight:bold;">Pick from tasks:</label>
+          <select id="taskSelect" class="input" style="width:100%; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            <option value="">-- Select a task --</option>
+          </select>
+        </div>
+        
+        <button id="btnLoadTruth" class="btn">Load Truth</button>
+        <button id="btnLoadDare" class="btn">Load Dare</button>
+        
+        <div id="customTaskWrapper" style="margin-top:12px;">
+          <input id="taskText" class="input" placeholder="Write a custom truth/dare...">
+        </div>
+        
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button class="btn ghost" id="btnAddTruthSmall">+ Truth</button>
+          <button class="btn ghost" id="btnAddDareSmall">+ Dare</button>
+        </div>
+      </div>
+      
+      <div style="margin-top:12px;">
+        <input id="taskTimer" type="number" class="input" placeholder="Timer in seconds" style="width:120px; margin-top:8px;">
+        <button class="btn" id="btnStartTimer">Start Timer</button>
+      </div>
+    </div>
+    
+    <!-- Confirm Popup -->
+    <div id="confirmPopup" class="popup" style="display:none;">
+      <div class="popup-content">
+        <h3>Did they do it?</h3>
+        <p><strong id="confirmPlayerName"></strong> completed the task?</p>
+        <button class="btn" id="confirmYes">Yes</button>
+        <button class="btn ghost" id="confirmNo">No (Skip / Penalty)</button>
+      </div>
+    </div>
+    
+  
+    <!-- Game Actions Card -->
+    <div class="card">
+      <div style="font-weight:900; margin-bottom:8px">Game Actions</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="small">Leave or reload the current game</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn ghost" id="btnLeave">Leave Game</button>
+          <button class="btn ghost" id="btnReload">Reload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category Selection (Host Only) – MOVED OUTSIDE #gameScreen -->
+<div id="categorySelection" style="margin:20px 12px; padding:20px; background:rgba(255,255,255,0.05); border-radius:16px; border:1px solid rgba(255,255,255,0.1); display:none; text-align:center;">
+  <p style="font-size:1.1em; margin-bottom:16px;">Host is choosing category...</p>
+  <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+    <button class="btn" data-cat="normal">Normal</button>
+    <button class="btn hot" data-cat="hot">Hot</button>
+    <button class="btn naughty" data-cat="naughty">Naughty</button>
+  </div>
+</div>
+    
+    
+      <!-- HOW TO PLAY CARD -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:900; margin-bottom:8px; color:deeppink; cursor:pointer;" id="tourTitle">
+        How to Play
+        <span id="tourToggleIcon" style="float:right; font-size:0.9em; opacity:0.7;">(click to hide)</span>
+      </div>
+      
+      <div id="tour" class="small" style="line-height:1.6; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px; border-left:3px solid deeppink;">
+        <p><strong>1.</strong> One player clicks <strong>Create Game</strong> → gets a 6-letter code</p>
+        <p><strong>2.</strong> Everyone else joins using that code</p>
+        <p><strong>3.</strong> Host picks a category: <strong>Normal</strong>, <strong>Hot</strong>, or <strong>Naughty (18+)</strong></p>
+        <p><strong>4.</strong> Game starts → turns go in order</p>
+        <p><strong>5.</strong> On your turn → choose <strong>Truth</strong> or <strong>Dare</strong></p>
+        <p><strong>6.</strong> Others quickly send a task (from list or custom)</p>
+        <p><strong>7.</strong> Task appears in preview → timer may start</p>
+        <p><strong>8.</strong> Current player chooses:</p>
+        
+        <div style="background:rgba(255,215,0,0.1); padding:12px; border-radius:8px; margin:12px 0; border:1px solid #ffd700;">
+          <p style="margin:0 0 8px; font-weight:bold; color:#ffd700;">
+            Coin System
+          </p>
+          <p style="margin:4px 0; color:#00ff88;"><strong>Complete task</strong> → <strong>+2 coins</strong></p>
+          <p style="margin:4px 0; color:#ff0066;"><strong>Skip / Forfeit</strong> → <strong>-20 coins</strong> (you need at least 20 coins to skip)</p>
+          <p style="margin:8px 0 0; font-weight:bold; color:#ffd700;">
+            Choose categories you know you can handle!
+          </p>
+          <p style="margin:4px 0 0; font-size:0.9em; opacity:0.9;">
+            If you run out of coins → no skipping. You MUST do the task!
+          </p>
+        </div>
+        
+        <p><strong>9.</strong> Next player’s turn automatically!</p>
+        
+        <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1); font-size:0.9em; opacity:0.9;">
+          Pro tip: Use the timer (20–90 sec) for maximum chaos!
+        </div>
+        
+        <div style="text-align:center; margin-top:12px;">
+          <button class="btn ghost small" id="btnToggleTour">
+            Hide Instructions
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    
+  </div>
+
+
+
+<!-- Chat UI -->
+<div class="chat-float" id="chatFloat">
+  <i class="fa-solid fa-comment-dots"></i>
+  <div class="chat-badge" style="display:none;">0</div>
+</div>
+
+<div class="chat-drawer" id="chatDrawer">
+  <div class="chat-header">
+    <div><i class="fa-solid fa-lock"></i> Secret Chat</div>
+    <button class="btn ghost" id="closeChat"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="chat-body" id="chatBody">
+    <div class="chat-welcome small" style="text-align:center;opacity:0.6;padding:20px;">
+      <i class="fa-solid fa-clock"></i> View-once messages disappear after 10 seconds
+    </div>
+  </div>
+
+  <!-- Audio / Waveform container (hidden by default) -->
+  <div id="audioWrapper" style="display:none; padding:10px 16px; background:rgba(30,30,50,0.9); border-top:1px solid rgba(255,255,255,0.08);">
+    <canvas id="waveformCanvas" style="width:100%; height:40px;"></canvas>
+    <div id="audioContainer"></div>
+    <span id="duration">00:00</span>
+  </div>
+
+  <div class="chat-input">
+    <button class="btn ghost" id="btnAttach"><i class="fa-solid fa-paperclip"></i></button>
+    <div id="mediaMenu" style="display:none;">
+      <button class="btn ghost" id="btnPhoto"><i class="fa-solid fa-camera"></i> Photo</button>
+      <button class="btn ghost" id="btnVoice"><i class="fa-solid fa-microphone"></i> Voice</button>
+      <button id="btnViewOnce" class="btn ghost">
+        <i class="fas fa-eye-slash"></i> View Once
+        <span id="viewOnceOn" style="color:#0f0;display:none;">ON</span>
+      </button>
+    </div>
+
+    <textarea id="chatTxt" class="input" placeholder="Send a secret message..." rows="1"></textarea>
+    <button class="btn" id="sendTxt"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+
+  <div class="game-start-popup" id="gameStartPopup">🎮 GAME START! 🎮</div>
+<canvas id="popupParticles" class="popup-particles"></canvas>
+
+<!-- Sound effect -->
+<audio id="gameStartSound" src="game-start.mp3" preload="auto"></audio>
+
+<!-- Game Over Container -->
+<div id="gameOverContainer" style="display:none;">
+  <div class="game-over-modal">
+    <h2>🎉 Congratulations! 🎉</h2>
+    <p>Both players have completed 40 tasks!</p>
+    <div class="players-summary">
+      <!-- Player profiles will be injected here -->
+    </div>
+    <button id="closeGameOverBtn">Close</button>
+  </div>
+</div>
+
+<!-- Confetti Canvas -->
+<canvas id="confettiCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999;"></canvas>
+
+
+</div>
+
+
+  
+
+
+<script type="module">
+  // ====================== SUPABASE CLIENT ======================
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  const supabase = createClient(
+    'https://xfxncdyyleyzteepdyuc.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmeG5jZHl5bGV5enRlZXBkeXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyNTM1ODcsImV4cCI6MjA3ODgyOTU4N30.iaG_k6VkhPl294jhRE6RCcbfvlPQpWVf0wcrod_6MmA'
+  );
+
+  window.supabase = supabase;
+
+  // ====================== HELPERS ======================
+  const $ = id => document.getElementById(id);
+  const setDisplay = (id, value) => { const el = $(id); if (el) el.style.display = value; };
+
+  // Simple & safe HTML escape
+  const escapeHtml = (unsafe) => {
+    if (typeof unsafe !== 'string') return '';
+    return unsafe.replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    })[m]);
+  };
+
+  // Safe random 6-char code (no ambiguous chars)
+  const generateCode = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  };
+
+  // ====================== GLOBALS ======================
+  let myId = null, myName = "Guest", gameId = null, gameCode = null, isHost = false;
+  let myCoins = 0;
+  let recorder = null, chunks = [], seconds = 0, durationInterval = null;
+  let audioCtx, analyser, dataArray, source, animationId;
+  let customTimerSeconds = null;
+  let currentTurnIndex = 0, currentTask = null, currentCategory = null;
+  let timerInterval = null;
+  let channelRefs = [];
+  window.currentGameData = null;
+
+  // CHAT GLOBALS
+  let currentChatId = null;
+  let unreadCount = 0, isViewOnce = false, isTyping = false, typingTimeout = null;
+  const typingUsers = new Map();
+  let chatChannel = null;
+
+  // ====================== PREMIUM TOAST SYSTEM ======================
+  const toastAudio = new Audio("toast-sound.mp3");
+  toastAudio.preload = "auto";
+  let toastContainer = null;
+
+  function getToastContainer() {
+    if (!toastContainer) {
+      toastContainer = document.createElement("div");
+      toastContainer.id = "toastContainer";
+      document.body.appendChild(toastContainer);
+    }
+    return toastContainer;
+  }
+
+  function enforceMaxStack(container) {
+    while (container.children.length > 3) container.children[0].remove();
+  }
+
+  function toast(msg, duration = 3500) {
+    const container = getToastContainer();
+    enforceMaxStack(container);
+
+    const t = document.createElement("div");
+    t.className = "premium-toast";
+    t.innerHTML = `
+      <i class="fas fa-bell"></i>
+      <div class="toast-content">
+        <div class="toast-message">${escapeHtml(msg)}</div>
+        <div class="toast-progress"><div class="toast-progress-fill"></div></div>
+      </div>
+    `;
+
+    const progressFill = t.querySelector(".toast-progress-fill");
+    container.prepend(t);
+
+    requestAnimationFrame(() => t.classList.add("show"));
+    toastAudio.currentTime = 0;
+    toastAudio.play().catch(() => {});
+
+    requestAnimationFrame(() => {
+      progressFill.style.transitionDuration = duration + "ms";
+      progressFill.style.transform = "scaleX(0)";
+    });
+
+    setTimeout(() => {
+      t.classList.add("hide");
+      setTimeout(() => t.remove(), 500);
+    }, duration);
+  }
+
+  // ====================== PROFILE ======================
+// ====================== PROFILE ======================
+async function loadProfile() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    myId = user.id;
+
+    // Fetch username, image, and is_premium
+    const { data: p, error } = await supabase
+      .from('profiles')
+      .select('username, image, is_premium')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Failed to fetch profile:", error);
+    }
+
+    // Store profile globally so other code can access it
+    window.userProfile = p ?? { is_premium: false, username: '', image: '' };
+
+    myName = (p?.username?.trim() || user.email.split('@')[0] || 'User').substring(0, 30);
+    const avatar = p?.image?.includes('supabase.co/storage') 
+      ? p.image 
+      : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(myName)}`;
+
+    if ($('profilePic')) $('profilePic').src = avatar;
+  } else {
+    myId = crypto.randomUUID();
+    myName = 'Guest' + Math.floor(Math.random() * 9999);
+    if ($('profilePic')) $('profilePic').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${myName}`;
+    
+    window.userProfile = { is_premium: false, username: myName, image: '' };
+  }
+
+  if ($('usernameDisplay')) $('usernameDisplay').textContent = myName;
+  updateHostBadge();
+}
+
+  function updateHostBadge() {
+    const badge = $('youHostBadge');
+    if (badge) badge.style.display = isHost ? 'inline-block' : 'none';
+  }
+  
+  
+// ====================== REALTIME ======================
+function subscribeGameRealtime(gId) {
+  unsubscribeAll(); // remove previous subscriptions
+
+  const channel = supabase.channel(`game:${gId}`)
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'games',
+      filter: `id=eq.${gId}`
+    }, payload => {
+      const game = payload.new;
+      window.currentGameData = game;
+
+      // Update players and category
+      if (game.players) renderPlayers(game.players);
+      if (game.category) currentCategory = game.category;
+
+      // Handle game start
+      if (game.status === 'in_progress') {
+        setDisplay('categorySelection', 'none');
+        setDisplay('startGameSection', 'none');
+        // Inside the click handler — ADD THESE TWO LINES:
+setDisplay('hide', 'none'); // ← hides the lobby for the HOST
+// Don't worry — the realtime listener will do it for others too!
+        showGameStartPopup();
+        showGameScreen();
+        toast("Game Started! " + (game.category || "").toUpperCase());
+
+        // Update turn once
+        if (game.current_turn !== undefined) {
+          currentTurnIndex = game.current_turn;
+        }
+        nextTurn(); // call only once
+      } else if (game.current_turn !== undefined) {
+        // Update turn during game without restarting
+        currentTurnIndex = game.current_turn;
+        nextTurn();
+      }
+    })
+    .subscribe();
+
+  // Keep reference to unsubscribe later
+  channelRefs = [channel];
+}
+
+
+  function unsubscribeAll() {
+    channelRefs.forEach(ch => supabase.removeChannel(ch).catch(() => {}));
+    channelRefs = [];
+  }
+
+
+
+  // ====================== RENDER PLAYERS (FIXED) ======================
+  function renderPlayers(players) {
+  const container = $('playersContainer');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (!players || players.length === 0) {
+    container.innerHTML = '<div class="center muted" style="grid-column:1/-1;padding:50px;">Waiting for players...</div>';
+    return;
+  }
+
+  players.forEach(p => {
+    const isMe = p.id === myId;
+    const safeName = escapeHtml(p.username || 'Player');
+    const avatar = p.image?.trim() && p.image.includes('supabase.co')
+      ? p.image
+      : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(p.username || 'player')}`;
+
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    if (isMe) card.classList.add('me');
+    if (p.is_winner) card.classList.add('winner'); // optional, if using winner logic
+    card.dataset.userId = p.id;
+
+    // Host badge
+    const hostBadgeHTML = p.is_host
+      ? `<div class="host-badge">HOST</div>`
+      : '';
+
+    card.innerHTML = `
+      <img src="${avatar}" alt="${safeName}">
+      <div class="username">${safeName}${isMe ? ' (You)' : ''}</div>
+      <div class="points">${p.coins || 0} coins</div>
+      ${hostBadgeHTML}
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+  // ====================== LEAVE GAME ======================
+  function leaveGame() {
+    unsubscribeAll();
+    localStorage.removeItem('lastGameId');
+    localStorage.removeItem('lastMyId');
+    gameId = null; gameCode = null; isHost = false;
+    currentTurnIndex = 0; currentTask = null; currentCategory = null;
+    clearTimer(); hidePreview();
+    window.currentGameData = null;
+    currentChatId = null;
+
+    setDisplay('gameCodeDisplay', 'none');
+    setDisplay('startGameSection', 'none');
+    setDisplay('categorySelection', 'none');
+    setDisplay('gameScreen', 'none');
+    setDisplay('taskPreview', 'none');
+    setDisplay('confirmPopup', 'none');
+    $('playersContainer') && ($('playersContainer').innerHTML = '');
+    $('displayCode') && ($('displayCode').textContent = '');
+    $('createBtn') && ($('createBtn').disabled = false);
+    $('btnJoin') && ($('btnJoin').disabled = false);
+    $('joinCode') && ($('joinCode').disabled = false);
+    updateHostBadge();
+
+    toast("Left the game");
+    setTimeout(() => window.location.href = "dashboard.html", 800);
+  }
+  
+  function updateTruthDareButtons() {
+  const isMyTurn = window.currentGameData?.players[currentTurnIndex]?.id === myId;
+  $('btnTruth').disabled = !isMyTurn;
+  $('btnDare').disabled = !isMyTurn;
+  $('doneBtn').style.display = isMyTurn ? 'block' : 'none';
+}
+
+  // ====================== TURN SYSTEM (FIXED) ======================
+// 1. FIXED nextTurn — now reads from DB
+function nextTurn() {
+  if (!gameId || !window.currentGameData?.players?.length) return toast("Waiting for players...");
+  
+  // Clean old preview rows at start of every turn
+  supabase.from('preview').delete().eq('game_id', gameId).then().catch(() => {});
+  
+  const players = window.currentGameData.players;
+  if (players.length < 2) return toast("Need at least 2 players!");
+  
+  // GAME OVER CHECK — FIXED VERSION
+  const playersAt40 = players.filter(p => (p.tasks?.length || 0) >= 40);
+  
+  if (playersAt40.length >= 1) {
+    let message = "";
+    
+    if (playersAt40.length === players.length) {
+      message = "EVERYONE completed 40 tasks — EPIC TIE!";
+    } else if (playersAt40.length > 1) {
+      message = playersAt40.map(p => escapeHtml(p.username)).join(" & ") + " reached 40 tasks — TIE!";
+    } else {
+      message = escapeHtml(playersAt40[0].username) + " wins with 40 tasks!";
+    }
+    
+    toast("GAME OVER! " + message, 10000);
+    launchConfetti(12000);
+    showGameOver(players);
+    return; // stop here — game is over
+  }
+  
+  // Normal turn flow
+  currentTurnIndex = window.currentGameData.current_turn ?? currentTurnIndex;
+  currentTurnIndex = currentTurnIndex % players.length;
+  
+  const currentPlayer = players[currentTurnIndex];
+  
+  if ($('currentPlayerTurn')) {
+    $('currentPlayerTurn').textContent = `${escapeHtml(currentPlayer.username)}'s Turn! Choose:`;
+  }
+  
+  toast(`${escapeHtml(currentPlayer.username)}, it's your turn! Pick Truth or Dare!`);
+  
+  // Highlight current player card
+  document.querySelectorAll('.player-card').forEach(c => c.classList.remove('current-turn'));
+  const card = document.querySelector(`.player-card[data-user-id="${currentPlayer.id}"]`);
+  if (card) card.classList.add('current-turn');
+  
+  // Reset task state
+  currentTask = null;
+  hidePreview();
+  clearTimer();
+  updateTruthDareButtons();
+}
+
+  // ====================== GAME OVER (FULLY FIXED) ======================
+async function showGameOver(players) {
+  const container = $('gameOverContainer');
+  const summaryDiv = container.querySelector('.players-summary');
+  summaryDiv.innerHTML = '';
+  
+  const maxPoints = Math.max(...players.map(p => (p.tasks?.length || 0)), 0);
+  
+  // We will update the DB only once at the end
+  const playersToUpdate = structuredClone(players);
+  
+  for (const player of playersToUpdate) {
+    const points = (player.tasks?.length || 0);
+    const earned = points * 2;
+    
+    // THIS IS THE FIX → give coins only once per game
+    if (earned > 0 && !player.game_over_bonus) {
+      player.game_over_bonus = true; // mark as paid
+      player.coins = (player.coins || 0) + earned; // increase coins in memory
+      
+      // Actually give the coins (only runs once)
+      await addCoinsForPlayer(player.id, earned, "Game Over Bonus", null);
+    }
+    
+    // ─────── Render player card (unchanged) ───────
+    const card = document.createElement('div');
+    card.classList.add('player-card');
+    card.dataset.userId = player.id;
+    
+    if (points === maxPoints && maxPoints > 0) {
+      card.classList.add('winner');
+      const badge = document.createElement('div');
+      badge.className = 'winner-badge';
+      badge.textContent = 'TROPHY';
+      card.appendChild(badge);
+    }
+    
+    const img = document.createElement('img');
+    img.src = player.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(player.username || 'player')}`;
+    img.alt = player.username;
+    
+    const username = document.createElement('div');
+    username.className = 'username';
+    username.textContent = escapeHtml(player.username || 'Player');
+    
+    const pts = document.createElement('div');
+    pts.className = 'points';
+    pts.textContent = `Points: ${points}`;
+    
+    const coinsEl = document.createElement('div');
+    coinsEl.className = 'coins';
+    coinsEl.textContent = `Coins: ${player.coins || 0}`;
+    
+    card.appendChild(img);
+    card.appendChild(username);
+    card.appendChild(pts);
+    card.appendChild(coinsEl);
+    summaryDiv.appendChild(card);
+    // ───────────────────────────────────────────────
+  }
+  
+  // Save the bonus flag + updated coin count to the database (only once!)
+  await supabase
+    .from('games')
+    .update({ players: playersToUpdate })
+    .eq('id', gameId);
+  
+  // Show screen
+  container.style.display = 'flex';
+  new Audio('game-start.mp3').play().catch(() => {});
+  launchConfetti(5000);
+  
+  $('closeGameOverBtn').onclick = () => container.style.display = 'none';
+  updateCoinDisplay();
+}
+
+
+
+async function loadCoins() {
+  if (!myId) return;
+
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('coins')
+      .eq('id', myId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    myCoins = data?.coins ?? 0;
+  } catch (err) {
+    console.error("Failed to load coins:", err);
+    myCoins = 0;
+  }
+
+  updateCoinDisplay();
+}
+
+async function addCoins(amount, reason = "") {
+  if (!myId) return;
+
+  try {
+    const { data, error } = await supabase.rpc('increment_coins', {
+      p_user_id: myId,
+      p_change: amount
+    });
+
+    if (error) throw error;
+
+    myCoins = data[0]?.coins ?? myCoins;
+    updateCoinDisplay();
+
+    // Floating animation
+    const float = document.createElement('div');
+    float.textContent = amount > 0 ? `+${amount}` : amount;
+    float.style.cssText = `
+      position: fixed;
+      top: 80px;
+      right: 30px;
+      color: ${amount > 0 ? '#00ff9d' : '#ff3b30'};
+      font-weight: bold;
+      font-size: 38px;
+      z-index: 9999;
+      pointer-events: none;
+      animation: floatUp 1.8s ease-out forwards;
+    `;
+    document.body.appendChild(float);
+    setTimeout(() => float.remove(), 2000);
+
+    toast(`${reason ? reason + ": " : ""}${amount > 0 ? '+' + amount : amount} coins!`);
+  } catch (err) {
+    console.error("Failed to update coins:", err);
+    toast("Failed to update coins!");
+  }
+}
+
+
+
+async function addCoinsForPlayer(playerId, amount, reason = "", coinsDisplayElement) {
+  if (playerId === myId) {
+    await addCoins(amount, reason);
+  }
+
+  if (coinsDisplayElement) {
+    const current = parseInt(coinsDisplayElement.textContent.replace(/\D/g, '')) || 0;
+    coinsDisplayElement.textContent = `Coins: ${current + amount}`;
+  }
+}
+
+function updateCoinDisplay() {
+  let coinDisplay = $('coinDisplay');
+
+  if (coinDisplay) {
+    $('coinCount').textContent = myCoins;
+    return;
+  }
+
+  coinDisplay = document.createElement('div');
+  coinDisplay.id = 'coinDisplay';
+  coinDisplay.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.85);
+    padding: 14px 26px;
+    border-radius: 50px;
+    border: 2px solid #00ff9d;
+    color: #00ff9d;
+    font-weight: bold;
+    font-size: 19px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    backdrop-filter: blur(12px);
+    animation: pulse 2s infinite;
+    pointer-events: none;
+    user-select: none;
+  `;
+  coinDisplay.innerHTML = `
+    <i class="fas fa-coins"></i>
+    <span id="coinCount">${myCoins}</span>
+  `;
+  document.body.appendChild(coinDisplay);
+}
+
+
+function listenToPreview() {
+  if (!gameId) return;
+  const channel = supabase.channel(`preview-${gameId}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'preview', filter: `game_id=eq.${gameId}` }, payload => {
+      showPreview(payload.new);
+    })
+    .subscribe();
+  channelRefs.push(channel);
+}
+
+// ---------------------- TASK PREVIEW ----------------------
+function showTaskPreview() {
+  if (!currentTask?.text) return;
+  $('previewType').textContent = currentTask.type;
+  $('previewType').style.color = currentTask.type === 'TRUTH' ? '#00ff00' : '#ff0066';
+  $('previewText').textContent = currentTask.text;
+  $('previewBy').textContent = currentTask.by || "You";
+  setDisplay('taskPreview', 'block');
+  if (customTimerSeconds !== null) startTimer(customTimerSeconds);
+}
+
+// ---------------------- CONFETTI ----------------------
+function launchConfetti(duration = 5000) {
+  const canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const confettiCount = 180;
+  const confettis = Array.from({length: confettiCount}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 6 + 4,
+    d: Math.random() * confettiCount,
+    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+    tilt: Math.random() * 10 - 10,
+    tiltAngleIncrement: Math.random() * 0.07 + 0.05,
+    tiltAngle: 0
+  }));
+
+  let animationId = null;
+
+  const draw = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettis.forEach(c => {
+      c.tiltAngle += c.tiltAngleIncrement;
+      c.tilt = Math.sin(c.tiltAngle) * 15;
+      ctx.beginPath();
+      ctx.lineWidth = c.r / 2;
+      ctx.strokeStyle = c.color;
+      ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
+      ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+      ctx.stroke();
+      c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+      if (c.y > canvas.height) {
+        c.x = Math.random() * canvas.width;
+        c.y = -10;
+      }
+    });
+    animationId = requestAnimationFrame(draw);
+  };
+
+  draw();
+
+  setTimeout(() => {
+    if (animationId) cancelAnimationFrame(animationId);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }, duration);
+}
+
+// ---------------------- ANIMATIONS ----------------------
+if (!document.getElementById('gameAnimations')) {
+  const style = document.createElement('style');
+  style.id = 'gameAnimations';
+  style.textContent = `
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to   { transform: translateY(-120px) scale(0.6); opacity: 0; }
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 6px 30px rgba(0,255,157,0.4); }
+      50% { box-shadow: 0 6px 50px rgba(0,255,157,0.7); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+
+function startTaskChoice(type) {
+  const players = window.currentGameData?.players || [];
+  const current = players[currentTurnIndex];
+  if (!current) return;
+  toast(`${escapeHtml(current.username)} chose ${type.toUpperCase()}! Others: write or pick a task!`);
+  currentTask = { type: type.toUpperCase(), text: '', by: null };
+  document.querySelectorAll('#taskCreator button, #taskCreator input, #taskCreator select')
+  .forEach(el => el.disabled = false);
+}
+
+async function sendPreview(type) {
+  const inputText = $("taskText")?.value.trim();
+  const selectValue = $("taskSelect")?.value.trim();
+  const content = selectValue || inputText;
+  
+  if (!content) return toast("Write or pick a task first!");
+  
+  // First: delete ALL old previews for this game
+  await supabase.from('preview').delete().eq('game_id', gameId);
+  
+  // Then: insert the new one
+  const { data, error } = await supabase
+    .from('preview')
+    .insert([{
+      game_id: gameId,
+      sender_id: myId,
+      type: type.toUpperCase(),
+      content: content
+    }])
+    .select() // important: get the inserted row back
+    .single();
+  
+  if (error || !data) {
+    console.error(error);
+    return toast("Failed to send task!");
+  }
+  
+  // Clear inputs
+  $("taskText").value = "";
+  $("taskSelect").value = "";
+  
+  // Update local state (for instant feedback)
+  currentTask = {
+    type: type.toUpperCase(),
+    text: content,
+    by: myName
+  };
+  
+  showTaskPreview();
+  toast(`Your ${type.toUpperCase()} is live!`);
+}
+
+function showPreview(task) {
+  const preview = $("taskPreview");
+  if (!preview) return;
+  
+  preview.style.display = "block";
+  
+  $("previewType").textContent = task.type;
+  $("previewType").style.color = task.type === 'TRUTH' ? '#00ff00' : '#ff0066';
+  $("previewText").textContent = task.content;
+  
+  // Find real player name safely
+  const player = window.currentGameData?.players?.find(p => p.id === task.sender_id);
+  const senderName = task.sender_id === myId ?
+    "You" :
+    player?.username || "Someone";
+  
+  $("previewBy").textContent = escapeHtml(senderName);
+  
+  // Auto-start timer if one was set
+  if (customTimerSeconds !== null && customTimerSeconds > 0) {
+    startTimer(customTimerSeconds);
+  }
+}
+
+
+// Fixed message injection (XSS safe)
+function appendMessage(msg) {
+  if (!msg?.id || $(`msg-${msg.id}`)) return;
+  
+  const div = document.createElement('div');
+  div.id = `msg-${msg.id}`;
+  div.className = `chat-msg ${msg.sender_id === myId ? 'me' : 'other'}`;
+  
+  const time = new Date(msg.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const senderName = escapeHtml(msg.sender_id === myId ? 'You' : (msg.sender_name || 'Player'));
+  
+  const content = msg.type === 'image' && msg.url ?
+    `<img src="${msg.url}" loading="lazy" style="max-width:100%;border-radius:14px;cursor:pointer;" onclick="this.requestFullscreen?.()">` :
+    msg.type === 'voice' && msg.url ?
+    `<audio controls src="${msg.url}" style="width:100%;margin:8px 0;"></audio>` :
+    `<div class="msg-text">${escapeHtml(msg.message || '')}</div>`;
+  
+  if (!msg.view_once) {
+    div.innerHTML = `<small style="opacity:0.8;font-weight:600;">${senderName}</small>${content}<div style="font-size:11px;opacity:0.6;margin-top:6px;">${time}</div>`;
+  } else {
+    const overlay = document.createElement('div');
+    overlay.className = 'view-once-overlay';
+    overlay.innerHTML = `<i class="fas fa-eye-slash"></i><div>Tap to view once</div><small>Disappears in 10s</small>`;
+    div.appendChild(overlay);
+    
+    overlay.onclick = (e) => {
+      e.stopPropagation();
+      div.innerHTML = `<small style="opacity:0.8;font-weight:600;">${senderName}</small>${content}<div style="font-size:11px;opacity:0.6;margin-top:6px;">${time}</div>`;
+      warnSensitive();
+      setTimeout(() => $(`msg-${msg.id}`)?.remove(), 7000);
+    };
+  }
+  
+  $('chatBody')?.appendChild(div);
+  const body = $('chatBody');
+  if (body && (body.scrollTop + body.clientHeight >= body.scrollHeight - 100 || msg.sender_id === myId)) {
+    setTimeout(() => body.scrollTop = body.scrollHeight, 100);
+  }
+}
+async function loadChatHistory() {
+  if (!currentChatId) return;
+  
+  const { data } = await supabase
+    .from('text_msg')
+    .select('*')
+    .eq('chat_id', currentChatId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  
+  if (data) {
+    // Oldest first for correct order
+    data.reverse().forEach(msg => appendMessage(msg));
+    // Scroll to bottom
+    const body = $('chatBody');
+    if (body) body.scrollTop = body.scrollHeight;
+  }
+}
+async function loadTasks(type) {
+  if (!currentCategory) {
+    toast("No category selected yet!");
+    return;
+  }
+  
+  const select = document.getElementById("taskSelect");
+  if (!select) return;
+  
+  // Clean, readable, and safe query
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("text")
+    .eq("category", currentCategory) // normal | hot | naughty
+    .eq("type", type.toLowerCase()) // truth | dare
+    .or(`game_id.is.null,game_id.eq.${gameId}`); // global tasks + this game's custom ones
+  
+  if (error) {
+    console.error("Supabase error:", error);
+    toast("Error loading tasks");
+    return;
+  }
+  
+  if (!data || data.length === 0) {
+    select.innerHTML = '<option>-- No tasks in this category --</option>';
+    toast(`No ${type}s found in ${currentCategory} mode`);
+    return;
+  }
+  
+  // Sort so custom tasks (game_id not null) appear first
+  data.sort((a, b) => (b.game_id ? 1 : 0) - (a.game_id ? 1 : 0));
+  
+  select.innerHTML = '<option>-- Pick a ready-made task --</option>';
+  data.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = opt.textContent = t.text;
+    // Optional: visually mark custom tasks
+    if (t.game_id) opt.textContent += " (custom)";
+    select.appendChild(opt);
+  });
+  
+  toast(`${data.length} ${type}(s) loaded!`);
+}
+  function hidePreview() {
+    setDisplay('taskPreview', 'none');
+    clearTimer();
+  }
+
+  function formatTime(secs) {
+    const m = String(Math.floor(secs / 60)).padStart(2, '0');
+    const s = String(secs % 60).padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function startTimer(seconds = 60) {
+    clearTimer();
+    let time = seconds;
+    const update = () => {
+      const fmt = formatTime(time);
+      if ($('timerDisplay')) $('timerDisplay').textContent = fmt;
+      if ($('previewTimer')) $('previewTimer').textContent = fmt;
+    };
+    update();
+    timerInterval = setInterval(() => {
+      time--;
+      update();
+      if (time <= 0) {
+        clearTimer();
+        toast("Time's Up!");
+      }
+    }, 1000);
+  }
+
+  function clearTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    if ($('timerDisplay')) $('timerDisplay').textContent = '00:00';
+    if ($('previewTimer')) $('previewTimer').textContent = '';
+  }
+
+  // ====================== CHAT INITIALIZATION (SAFE) ======================
+  // ====================== CHAT INIT ======================
+function initChat() {
+  if (!gameId || chatChannel) return;
+  currentChatId = gameId; // Use game ID as chat room
+
+  chatChannel = supabase.channel(`chat:${currentChatId}`)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'text_msg',
+      filter: `chat_id=eq.${currentChatId}`
+    }, payload => {
+      if (payload.new?.id) appendMessage(payload.new);
+    })
+    .on('broadcast', { event: 'typing' }, p => handleTyping(p.payload))
+    .subscribe();
+    
+    loadChatHistory();
+
+  channelRefs.push(chatChannel);
+  console.log("Secret Chat Ready!");
+}
+
+// ====================== LEAVE CHAT ======================
+function leaveChat() {
+  if (chatChannel) {
+    supabase.removeChannel(chatChannel).catch(() => {});
+    chatChannel = null;
+    console.log("Left chat channel");
+  }
+  typingUsers.clear();
+}
+
+// ====================== SEND MESSAGE ======================
+async function sendMessage(text = null, file = null, type = 'text') {
+  if (!currentChatId) return toast("Join a game first!");
+
+  let publicUrl = null;
+
+  if (file) {
+    try {
+      const ext = file.name.split('.').pop() || 'file';
+      const name = `${Date.now()}_${Math.random().toString(36).substr(2,6)}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('chat_media').upload(`${currentChatId}/${name}`, file);
+
+      if (uploadError) return toast("Upload failed");
+
+      const { data } = supabase.storage.from('chat_media').getPublicUrl(`${currentChatId}/${name}`);
+      publicUrl = data?.publicUrl || data?.public_url || null;
+      if (!publicUrl) throw new Error("Failed to get public URL");
+    } catch (err) {
+      console.error("File upload error:", err);
+      return toast("Upload failed");
+    }
+  }
+
+  const { data, error } = await supabase.from('text_msg').insert([{
+    chat_id: currentChatId,
+    sender_id: myId,
+    sender_name: myName,
+    message: text || (type === 'image' ? 'Photo' : 'Voice message'),
+    url: publicUrl,
+    type,
+    view_once: isViewOnce
+  }]).select().single();
+
+  if (error) {
+    console.error("Send failed:", error);
+    toast("Failed to send");
+  } else {
+    appendMessage(data);
+  }
+}
+
+// ====================== VIEW-ONCE PROTECTION ======================
+function blurAllViewOnce() {
+  document.querySelectorAll('.view-once-overlay, .view-once-blurred').forEach(el => {
+    el.classList.add('view-once-blurred');
+    if (el.classList.contains('view-once-overlay')) el.style.display = 'flex';
+  });
+}
+
+function warnSensitive() {
+  const warning = document.createElement('div');
+  warning.className = 'welcome-popup show';
+  warning.innerHTML = `
+    <div style="text-align:center;"><i class="fas fa-eye-slash"></i> Sensitive content!</div>
+    <small>Do not screenshot this chat</small>`;
+  document.body.appendChild(warning);
+  setTimeout(() => warning.remove(), 3000);
+}
+
+document.addEventListener('visibilitychange', () => { if(document.hidden) blurAllViewOnce(); });
+window.addEventListener('blur', () => blurAllViewOnce());
+
+document.addEventListener('keyup', e => {
+  if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'PrintScreen') || (e.metaKey && e.shiftKey && e.key === 'S')) {
+    blurAllViewOnce();
+    alert('Screenshots are disabled on sensitive messages!');
+  }
+});
+
+// ====================== TYPING ======================
+function handleTyping(p) {
+  if (p.user_id === myId) return;
+  if (p.user_name) typingUsers.set(p.user_id, { name: p.user_name });
+  else typingUsers.delete(p.user_id);
+
+  const el = $('typingIndicator');
+  if (!el || typingUsers.size === 0) { if(el) el.style.display='none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ' + [...typingUsers.values()].map(x=>x.name).join(', ') + ' typing...';
+}
+
+// ====================== UNREAD BADGE ======================
+function updateBadge() {
+  const b = document.querySelector('.chat-badge');
+  if (b) { 
+    b.textContent = unreadCount > 99 ? '99+' : unreadCount; 
+    b.style.display = unreadCount > 0 ? 'flex' : 'none'; 
+  }
+}
+
+//=== === === === === GAME START & CATEGORY === === === === ===
+
+// Show the main game screen
+function showGameScreen() {
+  setDisplay('hide', 'none');
+  setDisplay('gameScreen', 'block');
+  setDisplay('turnBanner', 'block');
+  updateTruthDareButtons(); // Enable buttons for current player
+  nextTurn();               // Highlight turn and refresh state
+  launchConfetti(4000);     // Celebration effect
+}
+
+// Show the initial game start popup
+function showGameStartPopup() {
+  const popup = $('gameStartPopup');
+  if (popup) popup.classList.add('show');
+
+  const sound = $('gameStartSound');
+  if (sound) {
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+
+  setTimeout(() => popup?.classList.remove('show'), 9000);
+}
+
+// Set up category buttons (normal / hot / naughty)
+function setupCategoryButtons() {
+  const container = $('categorySelection');
+  if (!container) return;
+
+  // Remove old listeners
+  container.querySelectorAll('button[data-cat]').forEach(btn => btn.replaceWith(btn.cloneNode(true)));
+
+  // Attach fresh listeners
+  container.querySelectorAll('button[data-cat]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!isHost) return toast("Only host can start the game!");
+
+      const selectedCategory = btn.dataset.cat; // "normal", "hot", "naughty"
+      toast(`Starting ${selectedCategory.toUpperCase()} mode...`);
+
+      const { error } = await supabase
+        .from('games')
+        .update({
+          category: selectedCategory,
+          status: 'in_progress',
+          current_turn: 0
+        })
+        .eq('id', gameId);
+
+      if (error) {
+        console.error("Failed to start game:", error);
+        toast("Failed to start game!");
+      }
+      // Realtime listener handles UI updates for everyone
+    });
+  });
+}
+
+// ====================== AUTO-REJOIN ON REFRESH / REOPEN ======================
+async function autoRejoinIfInGame() {
+  await loadProfile(); // ensure myId exists
+
+  const savedGameId = localStorage.getItem('lastGameId');
+  const savedMyId = localStorage.getItem('lastMyId');
+
+  if (!savedGameId || !savedMyId || savedMyId !== myId || gameId) return;
+
+  toast("Rejoining previous game...");
+
+  const { data: game, error } = await supabase
+    .from('games')
+    .select('*, players(*)')
+    .eq('id', savedGameId)
+    .single();
+
+  if (error || !game) {
+    localStorage.removeItem('lastGameId');
+    localStorage.removeItem('lastMyId');
+    return toast("Game no longer exists");
+  }
+
+  const stillInGame = game.players?.some(p => p.id === myId);
+  if (!stillInGame) {
+    localStorage.removeItem('lastGameId');
+    localStorage.removeItem('lastMyId');
+    return toast("You are no longer in that game");
+  }
+
+  // SUCCESS — REJOIN!
+  gameId = game.id;
+  gameCode = game.code;
+  isHost = game.host_id === myId;
+  window.currentGameData = game;
+
+  localStorage.setItem('lastGameId', gameId);
+  localStorage.setItem('lastMyId', myId);
+
+  $('displayCode').textContent = game.code;
+  setDisplay('gameCodeDisplay', 'flex');
+  renderPlayers(game.players);
+  updateHostBadge();
+
+  subscribeGameRealtime(gameId);  // Set up realtime updates
+  listenToPreview();              // Load task previews
+  initChat();                     // Load chat
+
+  if (game.status === 'in_progress') {
+    setDisplay('categorySelection', 'none');
+    setDisplay('startGameSection', 'none');
+    showGameScreen();             // Already calls nextTurn()
+    toast(`Rejoined! ${game.category?.toUpperCase() || '??'} mode`);
+  } else {
+    setDisplay('startGameSection', isHost ? 'block' : 'none');
+    toast("Back in waiting room");
+  }
+
+  // Disable lobby buttons after rejoining
+  $('createBtn')?.setAttribute('disabled', true);
+  $('btnJoin')?.setAttribute('disabled', true);
+  $('joinCode')?.setAttribute('disabled', true);
+}
+
+
+// ====================== TASK COMPLETED — YES ======================
+$('confirmYes')?.addEventListener('click', async () => {
+  if (!currentTask?.text) return toast("No task to confirm!");
+  
+  setDisplay('confirmPopup', 'none');
+  hidePreview();
+  clearTimer();
+  
+  const players = structuredClone(window.currentGameData.players); // safe deep copy
+  const currentPlayerObj = players[currentTurnIndex];
+  
+  // Record completed task
+  if (!currentPlayerObj.tasks) currentPlayerObj.tasks = [];
+  currentPlayerObj.tasks.push({
+    ...currentTask,
+    completed_at: new Date().toISOString()
+  });
+  
+  // Give coins only to the person who completed it
+  if (currentPlayerObj.id === myId) {
+    await addCoins(2, "Task completed +2");
+  }
+  
+  // Compute next turn
+  const nextIndex = (currentTurnIndex + 1) % players.length;
+  
+  // Update game in Supabase
+  await supabase
+    .from('games')
+    .update({
+      players: players,
+      current_turn: nextIndex
+    })
+    .eq('id', gameId);
+  
+  // Clean preview table
+  await supabase.from('preview').delete().eq('game_id', gameId);
+  
+  nextTurn(); // move to next player / detect game over
+});
+
+$('confirmNo')?.addEventListener('click', async () => {
+  if (myCoins < 20) {
+    return toast("You need at least 20 coins to skip!");
+  }
+  
+  setDisplay('confirmPopup', 'none');
+  hidePreview();
+  clearTimer();
+
+  const nextIndex = (currentTurnIndex + 1) % window.currentGameData.players.length;
+
+  // Update turn in Supabase
+  await supabase
+    .from('games')
+    .update({ current_turn: nextIndex })
+    .eq('id', gameId);
+
+  // Remove previewed task
+  await supabase.from('preview').delete().eq('game_id', gameId);
+
+  // Deduct coins using RPC
+  try {
+    const { data, error } = await supabase.rpc('increment_coins', {
+      p_user_id: myId,
+      p_change: -20
+    });
+
+    if (error) throw error;
+
+    myCoins = data[0]?.new_coins ?? myCoins;
+    updateCoinDisplay();
+    toast("Skipped -20 coins!");
+  } catch (err) {
+    console.error("Failed to deduct coins:", err);
+    toast("Failed to deduct coins!");
+  }
+
+  nextTurn();
+});
+
+
+
+// ====================== MAIN INIT – FINAL & BULLETPROOF ======================
+(async () => {
+      await new Promise(r => document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', r) : r());
+      
+      await loadProfile();
+      await loadCoins();
+      updateCoinDisplay();
+      
+      // CRITICAL: Try to rejoin first — this runs on every page load
+      await autoRejoinIfInGame();
+      
+      // Only setup create/join buttons if NOT already in a game
+      if (!gameId) {
+        setupCategoryButtons();
+        // Fixed game code generation
+  $('createBtn')?.addEventListener('click', async () => {
+    if (gameId) return toast('Already in a game');
+    const code = generateCode();
+
+    const hostPlayer = { id: myId, username: myName, image: $('profilePic')?.src || '', is_host: true, tasks: [], coins: myCoins };
+
+    const { data, error } = await supabase
+      .from('games')
+      .insert({ code, host_id: myId, status: 'waiting', players: [hostPlayer] })
+      .select().single();
+
+    if (error || !data) return toast('Failed to create game');
+
+    gameId = data.id; gameCode = code; isHost = true;
+    localStorage.setItem('lastGameId', gameId);
+    localStorage.setItem('lastMyId', myId);
+
+    $('displayCode').textContent = code;
+    setDisplay('gameCodeDisplay', 'flex');
+    setDisplay('startGameSection', 'block');
+    $('createBtn').disabled = true;
+    $('btnJoin').disabled = true;
+
+    toast(`Created! Share code: ${code}`);
+    subscribeGameRealtime(gameId);
+    renderPlayers(data.players);
+    updateHostBadge();
+    listenToPreview();
+    initChat();
+  });
+
+        // ====== JOIN GAME ======
+        $('btnJoin')?.addEventListener('click', async () => {
+          const code = $('joinCode')?.value.trim().toUpperCase();
+          if (!code) return toast('Enter code');
+          
+          const { data: game, error } = await supabase.from('games').select('*').eq('code', code).single();
+          if (error || !game) return toast('Game not found');
+          if (game.status !== 'waiting') return toast('Game already started');
+          if (game.players.some(p => p.id === myId)) return toast('You are already in');
+          
+          const newPlayer = { id: myId, username: myName, image: $('profilePic')?.src || '', is_host: false };
+          const updatedPlayers = [...game.players, newPlayer];
+          
+          const { error: updateError } = await supabase
+            .from('games')
+            .update({ players: updatedPlayers })
+            .eq('id', game.id);
+          
+          if (updateError) return toast('Could not join');
+          
+          gameId = game.id;
+          gameCode = code;
+          isHost = false;
+          
+          localStorage.setItem('lastGameId', gameId);
+          localStorage.setItem('lastMyId', myId);
+          
+          $('createBtn').disabled = true;
+          $('btnJoin').disabled = true;
+          $('joinCode').disabled = true;
+          
+          renderPlayers(updatedPlayers);
+          setDisplay('gameCodeDisplay', 'flex');
+          $('displayCode').textContent = code;
+          toast('Joined game!');
+          
+          subscribeGameRealtime(gameId);
+          updateHostBadge();
+          listenToPreview();
+          initChat();
+        });
+      }
+      
+      // ====== ALL OTHER BUTTONS (Leave, Chat, etc.) – unchanged & safe ======
+      $('btnLeave')?.addEventListener('click', () => {
+        if (!gameId) return toast("Not in a game");
+        if (confirm("Leave this game?")) {
+          localStorage.removeItem('lastGameId');
+          localStorage.removeItem('lastMyId');
+          leaveGame();
+        }
+      });
+      
+      $('copyCodeBtn')?.addEventListener('click', () => {
+        navigator.clipboard.writeText(gameCode || '');
+        toast('Code copied!');
+      });
+      
+$('btnStartGame')?.addEventListener('click', () => {
+  if (!isHost) return toast('Only host can start');
+
+  const profile = window.userProfile;
+  
+  if (!profile.is_premium) {
+    let gamesStarted = parseInt(localStorage.getItem('games_started')) || 0;
+    if (gamesStarted >= 5) return toast('Upgrade to Lifetime Plan to play more games!');
+    gamesStarted += 1;
+    localStorage.setItem('games_started', gamesStarted);
+  }
+
+  setDisplay('categorySelection', 'block');
+  setDisplay('startGameSection', 'none');
+  toast('Host: Pick a category!');
+});
+
+  // ====== CHAT FLOAT / DRAWER ======
+$('chatFloat')?.addEventListener('click', () => {
+  const d = $('chatDrawer');
+  if (d) {
+    d.classList.toggle('open');
+    if (d.classList.contains('open')) {
+  unreadCount = 0;
+  updateBadge(); // ← NOW WORKS
+      const body = $('chatBody');
+      if (body) body.scrollTop = body.scrollHeight;
+    }
+  }
+});
+
+  $('closeChat')?.addEventListener('click', () => $('chatDrawer')?.classList.remove('open'));
+$('btnAttach')?.addEventListener('click', () => {
+  const menu = $('mediaMenu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
+$('btnPhoto')?.addEventListener('click', () => {
+  const input = document.createElement('input'); input.type='file'; input.accept='image/*';
+  input.onchange = e => e.target.files[0] && sendMessage(null, e.target.files[0], 'image');
+  input.click(); $('mediaMenu').style.display='none';
+});
+
+// ====== VIEW-ONCE TOGGLE ======
+$('btnViewOnce')?.addEventListener('click', () => {
+  isViewOnce = !isViewOnce;
+  const on = $('viewOnceOn');
+  if(on) on.style.display = isViewOnce ? 'inline' : 'none';
+  $('mediaMenu').style.display='none';
+});
+
+// ====== AUDIO RECORDING ======
+const btn = $('btnVoice');
+const audioContainer = $('audioContainer');
+const durationEl = $('duration');
+const canvas = $('waveformCanvas');
+const canvasCtx = canvas.getContext('2d');
+
+btn.addEventListener('click', async () => {
+  const audioWrapper = $('audioWrapper'); // wrapper for audio + waveform
+
+  if (recorder?.state === 'recording') {
+    // Stop recording
+    recorder.stop();
+    btn.classList.remove('recording');
+    btn.innerHTML = '<i class="fa-solid fa-microphone"></i> Voice';
+
+    // Hide audio wrapper after recording
+    audioWrapper.style.display = 'none';
+
+    // Reset duration and waveform
+    clearInterval(durationInterval);
+    seconds = 0;
+    durationEl.textContent = '00:00';
+    cancelAnimationFrame(animationId);
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recorder = new MediaRecorder(stream);
+    chunks = [];
+
+    // Show audio wrapper while recording
+    audioWrapper.style.display = 'block';
+
+    // Setup Web Audio API for live waveform
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    source = audioCtx.createMediaStreamSource(stream);
+    source.connect(analyser);
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+
+    function drawWaveform() {
+      animationId = requestAnimationFrame(drawWaveform);
+      analyser.getByteTimeDomainData(dataArray);
+
+      canvasCtx.fillStyle = '#0f0f19';
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+      canvasCtx.lineWidth = 2;
+      canvasCtx.strokeStyle = '#ff007f';
+      canvasCtx.beginPath();
+
+      let x = 0;
+      const sliceWidth = canvas.width / bufferLength;
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * canvas.height / 2;
+        if (i === 0) canvasCtx.moveTo(x, y);
+        else canvasCtx.lineTo(x, y);
+        x += sliceWidth;
+      }
+      canvasCtx.lineTo(canvas.width, canvas.height / 2);
+      canvasCtx.stroke();
+    }
+    drawWaveform();
+
+    // Start duration timer
+    seconds = 0;
+    durationEl.textContent = '00:00';
+    durationInterval = setInterval(() => {
+      seconds++;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      durationEl.textContent = `${m}:${s}`;
+    }, 1000);
+
+    recorder.ondataavailable = e => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    recorder.onstop = () => {
+      clearInterval(durationInterval);
+      cancelAnimationFrame(animationId);
+      canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+      try {
+        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+
+        const audioEl = document.createElement('audio');
+        audioEl.controls = true;
+        audioEl.src = url;
+        audioContainer.innerHTML = '';
+        audioContainer.appendChild(audioEl);
+
+        audioEl.play().catch(() => {});
+
+        // Send audio to backend
+        sendMessage(null, audioBlob, 'voice');
+      } catch (err) {
+        console.error('Error processing audio', err);
+      } finally {
+        stream.getTracks().forEach(track => track.stop());
+        if (audioCtx) audioCtx.close();
+      }
+    };
+
+    recorder.start();
+    btn.classList.add('recording');
+    btn.innerHTML = 'Stop';
+    console.log('Recording started');
+  } catch (err) {
+    console.error('Microphone access denied or error starting recording', err);
+    toast('Microphone access denied or error starting recording');
+  }
+});
+
+
+$('chatTxt')?.addEventListener('input', () => {
+  if (!isTyping && chatChannel) {
+    isTyping = true;
+    chatChannel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { user_id: myId, user_name: myName, typing: true }
+    });
+  }
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    isTyping = false;
+    if (chatChannel) chatChannel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { typing: false }
+    });
+  }, 1000);
+});
+
+// NEW: Mobile keyboard fix — scroll chat into view when typing
+$('chatTxt')?.addEventListener('focus', () => {
+  setTimeout(() => {
+    const drawer = $('chatDrawer');
+    if (drawer && drawer.classList.contains('open')) {
+      drawer.scrollTop = drawer.scrollHeight;
+      // Critical for iOS/Android — forces page to bottom
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  }, 300);
+});
+
+$('sendTxt')?.addEventListener('click', () => {
+  const text = $('chatTxt')?.value.trim();
+  if (text) {
+    sendMessage(text);
+    $('chatTxt').value = '';
+    
+    // Bonus: after sending, make sure input stays visible
+    setTimeout(() => {
+      const drawer = $('chatDrawer');
+      if (drawer?.classList.contains('open')) {
+        drawer.scrollTop = drawer.scrollHeight;
+      }
+    }, 100);
+  }
+});
+
+$('chatTxt')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    $('sendTxt')?.click();
+  }
+});
+
+    // Initialize chat when entering a game
+    const originalCreate = $('createBtn')?.onclick;
+    const originalJoin = $('btnJoin')?.onclick;
+
+
+
+
+// Truth / Dare buttons
+$('btnTruth')?.addEventListener('click', () => startTaskChoice('truth'));
+$('btnDare')?.addEventListener('click', () => startTaskChoice('dare'));
+
+// Send custom tasks
+$('btnAddTruthSmall')?.addEventListener('click', () => sendPreview('truth'));
+$('btnAddDareSmall')?.addEventListener('click', () => sendPreview('dare'));
+
+// Load tasks from list
+$('btnLoadTruth')?.addEventListener('click', () => loadTasks('truth'));
+$('btnLoadDare')?.addEventListener('click', () => loadTasks('dare'));
+
+// Done / Skip task
+$('doneBtn')?.addEventListener('click', () => {
+  if (!currentTask?.text) return toast("No task yet!");
+  setDisplay('confirmPopup', 'block');
+});
+
+
+
+// Clear task input
+$('btnClear')?.addEventListener('click', () => {
+  $('taskText').value = '';
+  $('taskSelect').value = '';
+  currentTask = null;
+  hidePreview();
+  clearTimer();
+  toast("Cleared!");
+});
+
+// Reload page
+$('btnReload')?.addEventListener('click', () => confirm("Reload page?") && location.reload());
+
+// Timer Input (live update)
+$('taskTimer')?.addEventListener('input', (e) => {
+  const val = parseInt(e.target.value);
+  customTimerSeconds = (isNaN(val) || val <= 0) ? null : val;
+});
+
+$('taskTimer')?.addEventListener('blur', (e) => {
+  const val = parseInt(e.target.value);
+  customTimerSeconds = (isNaN(val) || val <= 0) ? null : val;
+  if (customTimerSeconds === null) {
+    e.target.value = '';
+    toast("Timer disabled (leave blank = no timer)");
+  }
+});
+
+// Start Timer Button
+$('btnStartTimer')?.addEventListener('click', () => {
+  const val = parseInt($('taskTimer')?.value);
+  if (!val || val <= 0) return toast("Enter seconds first!");
+  customTimerSeconds = val;
+  startTimer(val);
+  toast(`Timer started: ${val}s`);
+});
+    
+    
+// ====================== HOW TO PLAY – HIDE/SHOW + REMEMBER ======================
+const tourDiv = $('tour');
+const tourTitle = $('tourTitle');
+const toggleBtn = $('btnToggleTour');
+const toggleIcon = $('tourToggleIcon');
+
+function hideTour() {
+  tourDiv.style.display = 'none';
+  toggleBtn.innerHTML = 'Show Instructions';
+  toggleIcon.textContent = '(click to show)';
+  localStorage.setItem('tourHidden', 'true');
+}
+
+function showTour() {
+  tourDiv.style.display = 'block';
+  toggleBtn.innerHTML = 'Hide Instructions';
+  toggleIcon.textContent = '(click to hide)';
+  localStorage.setItem('tourHidden', 'false');
+}
+
+toggleBtn?.addEventListener('click', () => {
+  if (tourDiv.style.display === 'none') {
+    showTour();
+  } else {
+    hideTour();
+  }
+});
+
+tourTitle?.addEventListener('click', () => {
+  toggleBtn.click();
+});
+
+if (localStorage.getItem('tourHidden') === 'true') {
+  hideTour();
+} else {
+  showTour();
+}
+})();
+</script>
+
+
+</body>
+</html>
